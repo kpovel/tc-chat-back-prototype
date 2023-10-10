@@ -3,7 +3,6 @@ package com.example.demo.sequrity;
 import com.example.demo.sequrity.jwt.AuthEntryPointJwt;
 import com.example.demo.sequrity.jwt.AuthTokenFilter;
 import com.example.demo.servise.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +28,13 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @ComponentScan(basePackages = "com.example.demo")
 public class SecurityConfig {
 
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
 
-    public SecurityConfig(UserDetailsServiceImpl userDetailsServiceImpl) {
+    public SecurityConfig(AuthEntryPointJwt unauthorizedHandler, UserDetailsServiceImpl userDetailsServiceImpl) {
+        this.unauthorizedHandler = unauthorizedHandler;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
 
     }
@@ -48,22 +47,20 @@ public class SecurityConfig {
         return authProvider;
     }
 
-
-
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
-    @Bean
-    public HttpSessionEventPublisher httpSessionEventPublisher() {
-        return new HttpSessionEventPublisher();
-    }
+//    @Bean
+//    public HttpSessionEventPublisher httpSessionEventPublisher() {
+//        return new HttpSessionEventPublisher();
+//    }
 
-    @Bean
-    public SessionRegistry sessionRegistry() {
-        return new SessionRegistryImpl();
-    }
+//    @Bean
+//    public SessionRegistry sessionRegistry() {
+//        return new SessionRegistryImpl();
+//    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
@@ -77,20 +74,17 @@ public class SecurityConfig {
 
 
     public static final String[] ENDPOINTS_WHITELIST = {
-            "/css/*",
-            "/js/*",
-            "/login*",
-            "/api/auth/signup",
-            "/api/auth/signin",
+            "/api/signup",
+            "/api/login",
             "/"
 
     };
-    public static final String LOGIN_URL = "/api/auth/signin";
+//    public static final String LOGIN_URL = "/api/login";
     //    public static final String LOGOUT_URL = "/logout";
-    public static final String LOGIN_FAIL_URL = LOGIN_URL + "?error";
-    public static final String DEFAULT_SUCCESS_URL = "/security-page";
-    public static final String USERNAME = "username";
-    public static final String PASSWORD = "password";
+//    public static final String LOGIN_FAIL_URL = LOGIN_URL + "?error";
+//    public static final String DEFAULT_SUCCESS_URL = "/security-page";
+//    public static final String USERNAME = "username";
+//    public static final String PASSWORD = "password";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -98,10 +92,11 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/test/**").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/signup").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .anyRequest().authenticated()
                 )
 
         .authenticationProvider(authenticationProvider())
@@ -112,11 +107,6 @@ public class SecurityConfig {
 //                        .anyRequest().authenticated()
 //                )
 //
-
-
-
-
-
         return http.build();
     }
 }

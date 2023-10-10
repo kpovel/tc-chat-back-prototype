@@ -4,7 +4,6 @@ import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.payload.request.SignupRequest;
 import com.example.demo.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,9 @@ public class UserService {
         if (userRepository.findByEmail(email).isPresent()) return false;
         User user = new User();
         user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUserLogin(signUpRequest.getUserLogin());
+        user.setName(signUpRequest.getUserLogin());
+        user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.getAuthority().add(Role.ROLE_USER);
         user.setEnable(true);
         userRepository.save(user);

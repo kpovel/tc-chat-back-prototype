@@ -20,6 +20,9 @@ public class User implements Serializable{
     private Long id;
     @Column
     private String name;
+
+    @Column
+    private String userLogin;
     @NotBlank
     @Column
     private String email;

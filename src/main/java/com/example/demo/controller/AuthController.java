@@ -1,12 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.payload.request.LoginRequest;
-import com.example.demo.payload.request.SignupRequest;
 import com.example.demo.payload.response.JwtResponse;
-import com.example.demo.payload.response.MessageResponse;
 import com.example.demo.sequrity.UserDetailsImpl;
 import com.example.demo.sequrity.jwt.JwtUtils;
 import com.example.demo.servise.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api")
 @AllArgsConstructor
+
 public class AuthController {
 
     private final UserService userService;
@@ -29,28 +30,26 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final String jwtAccessToken = jwtUtils.generateJwtToken(authentication);
         final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        Cookie cookie = new Cookie("myCookie", jwtAccessToken);
+        cookie.setHttpOnly(true); // Встановлюємо атрибут HTTPOnly
+
+//         Додавання cookie до HTTP-відповіді
+        response.addCookie(cookie);
 
         return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
     }
 
-    @PostMapping("/signup") //реєстрація
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userService.createUser(signUpRequest)) {
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-        } else return ResponseEntity
-                .badRequest()
-                .body(new MessageResponse("Error: Email is already in use!"));
-    }
+
 
 
 //    @PostMapping("token")
