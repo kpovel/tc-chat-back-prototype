@@ -52,16 +52,6 @@ public class SecurityConfig {
         return new AuthTokenFilter();
     }
 
-//    @Bean
-//    public HttpSessionEventPublisher httpSessionEventPublisher() {
-//        return new HttpSessionEventPublisher();
-//    }
-
-//    @Bean
-//    public SessionRegistry sessionRegistry() {
-//        return new SessionRegistryImpl();
-//    }
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -73,18 +63,6 @@ public class SecurityConfig {
     }
 
 
-    public static final String[] ENDPOINTS_WHITELIST = {
-            "/api/signup",
-            "/api/login",
-            "/"
-
-    };
-//    public static final String LOGIN_URL = "/api/login";
-    //    public static final String LOGOUT_URL = "/logout";
-//    public static final String LOGIN_FAIL_URL = LOGIN_URL + "?error";
-//    public static final String DEFAULT_SUCCESS_URL = "/security-page";
-//    public static final String USERNAME = "username";
-//    public static final String PASSWORD = "password";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -99,14 +77,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-        .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider())
 
-       .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-//                .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-//                        .requestMatchers(ENDPOINTS_WHITELIST).permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }

@@ -28,7 +28,7 @@ public class User implements Serializable{
     private String email;
 
     @NotBlank
-    @Column(length = 1000)
+    @Column(length = 100)
     private String password;
 
     @Column

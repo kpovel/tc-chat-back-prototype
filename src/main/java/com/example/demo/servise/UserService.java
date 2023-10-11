@@ -24,8 +24,8 @@ public class UserService {
         if (userRepository.findByEmail(email).isPresent()) return false;
         User user = new User();
         user.setEmail(email);
-        user.setUserLogin(signUpRequest.getUserLogin());
-        user.setName(signUpRequest.getUserLogin());
+        user.setUserLogin(signUpRequest.getLogin());
+        user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.getAuthority().add(Role.ROLE_USER);
         user.setEnable(true);
