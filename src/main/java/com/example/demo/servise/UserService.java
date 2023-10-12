@@ -19,9 +19,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public boolean createUser(SignupRequest signUpRequest) {
+    public void createUser(SignupRequest signUpRequest) {
         String email = signUpRequest.getEmail();
-        if (userRepository.findByEmail(email).isPresent()) return false;
         User user = new User();
         user.setEmail(email);
         user.setUserLogin(signUpRequest.getLogin());
@@ -30,6 +29,5 @@ public class UserService {
         user.getAuthority().add(Role.ROLE_USER);
         user.setEnable(true);
         userRepository.save(user);
-        return true;
     }
 }

@@ -1,17 +1,18 @@
 package com.example.demo.validate;
 
+import com.example.demo.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class ValidateUserField {
-    public boolean validateUserPassword(String password) {
-        return false;
+    private final UserRepository userRepository;
+    public boolean existsByLogin(String login) {
+        return userRepository.existsByUserLogin(login);
     }
 
-    public boolean validateForSpaces (String field) {
-        String newField = field.trim();
-        newField = newField.replaceAll(" ", "");
-        if (field.equals(newField)) return true;
-        return false;
+    public boolean existsByEmail (String email) {
+        return userRepository.existsByEmail(email);
     }
 }

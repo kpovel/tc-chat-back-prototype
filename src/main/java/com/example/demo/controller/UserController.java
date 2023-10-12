@@ -1,22 +1,16 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.User;
 import com.example.demo.payload.request.SignupRequest;
-import com.example.demo.payload.response.MessageResponse;
 import com.example.demo.servise.UserService;
 import com.example.demo.validate.CustomFieldError;
 import com.example.demo.validate.ValidateUserField;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -36,35 +30,35 @@ public class UserController {
     private final MessageSource messageSource;
 
 
-
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
-                                          BindingResult bindingResult, @RequestHeader("Accept-Language") String acceptLanguage) {
+                                          BindingResult bindingResult, @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
 
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if(acceptLanguage.equals("uk-UA")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
+            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
-//            List<CustomFieldError> errors = bindingResult.getFieldErrors().stream()
-//                    .map(fieldError -> new CustomFieldError(fieldError.getField(), fieldError.getDefaultMessage()))
-//                    .collect(Collectors.toList());
-            List<CustomFieldError> errors = null;
-//            try {
-                errors = bindingResult.getFieldErrors().stream()
+            try {
+                List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
                         .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
                         .collect(Collectors.toList());
-//            } catch (NoSuchMessageException e) {
-//                System.out.println(e.getMessage());
-                return ResponseEntity.badRequest().body(errors);
-//            }
-
+                return ResponseEntity.badRequest().body(errorFields);
+            } catch (NoSuchMessageException e) {
+                return ResponseEntity.badRequest().body(new ArrayList<>(Arrays.asList(
+                        new CustomFieldError("error", messageSource.getMessage("server.error", null, currentLocale)))));
+            }
         }
-
-        if (userService.createUser(signUpRequest)) {
-            return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-        } else return ResponseEntity
-                .badRequest()
-                .body(new MessageResponse("Error: Email is already in use!"));
+        if (validate.existsByLogin(signUpRequest.getLogin())) {
+            return ResponseEntity.badRequest().body(new ArrayList<>(Arrays.asList(
+                    new CustomFieldError("error", messageSource.getMessage("login.duplicate", null, currentLocale)))));
+        }
+        if (validate.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new ArrayList<>(Arrays.asList(
+                    new CustomFieldError("error", messageSource.getMessage("email.duplicate", null, currentLocale)))));
+        }
+        userService.createUser(signUpRequest);
+        return ResponseEntity.ok(messageSource.getMessage("user.signup.success", null, currentLocale));
     }
 
 
