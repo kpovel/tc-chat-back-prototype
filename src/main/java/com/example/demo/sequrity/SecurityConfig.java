@@ -3,9 +3,11 @@ package com.example.demo.sequrity;
 import com.example.demo.sequrity.jwt.AuthEntryPointJwt;
 import com.example.demo.sequrity.jwt.AuthTokenFilter;
 import com.example.demo.servise.UserDetailsServiceImpl;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -37,6 +39,14 @@ public class SecurityConfig {
         this.unauthorizedHandler = unauthorizedHandler;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
 
+    }
+
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages"); // Базове ім'я файлів ресурсів (без розширення)
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
     }
 
     @Bean
