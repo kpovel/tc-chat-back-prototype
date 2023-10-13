@@ -4,6 +4,7 @@ import com.example.demo.payload.request.SignupRequest;
 import com.example.demo.servise.UserService;
 import com.example.demo.validate.CustomFieldError;
 import com.example.demo.validate.ValidateUserField;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -29,14 +30,13 @@ public class UserController {
     private final ValidateUserField validate;
     private final MessageSource messageSource;
 
-
+    @Operation(summary = "Registration new user")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult, @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
 
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk-UA")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             try {
@@ -45,17 +45,17 @@ public class UserController {
                         .collect(Collectors.toList());
                 return ResponseEntity.badRequest().body(errorFields);
             } catch (NoSuchMessageException e) {
-                return ResponseEntity.badRequest().body(new ArrayList<>(Arrays.asList(
-                        new CustomFieldError("error", messageSource.getMessage("server.error", null, currentLocale)))));
+                return ResponseEntity.badRequest().body(new ArrayList<>(List.of(
+                        new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)))));
             }
         }
         if (validate.existsByLogin(signUpRequest.getLogin())) {
-            return ResponseEntity.badRequest().body(new ArrayList<>(Arrays.asList(
-                    new CustomFieldError("error", messageSource.getMessage("login.duplicate", null, currentLocale)))));
+            return ResponseEntity.badRequest().body(new ArrayList<>(List.of(
+                    new CustomFieldError("loginDuplicate", messageSource.getMessage("login.duplicate", null, currentLocale)))));
         }
         if (validate.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new ArrayList<>(Arrays.asList(
-                    new CustomFieldError("error", messageSource.getMessage("email.duplicate", null, currentLocale)))));
+            return ResponseEntity.badRequest().body(new ArrayList<>(List.of(
+                    new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)))));
         }
         userService.createUser(signUpRequest);
         return ResponseEntity.ok(messageSource.getMessage("user.signup.success", null, currentLocale));

@@ -9,12 +9,15 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -30,7 +33,12 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
+                                              HttpServletResponse response,
+                                              @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
+
+        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk-UA")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
@@ -43,7 +51,6 @@ public class AuthController {
         Cookie cookie = new Cookie("myCookie", jwtAccessToken);
         cookie.setHttpOnly(true); // Встановлюємо атрибут HTTPOnly
 
-//         Додавання cookie до HTTP-відповіді
         response.addCookie(cookie);
 
         return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
