@@ -1,6 +1,7 @@
 package com.example.demo.exception;
 
 import com.example.demo.validate.CustomFieldError;
+import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -28,6 +29,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ResponseEntity<?> handleUserAuthorisationExceptions(BadCredentialsException ex) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ArrayList<>(List.of(
+                new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)))));
+    }
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ResponseEntity<?> handleRefreshJwtAccessTokenExceptions(AuthException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ArrayList<>(List.of(
                 new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)))));

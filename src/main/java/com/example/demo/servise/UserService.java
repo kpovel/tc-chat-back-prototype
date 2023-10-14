@@ -4,8 +4,11 @@ import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.payload.request.SignupRequest;
 import com.example.demo.repository.UserRepository;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 @Service
 //@Slf4j
@@ -20,9 +23,11 @@ public class UserService {
     }
 
     public void createUser(SignupRequest signUpRequest) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
         String email = signUpRequest.getEmail();
         User user = new User();
         user.setEmail(email);
+        user.setLocale(currentLocale.getLanguage());
         user.setUserLogin(signUpRequest.getLogin());
         user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
@@ -30,4 +35,6 @@ public class UserService {
         user.setEnable(true);
         userRepository.save(user);
     }
+
+
 }

@@ -26,6 +26,8 @@ public class User implements Serializable{
     @NotBlank
     @Column
     private String email;
+    @Column
+    private String locale;;
 
     @NotBlank
     @Column(length = 100)
