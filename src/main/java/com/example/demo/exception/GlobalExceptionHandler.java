@@ -1,6 +1,7 @@
 package com.example.demo.exception;
 
 import com.example.demo.validate.CustomFieldError;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleUserAuthorisationExceptions(BadCredentialsException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ArrayList<>(List.of(
-                new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)))));
+                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)))));
     }
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -40,5 +41,15 @@ public class GlobalExceptionHandler {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ArrayList<>(List.of(
                 new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)))));
+    }
+
+
+    @ExceptionHandler(UserAccountNotActivatedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ResponseEntity<?> emailNotVerificationException(UserAccountNotActivatedException ex) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArrayList<>(List.of(
+                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)))));
     }
 }

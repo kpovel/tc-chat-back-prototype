@@ -15,12 +15,12 @@ public class GreetingController {
 
     private final ChatThemeRepository themeRepository;
 
-//    @MessageMapping("/hello/{themeId}")
-//    @SendTo("/topic/{themeId}")
-//    public Message greeting(@DestinationVariable("themeId") Long themeId, HelloMessage message) throws Exception {
-////        Long themeLongId = Long.parseLong(themeId);
-//        Thread.sleep(1000); // simulated delay
-//        return new Message("Hello, " + HtmlUtils.htmlEscape(message.getName()) + "!");
-//    }
+    @MessageMapping("/hello/{themeId}")
+    @SendTo("/topic/{themeId}")
+    public Message greeting(@DestinationVariable("themeId") Long themeId, Message message) throws Exception {
+//        Long themeLongId = Long.parseLong(themeId);
+        Thread.sleep(1000); // simulated delay
+        return message;
+    }
 
 }

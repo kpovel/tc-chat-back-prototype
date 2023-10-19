@@ -17,7 +17,7 @@ public class SignupRequest {
 
   @NotBlank(message = "email.notblank")
   @Size(max = 50, message = "email.maxsize")
-  @Email(message = "email.email")
+  @Email(message = "email.email", regexp = "^(?=.{1,50}$)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$")
   private String email;
 
   @Size(min = 6, message = "password.minsize")

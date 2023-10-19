@@ -36,6 +36,15 @@ public class JwtUtils {
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
     }
 
+    public String getUsernameFromToken(String token) {
+
+        if (validateAccessToken(token)) {
+            final Claims claims = getRefreshClaims(token);
+            return claims.getSubject();
+        }
+        return null;
+    }
+
 
     public String generateJwtAccessToken(Authentication authentication) {
 
@@ -95,8 +104,9 @@ public class JwtUtils {
             logger.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (SignatureException e) {
+            logger.error("JWT claims string is signature: {}", e.getMessage());
         }
-
         return false;
     }
 

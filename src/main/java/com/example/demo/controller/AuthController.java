@@ -5,13 +5,20 @@ import com.example.demo.payload.response.JwtResponse;
 import com.example.demo.sequrity.UserDetailsImpl;
 import com.example.demo.sequrity.jwt.JwtUtils;
 import com.example.demo.servise.AuthService;
+import com.example.demo.validate.CustomFieldError;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,9 +32,8 @@ import java.util.Locale;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("api")
-@Tag(name = " ", description = " ")
+@Tag(name = "JWT Tokens", description = " ")
 @AllArgsConstructor
-
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -37,8 +43,12 @@ public class AuthController {
     private final AuthService authService;
 
 
-    @Operation(summary = "User authorisation")
     @PostMapping("/login")
+    @Operation(summary = "User authentication")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
+             })
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
                                               HttpServletResponse response,
                                               @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
@@ -64,15 +74,27 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
     }
 
-    @Operation(summary = "Refresh jwt access token")
+
     @PostMapping("/refresh/access-token")
+    @Operation(summary = "Refresh jwt access token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody JwtResponse request) throws AuthException {
         final JwtResponse token = authService.getAccessToken(request.getJwtRefreshToken());
         return ResponseEntity.ok(token);
     }
 
-    @Operation(summary = "Refresh jwt refresh token", description = " des", tags = {" tags "})
+
     @PostMapping("/refresh/refresh-token")
+    @Operation(summary = "Refresh jwt refresh token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
+            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody JwtResponse request) throws AuthException {
         final JwtResponse token = authService.getJwtRefreshToken(request.getJwtRefreshToken());
         return ResponseEntity.ok(token);
