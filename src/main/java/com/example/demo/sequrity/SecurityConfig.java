@@ -30,6 +30,7 @@ public class SecurityConfig {
 
     private final AuthEntryPointJwt unauthorizedHandler;
 
+
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
 
@@ -77,6 +78,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login", "/api/signup", "/api/verification-user-email/*").permitAll()

@@ -1,6 +1,7 @@
 package com.example.demo.sequrity;
 
 import com.example.demo.exception.UserAccountNotActivatedException;
+import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +15,6 @@ public class UserDetailsImpl implements UserDetails {
     public UserDetailsImpl(User user) throws UserAccountNotActivatedException {
         this.user = user;
     }
-
 
     public String getName() {
         return user.getName();
