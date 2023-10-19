@@ -25,7 +25,7 @@ public class JwtUtils {
     @Value(("${jwt.secret.refresh.expirationMs}"))
     private long jwtRefreshExpirationMs;
 
-    private final Key jwtAccessSecret;
+    private final SecretKey jwtAccessSecret;
     private final SecretKey jwtRefreshSecret;
 
     public JwtUtils(
@@ -36,8 +36,17 @@ public class JwtUtils {
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
     }
 
+    public String getUsernameFromToken(String token) {
 
-    public String generateJwtToken(Authentication authentication) {
+        if (validateAccessToken(token)) {
+            final Claims claims = getRefreshClaims(token);
+            return claims.getSubject();
+        }
+        return null;
+    }
+
+
+    public String generateJwtAccessToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         final Date expiration = new Date(new Date().getTime() + jwtAccessExpirationMs);
@@ -62,25 +71,10 @@ public class JwtUtils {
 
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtAccessSecret).build()
-                .parseClaimsJws(token).getBody().getSubject();
+                .parseClaimsJws(token)
+                .getPayload()
+                .getSubject();
     }
-
-//    public boolean validateJwtToken(String authToken) {
-//        try {
-//            Jwts.parser().setSigningKey(jwtAccessSecret).build().parse(authToken);
-//            return true;
-//        } catch (MalformedJwtException e) {
-//            logger.error("Invalid JWT token: {}", e.getMessage());
-//        } catch (ExpiredJwtException e) {
-//            logger.error("JWT token is expired: {}", e.getMessage());
-//        } catch (UnsupportedJwtException e) {
-//            logger.error("JWT token is unsupported: {}", e.getMessage());
-//        } catch (IllegalArgumentException e) {
-//            logger.error("JWT claims string is empty: {}", e.getMessage());
-//        }
-//
-//        return false;
-//    }
 
     public boolean validateRefreshToken(@NonNull String refreshToken) {
         return validateJwtToken(refreshToken, jwtRefreshSecret);
@@ -88,6 +82,14 @@ public class JwtUtils {
 
     public boolean validateAccessToken(@NonNull String accessToken) {
         return validateJwtToken(accessToken, jwtAccessSecret);
+    }
+
+    public Claims getAccessClaims(@NonNull String token) {
+        return getClaims(token, jwtAccessSecret);
+    }
+
+    public Claims getRefreshClaims(@NonNull String token) {
+        return getClaims(token, jwtRefreshSecret);
     }
 
     public boolean validateJwtToken(@NonNull String token, @NonNull Key secret) {
@@ -102,11 +104,19 @@ public class JwtUtils {
             logger.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (SignatureException e) {
+            logger.error("JWT claims string is signature: {}", e.getMessage());
         }
-
         return false;
     }
 
+    private Claims getClaims(@NonNull String token, @NonNull SecretKey secret) {
+        return Jwts.parser()
+                .verifyWith(secret)
+                .build()
+                .parseClaimsJws(token)
+                .getPayload();
+    }
 
 
 }

@@ -13,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "users")
-public class User implements Serializable{
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -26,10 +26,15 @@ public class User implements Serializable{
     @NotBlank
     @Column
     private String email;
+    @Column
+    private String locale;
+    ;
 
     @NotBlank
     @Column(length = 100)
     private String password;
+    @Column
+    private String activationCode;
 
     @Column
     private boolean enable;
