@@ -33,6 +33,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         LocaleContextHolder.setLocale(Locale.forLanguageTag(userOptional.get().getLocale()));
         if(!userOptional.get().isEnable()) throw new UserAccountNotActivatedException("email.not.verification");
-        return new UserDetailsImpl(userOptional.get());
+        User user = userOptional.get();
+        return new UserDetailsImpl(user);
     }
 }
