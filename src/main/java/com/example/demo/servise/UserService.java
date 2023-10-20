@@ -20,7 +20,7 @@ import java.util.*;
 @Service
 //@Slf4j
 public class UserService {
-    @Value(("${application.host}"))
+    @Value(("${front.host}"))
     private String host;
 
     private final UserRepository userRepository;

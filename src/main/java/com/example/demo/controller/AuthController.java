@@ -76,7 +76,7 @@ public class AuthController {
 
 
     @PostMapping("/refresh/access-token")
-    @Operation(summary = "Refresh jwt access token")
+    @Operation(summary = "Refresh jwt access token", description = "request: json - refresh token in body, headers - access token; response - json: new access token")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
@@ -89,7 +89,7 @@ public class AuthController {
 
 
     @PostMapping("/refresh/refresh-token")
-    @Operation(summary = "Refresh jwt refresh token")
+    @Operation(summary = "Refresh jwt refresh token", description = "request: json - refresh token in body, headers - access token; response - json: new access and refresh tokens")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
