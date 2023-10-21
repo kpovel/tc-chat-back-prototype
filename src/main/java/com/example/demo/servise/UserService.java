@@ -7,13 +7,15 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 //@Slf4j
@@ -26,15 +28,18 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final MailSenderService mailSenderService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private MessageSource messageSource;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        MailSenderService mailSenderService,
+                       UserDetailsServiceImpl userDetailsServiceImpl,
                        MessageSource messageSource) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.mailSenderService = mailSenderService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
         this.messageSource = messageSource;
     }
 
@@ -54,23 +59,27 @@ public class UserService {
         userRepository.save(user);
         if (!StringUtils.isEmpty(user.getEmail())) {
             String mailText = String.format(messageSource.getMessage("mail.activation.code", null, currentLocale),
-                    user.getUserLogin(), host, user.getActivationCode());
+                    user.getUserLogin(), host + "/" + user.getLocale(), user.getActivationCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.activation", null, currentLocale), mailText);
         }
     }
 
 
-    public boolean verificationUserEmail(String code) {
+    public Optional<User> verificationUserEmail(String code) {
         Optional<User> userOptional = userRepository.findByActivationCode(code);
         if(userOptional.isPresent()){
             User user = userOptional.get();
-            LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
             user.setEnable(true);
             user.setActivationCode(null);
             userRepository.save(user);
-            return true;
+            return Optional.of(user);
         }
-        return false;
+        return userOptional;
+    }
+
+    public Authentication userAuthentication(User user) {
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());;
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public void forgotPasswordOneStep(String userEmail) {
