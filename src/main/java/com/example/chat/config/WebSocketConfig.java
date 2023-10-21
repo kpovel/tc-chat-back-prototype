@@ -72,28 +72,28 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //            }
 //        });
 //    }
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
-                if (StompCommand.SEND.equals(accessor.getCommand())) {
-                    String token = accessor.getFirstNativeHeader("authorization"); // Отримайте токен з заголовка
-
-                    if (token != null && token.startsWith("Bearer ")) {
-                        token = token.substring(7); // Видаліть "Bearer " префікс
-
-                        if(!jwtUtils.validateAccessToken(token)){
-                            throw new BadCredentialsException(" error ");
-                        }
-                    }
-                }
-                return message;
-            }
-        });
-    }
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        registration.interceptors(new ChannelInterceptor() {
+//            @Override
+//            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+//                StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+//
+//                if (StompCommand.SEND.equals(accessor.getCommand())) {
+//                    String token = accessor.getFirstNativeHeader("authorization"); // Отримайте токен з заголовка
+//
+//                    if (token != null && token.startsWith("Bearer ")) {
+//                        token = token.substring(7); // Видаліть "Bearer " префікс
+//
+//                        if(!jwtUtils.validateAccessToken(token)){
+//                            throw new BadCredentialsException(" error ");
+//                        }
+//                    }
+//                }
+//                return message;
+//            }
+//        });
+//    }
 //    @Override
 //    public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
 //        return WebSocketMessageBrokerConfigurer.super.configureMessageConverters(messageConverters);
