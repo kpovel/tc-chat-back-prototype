@@ -1,5 +1,6 @@
 package com.example.chat.servise;
 
+import com.example.chat.model.Image;
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.model.Role;
@@ -55,6 +56,7 @@ public class UserService {
         user.getAuthority().add(Role.ROLE_USER);
         user.setEnable(false);
         user.setActivationCode(UUID.randomUUID().toString());
+        user.setImage(new Image());
         userRepository.save(user);
         if (!StringUtils.isEmpty(user.getEmail())) {
             String mailText = String.format(messageSource.getMessage("mail.activation.code", null, currentLocale),

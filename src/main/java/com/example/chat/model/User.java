@@ -43,6 +43,9 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<Role> authority = new HashSet<>();
 
+    @OneToOne(mappedBy = "user")
+    private Image image;
+
     public User() {
     }
 }

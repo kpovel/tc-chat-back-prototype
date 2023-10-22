@@ -2,6 +2,7 @@ package com.example.chat.controller;
 
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.payload.response.JwtResponse;
+import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.model.User;
 import com.example.chat.servise.AuthService;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -50,11 +52,11 @@ public class UserController {
     @Operation(summary = "Registration new user")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
+            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = ParserToResponseFromCustomFieldError.class), mediaType = "application/json") })
     })
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
-                                          BindingResult bindingResult, @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
-
+                                          BindingResult bindingResult,
+                                          @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
         if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
@@ -63,19 +65,16 @@ public class UserController {
                 List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
                         .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
                         .collect(Collectors.toList());
-                return ResponseEntity.badRequest().body(errorFields);
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             } catch (NoSuchMessageException e) {
-                return ResponseEntity.badRequest().body(new ArrayList<>(List.of(
-                        new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)))));
+                return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
             }
         }
         if (validate.existsByLogin(signUpRequest.getLogin())) {
-            return ResponseEntity.badRequest().body(new ArrayList<>(List.of(
-                    new CustomFieldError("loginDuplicate", messageSource.getMessage("login.duplicate", null, currentLocale)))));
+            return ResponseEntity.badRequest().body(new CustomFieldError("loginDuplicate", messageSource.getMessage("login.duplicate", null, currentLocale)));
         }
         if (validate.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new ArrayList<>(List.of(
-                    new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)))));
+            return ResponseEntity.badRequest().body(new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)));
         }
         userService.createUser(signUpRequest);
         return ResponseEntity.ok(messageSource.getMessage("user.signup.success", null, currentLocale));
