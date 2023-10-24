@@ -1,5 +1,6 @@
 package com.example.chat.controller;
 
+import com.example.chat.exception.CustomFileNotFoundException;
 import com.example.chat.exception.FileFormatException;
 import com.example.chat.servise.FileService;
 import com.example.chat.servise.ImageService;
@@ -26,7 +27,7 @@ public class ImageController {
     private final ImageService imageService;
 
     @PostMapping("/image/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws CustomFileNotFoundException {
         String contentType = file.getContentType();
         assert contentType != null;
         if (contentType.equalsIgnoreCase("image/jpeg") || contentType.equals("image/png")
