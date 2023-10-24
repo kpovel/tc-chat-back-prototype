@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +29,6 @@ public class User implements Serializable {
     private String email;
     @Column
     private String locale;
-    ;
 
     @NotBlank
     @Column(length = 100)
@@ -43,8 +43,20 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<Role> authority = new HashSet<>();
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
     private Image image;
+
+    @Column(name = "date_last_visit")
+    private LocalDateTime dateLastVisit;
+
+    @Column(name = "date_of_created")
+    private LocalDateTime dateOfCreated;
+    @PrePersist
+    private void init(){
+        dateOfCreated = LocalDateTime.now();
+    }
+
 
     public User() {
     }

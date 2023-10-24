@@ -1,15 +1,14 @@
 package com.example.chat.servise;
 
+import com.example.chat.exception.CustomFileNotFoundException;
 import com.example.chat.exception.FileStorageException;
 import com.example.chat.property.FileStorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,15 +22,10 @@ public class FileService {
 
     private final Path fileStorageLocation;
 
-    private final ImageService imageService;
-
-
     @Autowired
-    public FileService(FileStorageProperties fileStorageProperties,
-                         ImageService imageService) {
+    public FileService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();
-        this.imageService = imageService;
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
@@ -40,15 +34,14 @@ public class FileService {
     }
 
 
-    public String saveFileInStorage(MultipartFile file) {
-        // Normalize file name
+    public String saveFileInStorage(MultipartFile file, String contentType) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         try {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
             String uuidFile = UUID.randomUUID().toString();
-            String resultFilename = uuidFile + ".png";
+            String resultFilename = uuidFile + contentType.replaceAll("image/",".");
             Path targetLocation = this.fileStorageLocation.resolve(resultFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return resultFilename;
@@ -57,35 +50,33 @@ public class FileService {
 //            System.out.println(ex.getMessage());
         }
     }
-//
-//    public Resource loadFileAsResource(String fileName) {
-//        try {
-//            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
-//            Resource resource = new UrlResource(filePath.toUri());
-//            if (resource.exists()) {
-//                return resource;
-//            } else {
-//                throw new MyFileNotFoundException("File not found " + fileName);
-//
-//            }
-//        } catch (MalformedURLException ex) {
-//            throw new MyFileNotFoundException("File not found " + fileName, ex);
-////            System.out.println(ex.getMessage());
-//        }
-//    }
+
+    public Resource loadFileAsStorage(String fileName) throws CustomFileNotFoundException {
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return resource;
+            } else {
+                throw new CustomFileNotFoundException("File not found " + fileName);
+
+            }
+        } catch (MalformedURLException ex) {
+            throw new CustomFileNotFoundException("File not found " + fileName, ex.getMessage());
+//            System.out.println(ex.getMessage());
+        }
+    }
 
 
 
 
 
-    private void deleteFileFromStorage(String fileName) {
+    public void deleteFileFromStorage(String fileName) throws CustomFileNotFoundException {
         Path targetLocation = this.fileStorageLocation.resolve(fileName);
         try {
             Files.delete(targetLocation);
         } catch (IOException e) {
-//            throw new RuntimeException("Image not found");
-            System.out.println(e.getMessage());
-            return;
+            throw new CustomFileNotFoundException("Image not found");
         }
     }
 

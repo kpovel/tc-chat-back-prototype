@@ -56,7 +56,8 @@ public class UserController {
     })
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult,
-                                          @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
+                                          @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
+                                          @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
         if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
@@ -76,12 +77,12 @@ public class UserController {
         if (validate.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)));
         }
-        userService.createUser(signUpRequest);
+        userService.createUser(signUpRequest, XOriginatingHost);
         return ResponseEntity.ok(messageSource.getMessage("user.signup.success", null, currentLocale));
     }
 
 
-    @GetMapping("/verification-user-email/{code}")
+    @PutMapping("/verification-user-email/{code}")
     @Operation(summary = "Verification user email and authentication")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class)) }),

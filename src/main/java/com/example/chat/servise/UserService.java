@@ -5,11 +5,13 @@ import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.model.Role;
 import com.example.chat.model.User;
+import com.example.chat.sequrity.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,7 +46,8 @@ public class UserService {
     }
 
 
-    public void createUser(SignupRequest signUpRequest) {
+    public void createUser(SignupRequest signUpRequest, String XOriginatingHost) {
+        if(XOriginatingHost != null) host = XOriginatingHost;
         Locale currentLocale = LocaleContextHolder.getLocale();
         String email = signUpRequest.getEmail();
         User user = new User();
@@ -98,6 +101,11 @@ public class UserService {
         } else {
 
         }
+    }
 
+    public User getUserFromSecurityContextHolder() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+    return userRepository.findByEmail(userDetails.getUsername()).get();
     }
 }

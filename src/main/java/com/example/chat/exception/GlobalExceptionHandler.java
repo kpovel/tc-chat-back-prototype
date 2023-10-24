@@ -29,16 +29,16 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleUserAuthorisationExceptions(BadCredentialsException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ArrayList<>(List.of(
-                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)))));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)));
     }
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ResponseEntity<?> handleRefreshJwtAccessTokenExceptions(AuthException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ArrayList<>(List.of(
-                new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)))));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
     }
 
 
@@ -46,6 +46,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
     public ResponseEntity<?> emailNotVerificationException(UserAccountNotActivatedException ex) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)));
+    }
+    @ExceptionHandler(AssertionError.class) // add message to messages localizations files
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ResponseEntity<?> imageContentTypeIsNull(AssertionError ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArrayList<>(List.of(
                 new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)))));

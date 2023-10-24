@@ -52,6 +52,7 @@ public class JwtUtils {
         final Date expiration = new Date(new Date().getTime() + jwtAccessExpirationMs);
 
         return Jwts.builder()
+                .claim("id", userPrincipal.getId())
                 .subject((userPrincipal.getUsername()))
                 .issuedAt(new Date())
                 .expiration(expiration)
@@ -63,6 +64,7 @@ public class JwtUtils {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         final Date expiration = new Date(new Date().getTime() + jwtRefreshExpirationMs);
         return Jwts.builder()
+                .claim("id", userPrincipal.getId())
                 .subject((userPrincipal.getUsername()))
                 .expiration(expiration)
                 .signWith(jwtRefreshSecret, SignatureAlgorithm.HS256)

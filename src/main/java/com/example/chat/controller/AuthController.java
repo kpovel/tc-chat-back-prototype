@@ -49,7 +49,6 @@ public class AuthController {
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
              })
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
-                                              HttpServletResponse response,
                                               @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
 
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
@@ -64,11 +63,6 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         authService.saveJwtRefreshTokenToStorage(userDetails.getUsername(), jwtRefreshToken);
-
-        Cookie cookie = new Cookie("myCookie", jwtRefreshToken);
-        cookie.setHttpOnly(true); // Встановлюємо атрибут HTTPOnly
-
-        response.addCookie(cookie);
 
         return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
     }
@@ -99,32 +93,4 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
-//    @RequestMapping("/your-endpoint")
-//    public ResponseEntity<?> yourEndpoint(HttpServletRequest request, HttpServletResponse response) {
-//        // Отримуємо куку з запиту
-//        Cookie[] cookies = request.getCookies();
-//
-//        if (cookies != null) {
-//            for (Cookie cookie : cookies) {
-//                if ("myCookie".equals(cookie.getName())) {
-//                    // Отримуємо значення куки
-//                    String jwtRefreshToken = cookie.getValue();
-//
-//                    // Оновлюємо значення, якщо потрібно
-//
-//                    // Створюємо нову куку з оновленим значенням
-//                    Cookie updatedCookie = new Cookie("myCookie", newRefreshTokenValue);
-//                    updatedCookie.setHttpOnly(true); // Встановлюємо атрибут HTTPOnly
-//
-//                    // Відправляємо оновлену куку відповіддю
-//                    response.addCookie(updatedCookie);
-//
-//                    // Решта логіки вашого контролера
-//                }
-//            }
-//        }
-//
-//        // Решта вашого контролера
-//        return ResponseEntity.ok("Your response here");
-//    }
 }

@@ -30,6 +30,7 @@ public class AuthService {
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtUtils.getRefreshClaims(refreshToken);
             final String login = claims.getSubject();
+//            Integer id = (Integer)claims.get("id"); // Id User
             final String saveRefreshToken = refreshStorage.get(login);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
                 final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

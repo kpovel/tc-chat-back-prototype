@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @Table(name = "images")
 public class Image {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -18,11 +17,11 @@ public class Image {
     @Column
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @OneToOne(mappedBy = "image")
     private User user;
 
 
     public Image() {
     }
+
 }

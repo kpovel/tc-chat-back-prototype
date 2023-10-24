@@ -33,6 +33,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        String uri = request.getRequestURI();
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateAccessToken(jwt)) {
