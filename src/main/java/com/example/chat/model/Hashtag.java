@@ -4,13 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Setter
-@Table(name = "chat_themes")
-public class ChatTheme {
+@Table
+public class Hashtag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,10 +17,4 @@ public class ChatTheme {
 
     @Column
     private String name;
-    @OneToMany
-    @JoinColumn
-    private List<Message> greetingList;
-
-    public ChatTheme() {
-    }
 }
