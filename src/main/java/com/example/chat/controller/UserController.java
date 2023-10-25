@@ -82,7 +82,7 @@ public class UserController {
     }
 
 
-    @PutMapping("/verification-user-email/{code}")
+    @PutMapping("/validate-email/{code}")
     @Operation(summary = "Verification user email and authentication")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class)) }),
