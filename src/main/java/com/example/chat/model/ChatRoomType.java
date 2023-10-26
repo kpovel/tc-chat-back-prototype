@@ -1,6 +1,6 @@
 package com.example.chat.model;
 
-public enum ChatType {
+public enum ChatRoomType {
     PUBLIC, PRIVATE
 
 }

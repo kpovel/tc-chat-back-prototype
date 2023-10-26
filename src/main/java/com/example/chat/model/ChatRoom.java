@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,29 +21,32 @@ public class ChatRoom {
     private Long id;
 
     @Column
+    private String name;
+
+    @Column
     private Integer userLimit;
 
     @Column
     boolean archived = false;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_admin_id")
     private User userAminChatRoom;
 
-    @ManyToMany(cascade= CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(name = "users_chat_rooms",
     joinColumns = @JoinColumn(name = "chat_room_id"),
     inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> usersChatRoom;
 
-    @ElementCollection(targetClass = ChatType.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "type", joinColumns = @JoinColumn(name = "chat_room_id"))
+    @ElementCollection(targetClass = ChatRoomType.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "chat_room_type", joinColumns = @JoinColumn(name = "chat_room_id"))
     @Enumerated(EnumType.STRING)
-    private Set<Role> authority = new HashSet<>();
+    private Set<ChatRoomType> chatRoomType = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinTable(name = "chat_rooms_hashtags",
             joinColumns = @JoinColumn(name = "chat_room_id"),
             inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
-    private List<Hashtag> hashtags;
+    private List<Hashtag> hashtags = new ArrayList<>();
 }

@@ -53,7 +53,7 @@ public class User implements Serializable {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinTable(name = "users_chat_rooms",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "chat_room_id"))

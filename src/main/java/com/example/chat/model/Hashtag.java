@@ -4,12 +4,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Table
+@Table(name = "hashtags")
 public class Hashtag {
 
     @Id
@@ -20,9 +21,9 @@ public class Hashtag {
     @Column
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinTable(name = "chat_rooms_hashtags",
     joinColumns = @JoinColumn(name = "hashtag_id"),
     inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
-    private List<ChatRoom> chatRoom;
+    private List<ChatRoom> chatRoom = new ArrayList<>();
 }
