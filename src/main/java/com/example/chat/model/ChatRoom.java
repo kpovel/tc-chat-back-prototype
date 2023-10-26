@@ -29,16 +29,20 @@ public class ChatRoom {
     @JoinColumn(name = "user_id")
     private User userAminChatRoom;
 
-    @ManyToMany
+    @ManyToMany(cascade= CascadeType.ALL)
     @JoinTable(name = "users_chat_rooms",
     joinColumns = @JoinColumn(name = "chat_room_id"),
     inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> usersChatRoom;
+
     @ElementCollection(targetClass = ChatType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "type", joinColumns = @JoinColumn(name = "chat_room_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> authority = new HashSet<>();
 
-    @OneToMany
-    private List<Hashtag> hashtaghList;
+    @ManyToMany
+    @JoinTable(name = "chat_rooms_hashtags",
+            joinColumns = @JoinColumn(name = "chat_room_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
+    private List<Hashtag> hashtags;
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,25 +20,30 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
+
     @Column
     private String name;
 
     @Column
     private String userLogin;
+
     @NotBlank
     @Column
     private String email;
+
     @Column
     private String locale;
 
     @NotBlank
     @Column(length = 100)
     private String password;
+
     @Column
     private String activationCode;
 
     @Column
     private boolean enable;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
@@ -47,11 +53,18 @@ public class User implements Serializable {
     @JoinColumn(name = "image_id")
     private Image image;
 
+    @ManyToMany
+    @JoinTable(name = "users_chat_rooms",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
+    private List<ChatRoom> chatRooms;
+
     @Column(name = "date_last_visit")
     private LocalDateTime dateLastVisit;
 
     @Column(name = "date_of_created")
     private LocalDateTime dateOfCreated;
+
     @PrePersist
     private void init(){
         dateOfCreated = LocalDateTime.now();

@@ -19,9 +19,11 @@ public class Message {
     private String content;
 
     @ManyToOne
+    @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "date_of_created")
