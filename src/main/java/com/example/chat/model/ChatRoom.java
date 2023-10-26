@@ -11,7 +11,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table
+@Table(name = "chat_rooms")
 public class ChatRoom {
 
     @Id
@@ -22,6 +22,18 @@ public class ChatRoom {
     @Column
     private Integer userLimit;
 
+    @Column
+    boolean archived = false;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User userAminChatRoom;
+
+    @ManyToMany
+    @JoinTable(name = "users_chat_rooms",
+    joinColumns = @JoinColumn(name = "chat_room_id"),
+    inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> usersChatRoom;
     @ElementCollection(targetClass = ChatType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "type", joinColumns = @JoinColumn(name = "chat_room_id"))
     @Enumerated(EnumType.STRING)

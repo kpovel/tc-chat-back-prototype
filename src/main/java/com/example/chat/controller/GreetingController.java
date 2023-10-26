@@ -2,6 +2,9 @@ package com.example.chat.controller;
 
 import com.example.chat.model.ChatRoom;
 import com.example.chat.model.Message;
+import com.example.chat.servise.ChatRoomService;
+import com.example.chat.servise.MessageService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -9,12 +12,12 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class GreetingController {
 
-    private final ChatRoom chatRoom;
+    private final ChatRoomService chatRoomService;
 
-    private final Message message;
+    private final MessageService messageService;
 
     @MessageMapping("/hello/{chatRoomId}")
     @SendTo("/topic/{chatRoomId}")
