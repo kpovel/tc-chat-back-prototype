@@ -25,7 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
         prePostEnabled = true)
-@ComponentScan(basePackages = "com.example.demo")
+@ComponentScan(basePackages = "com.example.chat")
 public class SecurityConfig {
 
     private final AuthEntryPointJwt unauthorizedHandler;

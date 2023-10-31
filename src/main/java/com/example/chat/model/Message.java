@@ -1,5 +1,6 @@
 package com.example.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,11 +19,16 @@ public class Message {
     @Column
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_room_id")
-    private ChatRoom chatRoom;
+    @JsonBackReference
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "public_chat_room_id")
+    private PublicChatRoom publicChatRoom;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "private_chat_room_id")
+    private PrivateChatRoom privateChatRoom;
+
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -36,7 +42,4 @@ public class Message {
     public Message() {
     }
 
-    public Message(String content) {
-        this.content = content;
-    }
 }

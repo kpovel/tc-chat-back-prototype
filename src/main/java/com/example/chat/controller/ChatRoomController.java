@@ -1,7 +1,7 @@
 package com.example.chat.controller;
 
 import com.example.chat.payload.request.ChatRoomRequest;
-import com.example.chat.servise.ChatRoomService;
+import com.example.chat.servise.PublicChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api")
 public class ChatRoomController {
 
-    private final ChatRoomService chatRoomService;
+    private final PublicChatRoomService publicChatRoomService;
 
 
-    @Operation(summary = "New chat room")
+    @Operation(summary = "New chat room (-TODO-)")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/save-new-chat-room")
     public void saveNewChatRoom(@RequestBody ChatRoomRequest chatRoomRequest) {
-        chatRoomService.saveChatRoom(chatRoomRequest);
+        publicChatRoomService.saveChatRoom(chatRoomRequest);
 
     }
 

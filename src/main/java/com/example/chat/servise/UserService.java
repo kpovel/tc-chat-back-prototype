@@ -108,4 +108,10 @@ public class UserService {
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     return userRepository.findByEmail(userDetails.getUsername()).get();
     }
+
+    //???????????????????
+    public User getUserById(Long id) {
+        return userRepository.findById(id).get();
+    }
+
 }

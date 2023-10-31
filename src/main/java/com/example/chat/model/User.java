@@ -1,5 +1,8 @@
 package com.example.chat.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -19,16 +22,20 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
+    @JsonView(Views.ViewFieldId.class)
     private Long id;
 
     @Column
+    @JsonView(Views.ViewFieldName.class)
     private String name;
 
     @Column
+    @JsonView(Views.ViewFieldUserLogin.class)
     private String userLogin;
 
     @NotBlank
     @Column
+    @JsonView(Views.ViewFieldUserEmail.class)
     private String email;
 
     @Column
@@ -49,20 +56,28 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<Role> authority = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id")
     private Image image;
 
-    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST})
-    @JoinTable(name = "users_chat_rooms",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
-    private List<ChatRoom> chatRooms;
+//    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+//    @JoinTable(name = "users_chat_rooms",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
+//    private List<ChatRoom> chatRooms;
+
+//    @JsonManagedReference
+//    @OneToMany(mappedBy = "userAminChatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    private List<ChatRoom> isChatRoomsAdmin;
 
     @Column(name = "date_last_visit")
+    @JsonView(Views.ViewFieldUserDateLastVisit.class)
     private LocalDateTime dateLastVisit;
 
-    @Column(name = "date_of_created")
+    @Column(name = "date_of_created", updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonView(Views.ViewFieldUserDateOfCreated.class)
     private LocalDateTime dateOfCreated;
 
     @PrePersist

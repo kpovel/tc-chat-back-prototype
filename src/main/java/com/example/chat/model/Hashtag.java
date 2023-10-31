@@ -21,9 +21,9 @@ public class Hashtag {
     @Column
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST})
-    @JoinTable(name = "chat_rooms_hashtags",
-    joinColumns = @JoinColumn(name = "hashtag_id"),
-    inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
-    private List<ChatRoom> chatRoom = new ArrayList<>();
+//    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+//    @JoinTable(name = "chat_rooms_hashtags",
+//    joinColumns = @JoinColumn(name = "hashtag_id"),
+//    inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
+//    private List<ChatRoom> chatRoom = new ArrayList<>();
 }

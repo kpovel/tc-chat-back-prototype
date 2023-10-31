@@ -1,5 +1,6 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.Views;
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
@@ -9,6 +10,7 @@ import com.example.chat.servise.AuthService;
 import com.example.chat.servise.UserService;
 import com.example.chat.validate.CustomFieldError;
 import com.example.chat.validate.ValidateUserField;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -107,7 +109,7 @@ public class UserController {
 
 
     @PutMapping("/forgot-password")
-    @Operation(summary = "Forgot password, step one(-TODO-)")
+    @Operation(summary = "Forgot password, step one (-TODO-)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
@@ -126,6 +128,18 @@ public class UserController {
     public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable("code")String code) {
 
         //TODO
+        return null;
+    }
+
+    @GetMapping("/user")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Get User (-TODO-)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = User.class)) }),
+            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
+    })
+    @JsonView(Views.ViewFieldUser.class)
+    public ResponseEntity<User> getUserToProfile(){
         return null;
     }
 
