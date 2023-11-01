@@ -1,5 +1,6 @@
 package com.example.chat.servise;
 
+import com.example.chat.model.User;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.sequrity.UserDetailsImpl;
 import com.example.chat.sequrity.jwt.JwtUtils;
@@ -20,6 +21,8 @@ public class AuthService {
 
     private final JwtUtils jwtUtils;
 
+    private final UserService userService;
+
     private final Map<String, String> refreshStorage = new HashMap<>();
 
     public void saveJwtRefreshTokenToStorage(String userEmail, String jwtRefreshToken){
@@ -29,11 +32,11 @@ public class AuthService {
     public JwtResponse getAccessToken(@NonNull String refreshToken) throws AuthException {
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtUtils.getRefreshClaims(refreshToken);
-            final String login = claims.getSubject();
+            final String userEmail = claims.getSubject();
 //            Integer id = (Integer)claims.get("id"); // Id User
-            final String saveRefreshToken = refreshStorage.get(login);
+            final String saveRefreshToken = refreshStorage.get(userEmail);
             if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
-                final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                final Authentication authentication = userService.userAuthentication(new User(userEmail));
                 if (authentication == null) throw new AuthException("User authentication error");
 
                 final String accessToken = jwtUtils.generateJwtAccessToken(authentication);
