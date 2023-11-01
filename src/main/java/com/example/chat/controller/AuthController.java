@@ -69,12 +69,11 @@ public class AuthController {
 
 
     @PostMapping("/refresh/access-token")
-    @Operation(summary = "Refresh jwt access token", description = "request: json - refresh token in body, headers - access token; response - json: new access token")
+    @Operation(summary = "Refresh jwt access token", description = "request: json - refresh token in body; response - json: new access token")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
     })
-    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody JwtResponse request) throws AuthException {
         final JwtResponse token = authService.getAccessToken(request.getJwtRefreshToken());
         return ResponseEntity.ok(token);
