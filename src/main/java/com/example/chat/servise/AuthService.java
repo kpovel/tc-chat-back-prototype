@@ -1,5 +1,6 @@
 package com.example.chat.servise;
 
+import com.example.chat.exception.BadRefreshTokenException;
 import com.example.chat.model.User;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.sequrity.UserDetailsImpl;
@@ -9,6 +10,7 @@ import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class AuthService {
         refreshStorage.put(userEmail, jwtRefreshToken);
     }
 
-    public JwtResponse getAccessToken(@NonNull String refreshToken) throws AuthException {
+    public JwtResponse getAccessToken(@NonNull String refreshToken) throws AuthException, BadRefreshTokenException {
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtUtils.getRefreshClaims(refreshToken);
             final String userEmail = claims.getSubject();
@@ -44,7 +46,7 @@ public class AuthService {
                 return new JwtResponse(accessToken, null);
             }
         }
-        return new JwtResponse(null, null);
+        throw new BadRefreshTokenException("It is not correct refresh token");
     }
 
 

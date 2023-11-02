@@ -1,5 +1,6 @@
 package com.example.chat.controller;
 
+import com.example.chat.exception.BadRefreshTokenException;
 import com.example.chat.payload.request.LoginRequest;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.sequrity.jwt.JwtUtils;
@@ -74,7 +75,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
     })
-    public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody JwtResponse request) throws AuthException {
+    public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody JwtResponse request) throws AuthException, BadRefreshTokenException {
         final JwtResponse token = authService.getAccessToken(request.getJwtRefreshToken());
         return ResponseEntity.ok(token);
     }
