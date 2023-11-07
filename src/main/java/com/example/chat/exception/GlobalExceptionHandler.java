@@ -41,6 +41,13 @@ public class GlobalExceptionHandler {
                 new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
     }
 
+    @ExceptionHandler(BadRefreshTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ResponseEntity<?> badRefreshTokenExceptions(BadRefreshTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
 
     @ExceptionHandler(UserAccountNotActivatedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
