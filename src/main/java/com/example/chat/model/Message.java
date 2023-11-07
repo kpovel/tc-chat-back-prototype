@@ -21,12 +21,12 @@ public class Message {
 
     @JsonBackReference
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "public_chat_room_id")
-    private PublicChatRoom publicChatRoom;
-
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "private_chat_room_id")
-    private PrivateChatRoom privateChatRoom;
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
+//
+//    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "private_chat_room_id")
+//    private PrivateChatRoom privateChatRoom;
 
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

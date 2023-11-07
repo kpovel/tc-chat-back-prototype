@@ -1,6 +1,6 @@
 package com.example.chat.servise;
 
-import com.example.chat.model.PublicChatRoom;
+import com.example.chat.model.ChatRoom;
 import com.example.chat.model.Message;
 import com.example.chat.model.User;
 import com.example.chat.repository.MessageRepository;
@@ -23,11 +23,11 @@ public class MessageService {
     @Transactional
     public void saveMessage(Message message, Long chatRoomId) {
         User user = userService.getUserById(1L);
-        PublicChatRoom publicChatRoom = publicChatRoomService.getChatRoom(chatRoomId);
+        ChatRoom chatRoom = publicChatRoomService.getChatRoom(chatRoomId);
         message.setUser(user);
         message.setDateOfCreated(LocalDateTime.now());
 //        chatRoom.getMessage().add(message);
-        message.setPublicChatRoom(publicChatRoom);
+        message.setChatRoom(chatRoom);
         messageRepository.save(message);
     }
 }

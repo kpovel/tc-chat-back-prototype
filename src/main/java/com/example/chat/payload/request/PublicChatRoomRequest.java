@@ -5,13 +5,11 @@ import com.example.chat.dto.DtoHashtag;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
-public class ChatRoomRequest {
+public class PublicChatRoomRequest {
 
     private DtoChatRoom chatRoom;
 //    private Set<ChatRoomType> chatRoomType = new HashSet<>();
@@ -20,6 +18,6 @@ public class ChatRoomRequest {
 
     private List<Long> hashtagsId;
 
-    public ChatRoomRequest() {
+    public PublicChatRoomRequest() {
     }
 }

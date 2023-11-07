@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "chat_rooms")
-public class PublicChatRoom implements Serializable {
+public class ChatRoom implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +31,9 @@ public class PublicChatRoom implements Serializable {
     @Column
     boolean archived = false;
 
+    @Transient
+    private List<User> usersChatRoom = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_admin_id")
     private User userAminChatRoom;
@@ -41,11 +44,6 @@ public class PublicChatRoom implements Serializable {
     private Set<ChatRoomType> chatRoomType = new HashSet<>();
 
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.EAGER)
-    @JoinTable(name = "users_chat_rooms",
-            joinColumns = @JoinColumn(name = "chat_room_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<User> usersChatRoom = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "chat_rooms_hashtags",
@@ -54,6 +52,6 @@ public class PublicChatRoom implements Serializable {
     private List<Hashtag> hashtags = new ArrayList<>();
 
     @JsonManagedReference
-    @OneToMany(mappedBy = "publicChatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Message> message = new ArrayList<>();
 }

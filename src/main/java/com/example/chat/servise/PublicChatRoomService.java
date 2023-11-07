@@ -1,10 +1,10 @@
 package com.example.chat.servise;
 
-import com.example.chat.model.PublicChatRoom;
+import com.example.chat.model.ChatRoom;
 import com.example.chat.model.Hashtag;
 import com.example.chat.model.User;
-import com.example.chat.payload.request.ChatRoomRequest;
-import com.example.chat.repository.PublicChatRoomRepository;
+import com.example.chat.payload.request.PublicChatRoomRequest;
+import com.example.chat.repository.ChatRoomRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,35 +13,35 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class PublicChatRoomService {
 
-    private final PublicChatRoomRepository publicChatRoomRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     private final UserService userService;
 
-    public void saveChatRoom(ChatRoomRequest chatRoomRequest) {
+    public void saveChatRoom(PublicChatRoomRequest publicChatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
-        PublicChatRoom publicChatRoom = new PublicChatRoom();
-        publicChatRoom.setName(chatRoomRequest.getChatRoom().getName());
-        publicChatRoom.setUserAminChatRoom(user);
+        ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setName(publicChatRoomRequest.getChatRoom().getName());
+        chatRoom.setUserAminChatRoom(user);
         Hashtag hashtag = new Hashtag();
-        hashtag.setName(chatRoomRequest.getNewHashtag().get(0).getName()); // then recycle !!!!
-        publicChatRoom.getHashtags().add(hashtag);
-        publicChatRoom.getUsersChatRoom().add(user);
-        publicChatRoomRepository.save(publicChatRoom);
+        hashtag.setName(publicChatRoomRequest.getNewHashtag().get(0).getName()); // then recycle !!!!
+        chatRoom.getHashtags().add(hashtag);
+        chatRoom.getUsersChatRoom().add(user);
+        chatRoomRepository.save(chatRoom);
 
     }
 
     @Transactional
-    public PublicChatRoom getChatRoom(Long id) {
-        return publicChatRoomRepository.findById(id).get();
+    public ChatRoom getChatRoom(Long id) {
+        return chatRoomRepository.findById(id).get();
     }
 
-    public void saveTest(PublicChatRoom publicChatRoom) {
-        publicChatRoomRepository.save(publicChatRoom);
+    public void saveTest(ChatRoom chatRoom) {
+        chatRoomRepository.save(chatRoom);
     }
 
     @Transactional
     public void removeChatRoom(Long id) {
-        PublicChatRoom publicChatRoom = getChatRoom(id);
-        publicChatRoomRepository.delete(publicChatRoom);
+        ChatRoom chatRoom = getChatRoom(id);
+        chatRoomRepository.delete(chatRoom);
     }
 }
