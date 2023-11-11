@@ -50,7 +50,7 @@ public class AuthService {
     }
 
 
-    public JwtResponse getJwtRefreshToken(@NonNull String refreshToken) throws AuthException {
+    public JwtResponse getJwtRefreshToken(@NonNull String refreshToken) throws AuthException, BadRefreshTokenException {
         if (jwtUtils.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtUtils.getRefreshClaims(refreshToken);
             final String login = claims.getSubject();
@@ -66,7 +66,7 @@ public class AuthService {
                 return new JwtResponse(accessToken, newRefreshToken);
             }
         }
-        throw new AuthException("Invalid JWT token");
+        throw new BadRefreshTokenException("It is not correct refresh token");
     }
 
 }

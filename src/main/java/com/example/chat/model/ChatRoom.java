@@ -26,9 +26,6 @@ public class ChatRoom implements Serializable {
     private String name;
 
     @Column
-    private Integer userLimit;
-
-    @Column
     boolean archived = false;
 
     @Transient
@@ -44,14 +41,16 @@ public class ChatRoom implements Serializable {
     private Set<ChatRoomType> chatRoomType = new HashSet<>();
 
 
-
     @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "chat_rooms_hashtags",
             joinColumns = @JoinColumn(name = "chat_room_id"),
             inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
-    private List<Hashtag> hashtags = new ArrayList<>();
+    private List<Hashtag> hashtags = new ArrayList<>(); //Змінити на один хештег ?
 
     @JsonManagedReference
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Message> message = new ArrayList<>();
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<UserChatRooms> userChatRooms = new ArrayList<>();
 }

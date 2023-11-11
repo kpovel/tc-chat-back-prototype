@@ -18,12 +18,12 @@ public class MessageService {
 
     private final UserService userService;
 
-    private final PublicChatRoomService publicChatRoomService;
+    private final ChatRoomService chatRoomService;
 
     @Transactional
     public void saveMessage(Message message, Long chatRoomId) {
         User user = userService.getUserById(1L);
-        ChatRoom chatRoom = publicChatRoomService.getChatRoom(chatRoomId);
+        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         message.setUser(user);
         message.setDateOfCreated(LocalDateTime.now());
 //        chatRoom.getMessage().add(message);

@@ -10,8 +10,6 @@ public class DtoChatRoom {
 
     private String name;
 
-    private Integer userLimit;
-
     boolean archived = false;
 
     public DtoChatRoom() {

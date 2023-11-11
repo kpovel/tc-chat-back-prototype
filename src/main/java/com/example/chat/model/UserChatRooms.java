@@ -17,7 +17,7 @@ public class UserChatRooms {
     @Column
     private String chatName;
 
-    @OneToOne
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 

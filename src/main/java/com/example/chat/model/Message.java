@@ -34,6 +34,7 @@ public class Message {
 
     @Column(name = "date_of_created")
     private LocalDateTime dateOfCreated;
+
     @PrePersist
     private void init(){
         dateOfCreated = LocalDateTime.now();

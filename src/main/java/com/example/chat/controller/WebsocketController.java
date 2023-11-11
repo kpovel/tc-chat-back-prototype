@@ -1,7 +1,7 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.Message;
-import com.example.chat.servise.PublicChatRoomService;
+import com.example.chat.servise.ChatRoomService;
 import com.example.chat.servise.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class WebsocketController {
 
-    private final PublicChatRoomService publicChatRoomService;
+    private final ChatRoomService chatRoomService;
 
     private final MessageService messageService;
 
@@ -21,7 +21,7 @@ public class WebsocketController {
     @SendTo("/topic/{chatRoomId}")
     public Message greeting(@DestinationVariable("chatRoomId") Long chatRoomId, Message message) throws Exception {
         messageService.saveMessage(message, chatRoomId);
-        publicChatRoomService.removeChatRoom(6L);
+        chatRoomService.removeChatRoom(6L);
         Thread.sleep(1000); // simulated delay
         return message;
     }

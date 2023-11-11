@@ -1,8 +1,10 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.ChatRoomType;
 import com.example.chat.model.Message;
+import com.example.chat.payload.request.ChatRoomRequest;
 import com.example.chat.payload.request.PublicChatRoomRequest;
-import com.example.chat.servise.PublicChatRoomService;
+import com.example.chat.servise.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -18,16 +21,23 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("api")
-public class PublicChatRoomController {
+public class ChatRoomController {
 
-    private final PublicChatRoomService publicChatRoomService;
+    private final ChatRoomService chatRoomService;
 
 
     @PostMapping("/save-new-chat-room")
     @Operation(summary = "New chat room (-TODO-)")
     @SecurityRequirement(name = "Bearer Authentication")
-    public void saveNewChatRoom(@RequestBody PublicChatRoomRequest publicChatRoomRequest) {
-        publicChatRoomService.saveChatRoom(publicChatRoomRequest);
+    public void saveNewChatRoom(@RequestBody PublicChatRoomRequest chatRoomRequest) {
+        Set<ChatRoomType> chatRoomType = chatRoomRequest.getChatRoomType();
+        if(chatRoomType.contains(ChatRoomType.PRIVATE)){
+            chatRoomService.savePrivateChatRoom(chatRoomRequest);
+            System.out.println("PRIVATE CHAT");
+        } else {
+            chatRoomService.savePublicChatRoom(chatRoomRequest);
+        }
+
 
     }
 

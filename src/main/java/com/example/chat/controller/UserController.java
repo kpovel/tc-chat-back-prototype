@@ -1,11 +1,11 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.User;
 import com.example.chat.model.Views;
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
-import com.example.chat.model.User;
 import com.example.chat.servise.AuthService;
 import com.example.chat.servise.UserService;
 import com.example.chat.validate.CustomFieldError;
@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -29,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -56,6 +54,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = ParserToResponseFromCustomFieldError.class), mediaType = "application/json") })
     })
+
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult,
                                           @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,

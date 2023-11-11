@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SignupRequest {
+
   @Size(min = 3, message = "login.minsize")
   @Size(max = 50, message = "login.maxsize")
   @Pattern(regexp = "^\\S*$", message = "login.spaces")
