@@ -19,7 +19,8 @@ public class ImageService {
     public void saveImageName(String imageName) throws CustomFileNotFoundException {
         User user = userService.getUserFromSecurityContextHolder();
         Image image = user.getImage();
-        if (image.getName() != null) fileService.deleteFileFromStorage(image.getName());
+        String oldNameImage = image.getName();
+        if (image.getName() != null && !fileService.notDefaultImage(oldNameImage)) fileService.deleteFileFromStorage(oldNameImage);
         image.setName(imageName);
         imageRepository.save(image);
     }

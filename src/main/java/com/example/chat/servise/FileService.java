@@ -16,11 +16,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 @Service
 public class FileService {
 
     private final Path fileStorageLocation;
+
+    private final List<String> defaultAvatars = List.of("no-avatar.jpg");
 
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {
@@ -68,9 +73,6 @@ public class FileService {
     }
 
 
-
-
-
     public void deleteFileFromStorage(String fileName) throws CustomFileNotFoundException {
         Path targetLocation = this.fileStorageLocation.resolve(fileName);
         try {
@@ -78,6 +80,13 @@ public class FileService {
         } catch (IOException e) {
             throw new CustomFileNotFoundException("Image not found");
         }
+    }
+
+    public boolean notDefaultImage(String imageName) {
+        for (String arr: defaultAvatars) {
+            if(arr.equals(imageName)) return true;
+        }
+        return false;
     }
 
 

@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -58,7 +59,7 @@ public class UserController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult,
                                           @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
-                                          @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) {
+                                          @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) throws MessagingException {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
         if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();

@@ -6,6 +6,7 @@ import com.example.chat.repository.UserRepository;
 import com.example.chat.model.Role;
 import com.example.chat.model.User;
 import com.example.chat.sequrity.UserDetailsImpl;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.thymeleaf.context.Context;
 
 import java.util.*;
 
@@ -46,7 +48,7 @@ public class UserService {
     }
 
 
-    public void createUser(SignupRequest signUpRequest, String XOriginatingHost) {
+    public void createUser(SignupRequest signUpRequest, String XOriginatingHost) throws MessagingException {
         if(XOriginatingHost != null) host = XOriginatingHost;
         Locale currentLocale = LocaleContextHolder.getLocale();
         String email = signUpRequest.getEmail();
@@ -59,12 +61,16 @@ public class UserService {
         user.getAuthority().add(Role.ROLE_USER);
         user.setEnable(false);
         user.setActivationCode(UUID.randomUUID().toString());
-        user.setImage(new Image());
+        Image defaultAvatar = new Image();
+        defaultAvatar.setName("no-avatar.jpg");
+        user.setImage(defaultAvatar);
         userRepository.save(user);
         if (!StringUtils.isEmpty(user.getEmail())) {
-            String mailText = String.format(messageSource.getMessage("mail.activation.code", null, currentLocale),
-                    user.getUserLogin(), host + "/" + user.getLocale(), user.getActivationCode());
-            mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.activation", null, currentLocale), mailText);
+            Context context = new Context();
+            context.setVariable("username", user.getName());
+            context.setVariable("host", host);
+            context.setVariable("code", user.getActivationCode());
+            mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.activation", null, currentLocale), "activation_message_" + currentLocale.getLanguage(), context);
         }
     }
 
@@ -86,17 +92,17 @@ public class UserService {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
-    public void forgotPasswordOneStep(String userEmail) {
+    public void forgotPasswordOneStep(String userEmail) throws MessagingException {
         Optional<User> userOptional = userRepository.findByEmail(userEmail);
         if(userOptional.isPresent()) {
             User user = userOptional.get();
             Locale currentLocale = Locale.forLanguageTag(user.getLocale());
             user.setActivationCode(UUID.randomUUID().toString());
-
-
-            String mailText = String.format(messageSource.getMessage("mail.forgot.password.step.one", null, currentLocale),
-                    user.getUserLogin(), host, user.getActivationCode());
-            mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.forgot.password.step.one", null, currentLocale), mailText);
+            Context context = new Context();
+            context.setVariable("username", user.getName());
+            context.setVariable("host", host);
+            context.setVariable("code", user.getActivationCode());
+            mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.forgot.password.step.one", null, currentLocale), "forgot_password_message_" + currentLocale.getLanguage(), context);
 
         } else {
 
@@ -112,6 +118,12 @@ public class UserService {
     //???????????????????
     public User getUserById(Long id) {
         return userRepository.findById(id).get();
+    }
+
+
+    // Перевірка чи не прислав юзер новий пароль при зміні таким же як старий
+    public void notIsOldPassword(String password){
+
     }
 
 }

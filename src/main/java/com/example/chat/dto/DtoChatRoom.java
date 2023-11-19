@@ -10,6 +10,8 @@ public class DtoChatRoom {
 
     private String name;
 
+    private Long hashtagId;
+
     boolean archived = false;
 
     public DtoChatRoom() {

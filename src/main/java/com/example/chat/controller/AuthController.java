@@ -88,7 +88,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
     })
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody JwtResponse request) throws AuthException {
+    public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody JwtResponse request) throws AuthException, BadRefreshTokenException {
         final JwtResponse token = authService.getJwtRefreshToken(request.getJwtRefreshToken());
         return ResponseEntity.ok(token);
     }

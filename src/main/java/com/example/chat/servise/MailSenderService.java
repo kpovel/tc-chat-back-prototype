@@ -1,9 +1,13 @@
 package com.example.chat.servise;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Service
 public class MailSenderService {
@@ -13,17 +17,25 @@ public class MailSenderService {
 
     private final JavaMailSender javaMailSender;
 
-    public MailSenderService(JavaMailSender javaMailSender) {
+    private final TemplateEngine templateEngine;
+
+    public MailSenderService(JavaMailSender javaMailSender,
+                             TemplateEngine templateEngine) {
         this.javaMailSender = javaMailSender;
+        this.templateEngine = templateEngine;
     }
 
 
-    public void sendSimpleMessage(String emailTo, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(username);
-        message.setTo(emailTo);
-        message.setSubject(subject);
-        message.setText(text);
-        javaMailSender.send(message);
+    public void sendSimpleMessage(String emailTo, String subject, String templateName, Context context) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setFrom(username);
+        helper.setTo(emailTo);
+        helper.setSubject(subject);
+
+        String htmlContent = templateEngine.process(templateName, context);
+        helper.setText(htmlContent, true);
+
+        javaMailSender.send(mimeMessage);
     }
 }

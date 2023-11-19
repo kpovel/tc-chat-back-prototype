@@ -33,6 +33,9 @@ public class User implements Serializable {
     @JsonView(Views.ViewFieldUserLogin.class)
     private String userLogin;
 
+    @Column(length = 300)
+    private String description;
+
     @NotBlank
     @Column
     @JsonView(Views.ViewFieldUserEmail.class)

@@ -26,20 +26,8 @@ public class Hashtag {
     @Column
     private String ukrName;
 
-
-    @Column
-    private String globalCategory;
-
-//    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-//    @JoinTable(name = "chat_rooms_hashtags",
-//    joinColumns = @JoinColumn(name = "hashtag_id"),
-//    inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
-//    private List<ChatRoom> chatRoom = new ArrayList<>();
-
-
-    public Hashtag(String engName, String ukrName, String globalCategory) {
+    public Hashtag(String engName, String ukrName) {
         this.engName = engName;
         this.ukrName = ukrName;
-        this.globalCategory = globalCategory;
     }
 }
