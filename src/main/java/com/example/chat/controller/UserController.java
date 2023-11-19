@@ -114,7 +114,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
     })
-    public ResponseEntity<?> forgotUserPasswordOneStep(@RequestParam String userEmail) {
+    public ResponseEntity<?> forgotUserPasswordOneStep(@RequestParam String userEmail) throws MessagingException {
         userService.forgotPasswordOneStep(userEmail);
         //TODO
         return null;
