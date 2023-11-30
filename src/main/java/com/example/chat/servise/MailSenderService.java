@@ -32,7 +32,6 @@ public class MailSenderService {
         helper.setFrom(username);
         helper.setTo(emailTo);
         helper.setSubject(subject);
-
         String htmlContent = templateEngine.process(templateName, context);
         helper.setText(htmlContent, true);
 

@@ -10,6 +10,8 @@ import com.example.chat.servise.AuthService;
 import com.example.chat.servise.UserService;
 import com.example.chat.validate.CustomFieldError;
 import com.example.chat.validate.ValidateUserField;
+import com.example.chat.web.dto.UserDto;
+import com.example.chat.web.mapper.UserMapper;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,6 +50,8 @@ public class UserController {
     private final AuthService authService;
 
     private final JwtUtils jwtUtils;
+
+   private final UserMapper userMapper;
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
@@ -98,6 +102,7 @@ public class UserController {
         Optional<User> optionalUser = userService.verificationUserEmail(code);
         if(optionalUser.isPresent()){
             Authentication authentication = userService.userAuthentication(optionalUser.get());
+
             final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
             final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
             authService.saveJwtRefreshTokenToStorage(optionalUser.get().getEmail(), jwtRefreshToken);
@@ -139,8 +144,10 @@ public class UserController {
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
     })
     @JsonView(Views.ViewFieldUser.class)
-    public ResponseEntity<User> getUserToProfile(){
-        return null;
+    public ResponseEntity<UserDto> getUserToProfile(){
+        User user = userService.getUserById(1L);
+        UserDto dto = userMapper.toDto(user);
+        return ResponseEntity.ok(dto);
     }
 
 

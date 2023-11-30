@@ -25,9 +25,16 @@ public class Hashtag {
 
     @Column
     private String ukrName;
+    @Column
+    private String engGroupName;
 
-    public Hashtag(String engName, String ukrName) {
+    @Column
+    private String ukrGroupName;
+
+    public Hashtag(String engName, String ukrName, String engGroupName, String ukrGroupName) {
         this.engName = engName;
         this.ukrName = ukrName;
+        this.engGroupName = engGroupName;
+        this.ukrGroupName = ukrGroupName;
     }
 }

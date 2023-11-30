@@ -88,7 +88,7 @@ public class UserService {
     }
 
     public Authentication userAuthentication(User user) {
-        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());;
+        UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(user.getEmail());
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
