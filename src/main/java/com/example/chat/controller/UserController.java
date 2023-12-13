@@ -151,6 +151,7 @@ public class UserController {
     }
 
 
+
     @Operation(summary = "Test protected endpoint")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/chat")

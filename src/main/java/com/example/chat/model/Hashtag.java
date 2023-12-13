@@ -31,6 +31,10 @@ public class Hashtag {
     @Column
     private String ukrGroupName;
 
+    @ManyToOne
+    @JoinColumn
+    private HashtagsGroup hashtagsGroup;
+
     public Hashtag(String engName, String ukrName, String engGroupName, String ukrGroupName) {
         this.engName = engName;
         this.ukrName = ukrName;

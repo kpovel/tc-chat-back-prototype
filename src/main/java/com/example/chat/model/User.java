@@ -64,15 +64,13 @@ public class User implements Serializable {
     @JoinColumn(name = "image_id")
     private Image image;
 
-//    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-//    @JoinTable(name = "users_chat_rooms",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "chat_room_id"))
-//    private List<ChatRoom> chatRooms;
 
-//    @JsonManagedReference
-//    @OneToMany(mappedBy = "userAminChatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<ChatRoom> isChatRoomsAdmin;
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinTable(name = "users_hashtags",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
+    private List<Hashtag> hashtags;
+
 
     @Column(name = "date_last_visit")
     @JsonView(Views.ViewFieldUserDateLastVisit.class)

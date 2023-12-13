@@ -26,7 +26,7 @@ public class ImageController {
     private final FileService fileService;
     private final ImageService imageService;
 
-    @PostMapping("/image/upload")
+    @PostMapping("/user/avatar/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws CustomFileNotFoundException {
         String contentType = file.getContentType();
         assert contentType != null;
