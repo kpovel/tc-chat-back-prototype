@@ -1,5 +1,7 @@
 package com.example.chat.model;
 
+import com.example.chat.utils.Views;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,33 +14,27 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "hashtags")
-@NoArgsConstructor
 public class Hashtag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
+    @JsonView(Views.ViewFieldId.class)
     private Long id;
 
     @Column
-    private String engName;
+    @JsonView(Views.ViewFieldName.class)
+    private String name;
 
-    @Column
-    private String ukrName;
-    @Column
-    private String engGroupName;
-
-    @Column
-    private String ukrGroupName;
-
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
     private HashtagsGroup hashtagsGroup;
 
-    public Hashtag(String engName, String ukrName, String engGroupName, String ukrGroupName) {
-        this.engName = engName;
-        this.ukrName = ukrName;
-        this.engGroupName = engGroupName;
-        this.ukrGroupName = ukrGroupName;
+    public Hashtag() {
+    }
+
+    public Hashtag(String name, HashtagsGroup hashtagsGroup) {
+        this.name = name;
+        this.hashtagsGroup = hashtagsGroup;
     }
 }

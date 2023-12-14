@@ -1,4 +1,4 @@
-package com.example.chat.model;
+package com.example.chat.utils;
 
 public final class Views {
     public interface ViewFieldId{}
@@ -8,6 +8,10 @@ public final class Views {
     public interface ViewFieldUserDateOfCreated{}
     public interface ViewFieldUserDateLastVisit{}
 
+    public interface ViewFieldOther{}
+
     public interface ViewFieldChatRoom {}
     public interface ViewFieldUser extends ViewFieldId, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldUserDateOfCreated, ViewFieldUserDateLastVisit{}
+
+    public interface ViewFieldHashtagsGroups extends ViewFieldId, ViewFieldName, ViewFieldOther{}
 }

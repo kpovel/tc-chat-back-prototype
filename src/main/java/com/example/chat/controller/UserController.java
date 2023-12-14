@@ -1,7 +1,9 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.Hashtag;
 import com.example.chat.model.User;
-import com.example.chat.model.Views;
+import com.example.chat.payload.request.HashtagRequest;
+import com.example.chat.utils.Views;
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
@@ -11,6 +13,7 @@ import com.example.chat.servise.UserService;
 import com.example.chat.validate.CustomFieldError;
 import com.example.chat.validate.ValidateUserField;
 import com.example.chat.web.dto.UserDto;
+import com.example.chat.web.mapper.HashtagMapper;
 import com.example.chat.web.mapper.UserMapper;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -40,7 +44,7 @@ import java.util.stream.Collectors;
 @Tag(name = "User rest controller", description = "Rest controller user account")
 @RestController
 @RequestMapping("api")
-@AllArgsConstructor
+@Data
 public class UserController {
 
     private final UserService userService;
@@ -52,6 +56,7 @@ public class UserController {
     private final JwtUtils jwtUtils;
 
    private final UserMapper userMapper;
+    private final HashtagMapper hashtagMapper;
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
@@ -150,13 +155,21 @@ public class UserController {
         return ResponseEntity.ok(dto);
     }
 
-
-
-    @Operation(summary = "Test protected endpoint")
+    @Operation(summary = "User onboarding - save hashtags")
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping("/chat")
-    public ResponseEntity<String> securityPage() {
-        return ResponseEntity.ok("It is Chat page - protected");
+    @PutMapping("/user/hashtags-with-onboarding/save")
+    public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
+        if(hashtags == null) throw new NullPointerException("");
+
+        userService.saveUserHashtagsWithOnboarding(hashtags);
+        return ResponseEntity.ok("Ok");
     }
+
+//    @Operation(summary = "Test protected endpoint")
+//    @SecurityRequirement(name = "Bearer Authentication")
+//    @GetMapping("/chat")
+//    public ResponseEntity<String> securityPage() {
+//        return ResponseEntity.ok("It is Chat page - protected");
+//    }
 
 }

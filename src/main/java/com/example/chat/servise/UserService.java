@@ -1,12 +1,18 @@
 package com.example.chat.servise;
 
+import com.example.chat.model.Hashtag;
 import com.example.chat.model.Image;
+import com.example.chat.payload.request.HashtagRequest;
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.model.Role;
 import com.example.chat.model.User;
 import com.example.chat.sequrity.UserDetailsImpl;
+import com.example.chat.web.mapper.HashtagMapper;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -21,10 +27,14 @@ import org.thymeleaf.context.Context;
 
 import java.util.*;
 
-@Service
 //@Slf4j
+@Service
+@Data
 public class UserService {
-    @Value(("${front.host}"))
+//    @Value(("${front.host}"))
+//    @Value(("${front.host}"))
+    @Value("${front.host}")
+    @Transient
     private String host;
 
     private final UserRepository userRepository;
@@ -32,20 +42,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final MailSenderService mailSenderService;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
-    private MessageSource messageSource;
 
-    public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       MailSenderService mailSenderService,
-                       UserDetailsServiceImpl userDetailsServiceImpl,
-                       MessageSource messageSource) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.mailSenderService = mailSenderService;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
-        this.messageSource = messageSource;
-    }
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+
+    private final MessageSource messageSource;
+
+    private final HashtagMapper hashtagMapper;
 
 
     public void createUser(SignupRequest signUpRequest, String XOriginatingHost) throws MessagingException {
@@ -126,4 +128,12 @@ public class UserService {
 
     }
 
+    public void saveUserHashtagsWithOnboarding(List<HashtagRequest> hashtags) {
+        User user = getUserFromSecurityContextHolder();
+        for (HashtagRequest arr: hashtags) {
+            Hashtag hashtag = hashtagMapper.toModel(arr);
+            user.getHashtags().add(hashtag);
+        }
+        userRepository.save(user);
+    }
 }
