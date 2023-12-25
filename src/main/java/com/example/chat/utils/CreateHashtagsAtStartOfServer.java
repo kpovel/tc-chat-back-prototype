@@ -22,27 +22,27 @@ public class CreateHashtagsAtStartOfServer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         if(hashtagGroupService.countHashtagGroup() == 0) {
-//            HashtagsGroup ukEntertainment = new HashtagsGroup("Розваги", "uk");
-//            ukEntertainment.getHashtags().add(new Hashtag("фільми", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("ігри", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("музика", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("аніме", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("інфлюенсери", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("меми", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("події", ukEntertainment ));
-//            ukEntertainment.getHashtags().add(new Hashtag("комікси", ukEntertainment ));
-//
-//            HashtagsGroup entertainment = new HashtagsGroup("Entertainment", "en");
-//            entertainment.getHashtags().add(new Hashtag("movies", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("videogames", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("music", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("anime", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("influensers", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("memes", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("events", entertainment));
-//            entertainment.getHashtags().add(new Hashtag("comics", entertainment));
-//            entertainment.setUkHashtagsGroup(ukEntertainment);
-//            hashtagGroupService.saveHashtagGroup(entertainment);
+            HashtagsGroup ukEntertainment = new HashtagsGroup("Розваги", "uk");
+            ukEntertainment.getHashtags().add(new Hashtag("фільми", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("ігри", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("музика", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("аніме", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("інфлюенсери", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("меми", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("події", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("комікси", ukEntertainment ));
+
+            HashtagsGroup entertainment = new HashtagsGroup("Entertainment", "en");
+            entertainment.getHashtags().add(new Hashtag("movies", entertainment));
+            entertainment.getHashtags().add(new Hashtag("videogames", entertainment));
+            entertainment.getHashtags().add(new Hashtag("music", entertainment));
+            entertainment.getHashtags().add(new Hashtag("anime", entertainment));
+            entertainment.getHashtags().add(new Hashtag("influensers", entertainment));
+            entertainment.getHashtags().add(new Hashtag("memes", entertainment));
+            entertainment.getHashtags().add(new Hashtag("events", entertainment));
+            entertainment.getHashtags().add(new Hashtag("comics", entertainment));
+            entertainment.setUkHashtagsGroup(ukEntertainment);
+            hashtagGroupService.saveHashtagGroup(entertainment);
 //
 //            HashtagsGroup ukLifestyle = new HashtagsGroup("Лайфстайл & хобі", "uk");
 //            ukLifestyle.getHashtags().add(new Hashtag("природа", ukLifestyle ));

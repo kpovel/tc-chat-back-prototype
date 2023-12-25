@@ -4,6 +4,7 @@ import com.example.chat.utils.Views;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Cascade;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,8 +39,9 @@ public class HashtagsGroup implements Serializable {
     private HashtagsGroup engHashtagsGroup;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "uk_hashtag_group_id", referencedColumnName = "id")
+    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     private HashtagsGroup ukHashtagsGroup;
 
     public HashtagsGroup() {
