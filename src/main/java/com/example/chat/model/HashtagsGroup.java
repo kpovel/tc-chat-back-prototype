@@ -41,7 +41,7 @@ public class HashtagsGroup implements Serializable {
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "uk_hashtag_group_id", referencedColumnName = "id")
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
+//    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     private HashtagsGroup ukHashtagsGroup;
 
     public HashtagsGroup() {
