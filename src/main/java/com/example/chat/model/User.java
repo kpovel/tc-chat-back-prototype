@@ -50,6 +50,9 @@ public class User implements Serializable {
     @Column(length = 100)
     private String password;
 
+    @Column(columnDefinition = "text", length = 450)
+    private String about;
+
     @Column
     private String activationCode;
 

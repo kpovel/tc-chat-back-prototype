@@ -19,6 +19,9 @@ public class Message {
     @Column
     private String content;
 
+    @Column
+    private boolean edited = false;
+
     @JsonBackReference
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_room_id")
