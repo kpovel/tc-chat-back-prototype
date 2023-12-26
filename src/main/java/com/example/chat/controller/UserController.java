@@ -165,6 +165,16 @@ public class UserController {
         return ResponseEntity.ok("Ok");
     }
 
+    @Operation(summary = "User onboarding - save user about field")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PutMapping("/user/hashtags-with-onboarding/save")
+    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody List<HashtagRequest> hashtags) {
+        if(hashtags == null) throw new NullPointerException("");
+
+        userService.saveUserHashtagsWithOnboarding(hashtags);
+        return ResponseEntity.ok("Ok");
+    }
+
 //    @Operation(summary = "Test protected endpoint")
 //    @SecurityRequirement(name = "Bearer Authentication")
 //    @GetMapping("/chat")
