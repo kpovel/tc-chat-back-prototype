@@ -159,19 +159,18 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/hashtags-with-onboarding/save")
     public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
-        if(hashtags == null) throw new NullPointerException("");
-
+        if(hashtags == null) throw new NullPointerException("hashtags is NULL");
         userService.saveUserHashtagsWithOnboarding(hashtags);
         return ResponseEntity.ok("Ok");
     }
 
     @Operation(summary = "User onboarding - save user about field")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping("/user/hashtags-with-onboarding/save")
-    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody List<HashtagRequest> hashtags) {
-        if(hashtags == null) throw new NullPointerException("");
-
-        userService.saveUserHashtagsWithOnboarding(hashtags);
+    @PutMapping("/user/user-about-with-onboarding/save")
+    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestParam(value = "userAbout") String userAbout) {
+        if(userAbout == null) throw new NullPointerException("userAbout is NULL");
+        //TODO
+        userService.saveUserAboutWithOnboarding(userAbout);
         return ResponseEntity.ok("Ok");
     }
 

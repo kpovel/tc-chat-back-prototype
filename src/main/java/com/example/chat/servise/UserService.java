@@ -136,4 +136,10 @@ public class UserService {
         }
         userRepository.save(user);
     }
+
+    public void saveUserAboutWithOnboarding(String userAbout) {
+        User user = getUserFromSecurityContextHolder();
+        user.setAbout(userAbout);
+        userRepository.save(user);
+    }
 }

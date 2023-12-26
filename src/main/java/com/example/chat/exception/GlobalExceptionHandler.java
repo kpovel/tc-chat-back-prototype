@@ -29,8 +29,9 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleUserAuthorisationExceptions(BadCredentialsException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new CustomFieldError("authorisation", messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
+
     }
     @ExceptionHandler(AuthException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -65,4 +66,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArrayList<>(List.of(
                 new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)))));
     }
+
+    @ExceptionHandler(NullPointerException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<NullPointerException> NullPointerException(NullPointerException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex);
+    }
+
 }

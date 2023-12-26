@@ -15,8 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -44,36 +42,37 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    @Operation(summary = "User authentication")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
-             })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json")})
+    })
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
                                               @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
 
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk-UA")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
+            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
-        final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
+            final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        authService.saveJwtRefreshTokenToStorage(userDetails.getUsername(), jwtRefreshToken);
+            authService.saveJwtRefreshTokenToStorage(userDetails.getUsername(), jwtRefreshToken);
 
-        return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
+            return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
+
     }
 
 
     @PostMapping("/refresh/access-token")
     @Operation(summary = "Refresh jwt access token", description = "request: json - refresh token in body; response - json: new access token")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json")})
     })
     public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody JwtResponse request) throws AuthException, BadRefreshTokenException {
         final JwtResponse token = authService.getAccessToken(request.getJwtRefreshToken());
@@ -84,8 +83,8 @@ public class AuthController {
     @PostMapping("/refresh/refresh-token")
     @Operation(summary = "Refresh jwt refresh token", description = "request: json - refresh token in body, headers - access token; response - json: new access and refresh tokens")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json") }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json") })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json")})
     })
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<JwtResponse> getNewRefreshToken(@RequestBody JwtResponse request) throws AuthException, BadRefreshTokenException {

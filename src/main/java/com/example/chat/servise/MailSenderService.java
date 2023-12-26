@@ -1,7 +1,9 @@
 package com.example.chat.servise;
 
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -10,6 +12,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
+@Data
 public class MailSenderService {
     @Value("${spring.mail.username}")
     private String username;
@@ -19,11 +22,11 @@ public class MailSenderService {
 
     private final TemplateEngine templateEngine;
 
-    public MailSenderService(JavaMailSender javaMailSender,
-                             TemplateEngine templateEngine) {
-        this.javaMailSender = javaMailSender;
-        this.templateEngine = templateEngine;
-    }
+//    public MailSenderService(JavaMailSender javaMailSender,
+//                             TemplateEngine templateEngine) {
+//        this.javaMailSender = javaMailSender;
+//        this.templateEngine = templateEngine;
+//    }
 
 
     public void sendSimpleMessage(String emailTo, String subject, String templateName, Context context) throws MessagingException {
@@ -36,5 +39,6 @@ public class MailSenderService {
         helper.setText(htmlContent, true);
 
         javaMailSender.send(mimeMessage);
+
     }
 }

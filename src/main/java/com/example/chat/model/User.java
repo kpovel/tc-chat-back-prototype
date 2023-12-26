@@ -35,8 +35,8 @@ public class User implements Serializable {
     @JsonView(Views.ViewFieldUserLogin.class)
     private String userLogin;
 
-    @Column(length = 300)
-    private String description;
+    @Column(columnDefinition = "text", length = 450)
+    private String about = "A little bit about me";
 
     @NotBlank
     @Column
@@ -50,8 +50,7 @@ public class User implements Serializable {
     @Column(length = 100)
     private String password;
 
-    @Column(columnDefinition = "text", length = 450)
-    private String about;
+
 
     @Column
     private String activationCode;

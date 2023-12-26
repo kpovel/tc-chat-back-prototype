@@ -4,6 +4,8 @@ import com.example.chat.exception.CustomFileNotFoundException;
 import com.example.chat.exception.FileFormatException;
 import com.example.chat.servise.FileService;
 import com.example.chat.servise.ImageService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.core.io.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
@@ -26,6 +28,8 @@ public class ImageController {
     private final FileService fileService;
     private final ImageService imageService;
 
+    @Operation(summary = "User onboarding - save user avatar")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/user/avatar/upload")
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws CustomFileNotFoundException {
         String contentType = file.getContentType();
@@ -34,10 +38,8 @@ public class ImageController {
                 || contentType.equals("image/webp") || contentType.equals("image/jpg")) {
             String imageName = fileService.saveFileInStorage(file,  contentType.replaceAll("image/","."));
             imageService.saveImageName(imageName);
-            return ResponseEntity.ok("/web-image/" + imageName);
+            return ResponseEntity.ok(imageName);
         } else throw new FileFormatException("Дозволено тільки зображення");
-
-//        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/user-image/{fileName:.+}")
