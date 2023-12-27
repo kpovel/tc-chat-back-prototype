@@ -31,8 +31,6 @@ import java.util.*;
 @Service
 @Data
 public class UserService {
-//    @Value(("${front.host}"))
-//    @Value(("${front.host}"))
     @Value("${front.host}")
     @Transient
     private String host;

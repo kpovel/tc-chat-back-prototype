@@ -27,11 +27,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RestController
 @RequestMapping("api")
 @Tag(name = "JWT Tokens", description = " ")
 @AllArgsConstructor
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -53,17 +54,17 @@ public class AuthController {
         if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
             LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
 
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
-            final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
-            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
+        final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-            authService.saveJwtRefreshTokenToStorage(userDetails.getUsername(), jwtRefreshToken);
+        authService.saveJwtRefreshTokenToStorage(userDetails.getUsername(), jwtRefreshToken);
 
-            return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
+        return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
 
     }
 

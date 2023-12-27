@@ -16,11 +16,12 @@ import java.util.List;
 import java.util.Set;
 
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @Tag(name = "Chat room", description = "Rest controller chat room")
 @RestController
 @AllArgsConstructor
 @RequestMapping("api")
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;

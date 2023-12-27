@@ -40,11 +40,11 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Tag(name = "User rest controller", description = "Rest controller user account")
 @RestController
 @RequestMapping("api")
 @Data
+@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class UserController {
 
     private final UserService userService;
