@@ -70,7 +70,7 @@ public class UserService {
         if (!StringUtils.isEmpty(user.getEmail())) {
             Context context = new Context();
             context.setVariable("username", user.getName());
-            context.setVariable("host", host);
+            context.setVariable("host", host + "/" + user.getLocale() + "/");
             context.setVariable("code", user.getActivationCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.activation", null, currentLocale), "activation_message_" + currentLocale.getLanguage(), context);
         }
