@@ -22,14 +22,8 @@ public class ParserToResponseFromCustomFieldError {
             String fieldName = arr.getFieldName();
             String fieldMessage = arr.getFieldMessage();
 
-            // Використовуємо computeIfAbsent для додавання значень до fieldErrors
-            fieldErrors.computeIfAbsent(fieldName, k -> fieldMessage);
-
-            // Якщо значення вже існує, доповнюємо його
-            if (fieldErrors.containsKey(fieldName)) {
-                String existingValue = fieldErrors.get(fieldName);
-                fieldErrors.put(fieldName, existingValue + ", " + fieldMessage);
-            }
+            // Використовуємо merge для додавання значень до fieldErrors
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + ", " + newValue);
         }
 
         return fieldErrors;
