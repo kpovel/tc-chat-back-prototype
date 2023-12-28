@@ -23,7 +23,7 @@ import java.io.InputStream;
 @RestController
 @RequestMapping("api")
 @AllArgsConstructor
-@CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ImageController {
 
     private final FileService fileService;
