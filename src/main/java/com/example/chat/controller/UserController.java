@@ -167,7 +167,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/user-about-with-onboarding/save")
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserAboutField userAbout) {
-        String userAboutStr = userAbout.getAbout();
+        String userAboutStr = userAbout.getOnboardingFieldStr();
         if(userAboutStr == null) throw new NullPointerException("userAbout is NULL");
         //TODO
         userService.saveUserAboutWithOnboarding(userAboutStr);

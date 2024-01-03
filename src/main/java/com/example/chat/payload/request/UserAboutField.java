@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class UserAboutField {
 
-    String about;
+    String onboardingFieldStr;
 
 
 }
