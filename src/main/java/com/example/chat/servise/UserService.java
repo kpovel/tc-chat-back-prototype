@@ -61,7 +61,7 @@ public class UserService {
         user.setEnable(false);
         user.setActivationCode(UUID.randomUUID().toString());
         Image defaultAvatar = new Image();
-        defaultAvatar.setName("no-avatar.jpg");
+        defaultAvatar.setName("no-avatar.jpeg");
         user.setImage(defaultAvatar);
         userRepository.save(user);
         if (!StringUtils.isEmpty(user.getEmail())) {
