@@ -1,6 +1,6 @@
 package com.example.chat.servise;
 
-import com.example.chat.exception.UserAccountNotActivatedException;
+import com.example.chat.utils.exception.UserAccountNotActivatedException;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.sequrity.UserDetailsImpl;
 import com.example.chat.model.User;

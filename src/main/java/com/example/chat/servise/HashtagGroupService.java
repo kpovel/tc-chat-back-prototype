@@ -1,6 +1,6 @@
 package com.example.chat.servise;
 
-import com.example.chat.exception.ErrorServerException;
+import com.example.chat.utils.exception.ErrorServerException;
 import com.example.chat.model.HashtagsGroup;
 import com.example.chat.model.User;
 import com.example.chat.repository.HashtagGroupRepository;

@@ -1,6 +1,6 @@
 package com.example.chat.sequrity;
 
-import com.example.chat.exception.UserAccountNotActivatedException;
+import com.example.chat.utils.exception.UserAccountNotActivatedException;
 import com.example.chat.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

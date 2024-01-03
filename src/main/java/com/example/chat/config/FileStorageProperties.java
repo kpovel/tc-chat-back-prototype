@@ -1,4 +1,4 @@
-package com.example.chat.property;
+package com.example.chat.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

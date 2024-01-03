@@ -1,4 +1,4 @@
-package com.example.chat.exception;
+package com.example.chat.utils.exception;
 
 public class FileStorageException extends RuntimeException {
     public FileStorageException(String message) {

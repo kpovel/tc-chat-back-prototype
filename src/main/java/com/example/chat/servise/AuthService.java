@@ -1,6 +1,6 @@
 package com.example.chat.servise;
 
-import com.example.chat.exception.BadRefreshTokenException;
+import com.example.chat.utils.exception.BadRefreshTokenException;
 import com.example.chat.model.User;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.sequrity.UserDetailsImpl;
@@ -10,7 +10,6 @@ import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

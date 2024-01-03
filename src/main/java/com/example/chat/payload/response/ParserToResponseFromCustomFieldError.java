@@ -1,6 +1,6 @@
 package com.example.chat.payload.response;
 
-import com.example.chat.validate.CustomFieldError;
+import com.example.chat.utils.validate.CustomFieldError;
 import lombok.Getter;
 import lombok.Setter;
 

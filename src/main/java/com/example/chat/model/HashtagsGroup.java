@@ -1,10 +1,9 @@
 package com.example.chat.model;
 
-import com.example.chat.utils.Views;
+import com.example.chat.utils.JsonViews;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Cascade;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,12 +24,12 @@ public class HashtagsGroup implements Serializable {
     private String locale;
 
     @Column
-    @JsonView(Views.ViewFieldName.class)
+    @JsonView(JsonViews.ViewFieldName.class)
     private String name;
 
 
     @OneToMany(mappedBy = "hashtagsGroup",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonView(Views.ViewFieldOther.class)
+    @JsonView(JsonViews.ViewFieldOther.class)
     private List<Hashtag> hashtags = new ArrayList<>();
 
 

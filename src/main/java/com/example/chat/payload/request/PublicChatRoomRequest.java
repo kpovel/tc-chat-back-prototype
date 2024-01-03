@@ -1,6 +1,6 @@
 package com.example.chat.payload.request;
 
-import com.example.chat.dto.DtoChatRoom;
+import com.example.chat.utils.dto.DtoChatRoom;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

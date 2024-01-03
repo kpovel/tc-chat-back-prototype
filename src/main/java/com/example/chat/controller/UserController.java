@@ -1,20 +1,19 @@
 package com.example.chat.controller;
 
-import com.example.chat.model.Hashtag;
 import com.example.chat.model.User;
 import com.example.chat.payload.request.HashtagRequest;
-import com.example.chat.utils.Views;
+import com.example.chat.utils.JsonViews;
 import com.example.chat.payload.request.SignupRequest;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.servise.AuthService;
 import com.example.chat.servise.UserService;
-import com.example.chat.validate.CustomFieldError;
-import com.example.chat.validate.ValidateUserField;
-import com.example.chat.web.dto.UserDto;
-import com.example.chat.web.mapper.HashtagMapper;
-import com.example.chat.web.mapper.UserMapper;
+import com.example.chat.utils.validate.CustomFieldError;
+import com.example.chat.utils.validate.ValidateUserField;
+import com.example.chat.utils.dto.UserDto;
+import com.example.chat.utils.mapper.HashtagMapper;
+import com.example.chat.utils.mapper.UserMapper;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +24,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
@@ -148,7 +146,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = User.class)) }),
             @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
     })
-    @JsonView(Views.ViewFieldUser.class)
+    @JsonView(JsonViews.ViewFieldUser.class)
     public ResponseEntity<UserDto> getUserToProfile(){
         User user = userService.getUserById(1L);
         UserDto dto = userMapper.toDto(user);

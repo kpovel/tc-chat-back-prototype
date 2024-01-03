@@ -1,6 +1,6 @@
-package com.example.chat.exception;
+package com.example.chat.utils.exception;
 
-import com.example.chat.validate.CustomFieldError;
+import com.example.chat.utils.validate.CustomFieldError;
 import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +73,13 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<NullPointerException> NullPointerException(NullPointerException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex);
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<String> NullPointerException(MultipartException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
 }

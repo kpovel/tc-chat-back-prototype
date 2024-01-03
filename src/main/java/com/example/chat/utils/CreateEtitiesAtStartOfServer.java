@@ -2,19 +2,16 @@ package com.example.chat.utils;
 
 import com.example.chat.model.Hashtag;
 import com.example.chat.model.HashtagsGroup;
+import com.example.chat.model.Image;
 import com.example.chat.servise.HashtagGroupService;
-import com.example.chat.servise.HashtagService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 @AllArgsConstructor
-public class CreateHashtagsAtStartOfServer implements ApplicationRunner {
+public class CreateEtitiesAtStartOfServer implements ApplicationRunner {
 
     private final HashtagGroupService hashtagGroupService;
 
@@ -24,7 +21,7 @@ public class CreateHashtagsAtStartOfServer implements ApplicationRunner {
         if(hashtagGroupService.countHashtagGroup() == 0) {
             HashtagsGroup ukEntertainment = new HashtagsGroup("Розваги", "uk");
             ukEntertainment.getHashtags().add(new Hashtag("фільми", ukEntertainment ));
-            ukEntertainment.getHashtags().add(new Hashtag("ігри", ukEntertainment ));
+            ukEntertainment.getHashtags().add(new Hashtag("відеоігри", ukEntertainment ));
             ukEntertainment.getHashtags().add(new Hashtag("музика", ukEntertainment ));
             ukEntertainment.getHashtags().add(new Hashtag("аніме", ukEntertainment ));
             ukEntertainment.getHashtags().add(new Hashtag("інфлюенсери", ukEntertainment ));
@@ -146,5 +143,9 @@ public class CreateHashtagsAtStartOfServer implements ApplicationRunner {
 
         }
 
+    }
+
+    private void createDefaultAvatars() {
+        Image image = new Image();
     }
 }

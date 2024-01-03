@@ -1,6 +1,6 @@
 package com.example.chat.model;
 
-import com.example.chat.utils.Views;
+import com.example.chat.utils.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,11 +15,11 @@ public class Hashtag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(Views.ViewFieldId.class)
+    @JsonView(JsonViews.ViewFieldId.class)
     private Long id;
 
     @Column
-    @JsonView(Views.ViewFieldName.class)
+    @JsonView(JsonViews.ViewFieldName.class)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)

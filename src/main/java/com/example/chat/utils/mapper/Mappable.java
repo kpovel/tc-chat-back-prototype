@@ -1,4 +1,4 @@
-package com.example.chat.web.mapper;
+package com.example.chat.utils.mapper;
 
 public interface Mappable<M, R> {
 

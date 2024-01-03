@@ -1,6 +1,6 @@
 package com.example.chat.utils;
 
-public final class Views {
+public final class JsonViews {
     public interface ViewFieldId{}
     public interface ViewFieldName{}
     public interface ViewFieldUserLogin{}

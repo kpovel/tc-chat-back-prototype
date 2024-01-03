@@ -1,4 +1,4 @@
-package com.example.chat.validate;
+package com.example.chat.utils.validate;
 
 import lombok.Getter;
 import lombok.Setter;

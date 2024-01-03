@@ -1,4 +1,4 @@
-package com.example.chat.web.mapper;
+package com.example.chat.utils.mapper;
 
 import com.example.chat.model.Hashtag;
 import com.example.chat.payload.request.HashtagRequest;

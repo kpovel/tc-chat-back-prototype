@@ -1,8 +1,10 @@
 package com.example.chat.servise;
 
-import com.example.chat.exception.CustomFileNotFoundException;
-import com.example.chat.exception.FileStorageException;
-import com.example.chat.property.FileStorageProperties;
+import com.example.chat.utils.exception.CustomFileNotFoundException;
+import com.example.chat.utils.exception.FileStorageException;
+import com.example.chat.config.FileStorageProperties;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,16 +18,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 @Service
+@AllArgsConstructor
+//@NoArgsConstructor
 public class FileService {
 
     private final Path fileStorageLocation;
 
-    private final List<String> defaultAvatars = List.of("no-avatar.jpg");
+    private static List<String> defaultAvatars = List.of("no-avatar.jpeg", "avatar-1.jpeg", "avatar-2.jpeg", "avatar-3.jpeg", "avatar-4.jpeg", "avatar-5.jpeg", "avatar-6.jpeg", "avatar-7.jpeg");
 
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {

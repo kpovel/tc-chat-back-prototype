@@ -1,4 +1,4 @@
-package com.example.chat.web.dto;
+package com.example.chat.utils.dto;
 
 import lombok.Data;
 

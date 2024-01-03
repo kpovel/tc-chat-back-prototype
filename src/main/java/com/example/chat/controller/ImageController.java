@@ -1,7 +1,7 @@
 package com.example.chat.controller;
 
-import com.example.chat.exception.CustomFileNotFoundException;
-import com.example.chat.exception.FileFormatException;
+import com.example.chat.utils.exception.CustomFileNotFoundException;
+import com.example.chat.utils.exception.FileFormatException;
 import com.example.chat.servise.FileService;
 import com.example.chat.servise.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @RestController
 @RequestMapping("api")
@@ -35,14 +36,16 @@ public class ImageController {
     public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws CustomFileNotFoundException {
         String contentType = file.getContentType();
         assert contentType != null;
-        if (contentType.equalsIgnoreCase("image/jpeg") || contentType.equals("image/png")
-                || contentType.equals("image/webp") || contentType.equals("image/jpg")) {
+        if (contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/png")
+                || contentType.equalsIgnoreCase("image/webp") || contentType.equalsIgnoreCase("image/jpg")) {
             String imageName = fileService.saveFileInStorage(file,  contentType.replaceAll("image/","."));
             imageService.saveImageName(imageName);
             return ResponseEntity.ok(imageName);
         } else throw new FileFormatException("Дозволено тільки зображення");
     }
 
+    @Operation(summary = "User avatar by image name")
+    @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/user-image/{fileName:.+}")
     public ResponseEntity<byte[]> categoryImage(@PathVariable String fileName, HttpServletRequest request) throws IOException {
         Resource resource = fileService.loadFileAsStorage(fileName);
@@ -53,5 +56,14 @@ public class ImageController {
         headers.setContentLength(imageBytes.length);
         headers.setContentDisposition(ContentDisposition.builder("inline").filename(resource.getFilename()).build());
         return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+    }
+
+    @Operation(summary = "User onboarding - collection default avatars")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/default-avatars")
+    public ResponseEntity<List<String>> defaultAvatars() {
+       List<String> defaultAvatars = List.of("no-avatar.jpeg", "avatar-1.jpeg", "avatar-2.jpeg", "avatar-3.jpeg", "avatar-4.jpeg",
+                                                "avatar-5.jpeg", "avatar-6.jpeg", "avatar-7.jpeg");
+       return ResponseEntity.ok(defaultAvatars);
     }
 }

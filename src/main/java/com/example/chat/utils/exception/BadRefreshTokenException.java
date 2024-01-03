@@ -1,4 +1,4 @@
-package com.example.chat.exception;
+package com.example.chat.utils.exception;
 
 import javax.security.auth.login.LoginException;
 

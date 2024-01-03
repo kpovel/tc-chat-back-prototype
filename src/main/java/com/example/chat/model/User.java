@@ -1,6 +1,6 @@
 package com.example.chat.model;
 
-import com.example.chat.utils.Views;
+import com.example.chat.utils.JsonViews;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,15 +24,15 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(Views.ViewFieldId.class)
+    @JsonView(JsonViews.ViewFieldId.class)
     private Long id;
 
     @Column
-    @JsonView(Views.ViewFieldName.class)
+    @JsonView(JsonViews.ViewFieldName.class)
     private String name;
 
     @Column
-    @JsonView(Views.ViewFieldUserLogin.class)
+    @JsonView(JsonViews.ViewFieldUserLogin.class)
     private String userLogin;
 
     @Column(columnDefinition = "text", length = 450)
@@ -40,7 +40,7 @@ public class User implements Serializable {
 
     @NotBlank
     @Column
-    @JsonView(Views.ViewFieldUserEmail.class)
+    @JsonView(JsonViews.ViewFieldUserEmail.class)
     private String email;
 
     @Column
@@ -77,12 +77,12 @@ public class User implements Serializable {
 
 
     @Column(name = "date_last_visit")
-    @JsonView(Views.ViewFieldUserDateLastVisit.class)
+    @JsonView(JsonViews.ViewFieldUserDateLastVisit.class)
     private LocalDateTime dateLastVisit;
 
     @Column(name = "date_of_created", updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonView(Views.ViewFieldUserDateOfCreated.class)
+    @JsonView(JsonViews.ViewFieldUserDateOfCreated.class)
     private LocalDateTime dateOfCreated;
 
     @PrePersist

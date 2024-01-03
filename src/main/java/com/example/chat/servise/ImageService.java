@@ -1,13 +1,11 @@
 package com.example.chat.servise;
 
-import com.example.chat.exception.CustomFileNotFoundException;
+import com.example.chat.utils.exception.CustomFileNotFoundException;
 import com.example.chat.model.Image;
 import com.example.chat.model.User;
 import com.example.chat.repository.ImageRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
