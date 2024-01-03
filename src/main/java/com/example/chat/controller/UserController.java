@@ -1,6 +1,7 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.User;
+import com.example.chat.payload.request.UserAboutField;
 import com.example.chat.payload.request.HashtagRequest;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.payload.request.SignupRequest;
@@ -165,10 +166,11 @@ public class UserController {
     @Operation(summary = "User onboarding - save user about field")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/user-about-with-onboarding/save")
-    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestParam(value = "userAbout") String userAbout) {
-        if(userAbout == null) throw new NullPointerException("userAbout is NULL");
+    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserAboutField userAbout) {
+        String userAboutStr = userAbout.getAbout();
+        if(userAboutStr == null) throw new NullPointerException("userAbout is NULL");
         //TODO
-        userService.saveUserAboutWithOnboarding(userAbout);
+        userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Ok");
     }
 
