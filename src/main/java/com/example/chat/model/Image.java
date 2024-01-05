@@ -1,6 +1,8 @@
 package com.example.chat.model;
 
+import com.example.chat.utils.JsonViews;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +20,7 @@ public class Image implements Serializable {
     private Long id;
 
     @Column
+    @JsonView(JsonViews.ViewFieldName.class)
     private String name;
 
     @JsonBackReference

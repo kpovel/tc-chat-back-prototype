@@ -4,6 +4,7 @@ import com.example.chat.model.Hashtag;
 import com.example.chat.model.Image;
 import com.example.chat.payload.request.HashtagRequest;
 import com.example.chat.payload.request.SignupRequest;
+import com.example.chat.payload.request.UserOnboardingSteps;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.model.Role;
 import com.example.chat.model.User;
@@ -58,7 +59,6 @@ public class UserService {
         user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.getAuthority().add(Role.ROLE_USER);
-        user.setEnable(false);
         user.setActivationCode(UUID.randomUUID().toString());
         Image defaultAvatar = new Image();
         defaultAvatar.setName("no-avatar.jpeg");
@@ -143,6 +143,12 @@ public class UserService {
     public void saveDefaultAvatarWithOnboarding(String defaultAvatarName) {
         User user = getUserFromSecurityContextHolder();
         user.getImage().setName(defaultAvatarName);
+        userRepository.save(user);
+    }
+
+    public void userOnboardingEnd(UserOnboardingSteps onboardingEnd) {
+        User user = getUserFromSecurityContextHolder();
+        user.setOnboardingEnd(onboardingEnd.isOnboardingEnd());
         userRepository.save(user);
     }
 }

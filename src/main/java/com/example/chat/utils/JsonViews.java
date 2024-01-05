@@ -12,6 +12,7 @@ public final class JsonViews {
 
     public interface ViewFieldChatRoom {}
     public interface ViewFieldUser extends ViewFieldId, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldUserDateOfCreated, ViewFieldUserDateLastVisit{}
+    public interface ViewFieldUserOnboarding extends ViewFieldName, ViewFieldUserLogin, ViewFieldOther {}
 
     public interface ViewFieldHashtagsGroups extends ViewFieldId, ViewFieldName, ViewFieldOther{}
 }

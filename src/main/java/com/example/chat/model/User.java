@@ -56,7 +56,12 @@ public class User implements Serializable {
     private String activationCode;
 
     @Column
-    private boolean enable;
+    private boolean enable = false;
+
+    @Column
+    @JsonView(JsonViews.ViewFieldOther.class)
+    private boolean onboardingEnd = false;
+
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "authorities", joinColumns = @JoinColumn(name = "user_id"))
@@ -66,6 +71,7 @@ public class User implements Serializable {
     @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id")
+    @JsonView(JsonViews.ViewFieldOther.class)
     private Image image;
 
 

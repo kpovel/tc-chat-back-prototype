@@ -4,7 +4,6 @@ import com.example.chat.utils.exception.CustomFileNotFoundException;
 import com.example.chat.utils.exception.FileStorageException;
 import com.example.chat.config.FileStorageProperties;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -83,7 +82,7 @@ public class FileService {
         }
     }
 
-    public boolean notDefaultImage(String imageName) {
+    public boolean defaultImage(String imageName) {
         for (String arr: defaultAvatars) {
             if(arr.equals(imageName)) return true;
         }

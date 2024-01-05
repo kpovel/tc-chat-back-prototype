@@ -18,7 +18,7 @@ public class ImageService {
         User user = userService.getUserFromSecurityContextHolder();
         Image image = user.getImage();
         String oldNameImage = image.getName();
-        if (image.getName() != null && !fileService.notDefaultImage(oldNameImage)) fileService.deleteFileFromStorage(oldNameImage);
+        if (image.getName() != null && !fileService.defaultImage(oldNameImage)) fileService.deleteFileFromStorage(oldNameImage);
         image.setName(imageName);
         imageRepository.save(image);
     }

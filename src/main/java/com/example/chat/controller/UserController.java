@@ -1,20 +1,22 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.User;
-import com.example.chat.payload.request.UserOnboardingSteps;
 import com.example.chat.payload.request.HashtagRequest;
-import com.example.chat.utils.JsonViews;
 import com.example.chat.payload.request.SignupRequest;
+import com.example.chat.payload.request.UserOnboardingSteps;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.servise.AuthService;
+import com.example.chat.servise.FileService;
 import com.example.chat.servise.UserService;
-import com.example.chat.utils.validate.CustomFieldError;
-import com.example.chat.utils.validate.ValidateFields;
+import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.dto.UserDto;
+import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.mapper.UserMapper;
+import com.example.chat.utils.validate.CustomFieldError;
+import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -49,19 +51,17 @@ public class UserController {
     private final UserService userService;
     private final ValidateFields validate;
     private final MessageSource messageSource;
-
     private final AuthService authService;
-
     private final JwtUtils jwtUtils;
-
-   private final UserMapper userMapper;
+    private final UserMapper userMapper;
     private final HashtagMapper hashtagMapper;
+    private final FileService fileService;
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = ParserToResponseFromCustomFieldError.class), mediaType = "application/json") })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ParserToResponseFromCustomFieldError.class), mediaType = "application/json")})
     })
 
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
@@ -69,7 +69,8 @@ public class UserController {
                                           @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
                                           @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) throws MessagingException {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk"))
+            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             try {
@@ -95,16 +96,17 @@ public class UserController {
     @PutMapping("/validate-email/{code}")
     @Operation(summary = "Verification user email and authentication")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = JwtResponse.class)) }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class))}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
     public ResponseEntity<?> verificationUserEmail(@PathVariable("code") String code,
                                                    @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk"))
+            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<User> optionalUser = userService.verificationUserEmail(code);
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             Authentication authentication = userService.userAuthentication(optionalUser.get());
 
             final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
@@ -120,21 +122,22 @@ public class UserController {
     @PutMapping("/forgot-password")
     @Operation(summary = "Forgot password, step one (-TODO-)")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
     public ResponseEntity<?> forgotUserPasswordOneStep(@RequestParam String userEmail) throws MessagingException {
         userService.forgotPasswordOneStep(userEmail);
         //TODO
         return null;
     }
+
     @PutMapping("/forgot-password/{code}")
     @Operation(summary = "Forgot password, step two (-TODO-)")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = String.class)) }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
-    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable("code")String code) {
+    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable("code") String code) {
 
         //TODO
         return null;
@@ -144,45 +147,62 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Get User (-TODO-)")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = { @Content(schema = @Schema(implementation = User.class)) }),
-            @ApiResponse(responseCode = "400", content = { @Content(schema = @Schema(implementation = String.class)) })
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = User.class))}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
     @JsonView(JsonViews.ViewFieldUser.class)
-    public ResponseEntity<UserDto> getUserToProfile(){
+    public ResponseEntity<UserDto> getUserToProfile() {
         User user = userService.getUserById(1L);
         UserDto dto = userMapper.toDto(user);
         return ResponseEntity.ok(dto);
     }
 
-    @Operation(summary = "User onboarding - save hashtags")
+    @Operation(summary = "User onboarding (step: 'HASHTAGS') - save hashtags")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/hashtags-with-onboarding/save")
     public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
-        if(hashtags == null) throw new NullPointerException("response - hashtags is NULL");
+        if (hashtags == null) throw new NullPointerException("response - hashtags is NULL");
         userService.saveUserHashtagsWithOnboarding(hashtags);
         return ResponseEntity.ok("Ok");
     }
 
-    @Operation(summary = "User onboarding - save user about field")
+    @Operation(summary = "User onboarding (step: 'ABOUT') - save user about field")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/user-about-with-onboarding/save")
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
-        if(userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
+        if (userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
         //TODO
         userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Ok");
     }
 
-    @Operation(summary = "User onboarding - save user about field")
+    @Operation(summary = "User onboarding (step: 'AVATAR')- save default avatar")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/default-avatar-with-onboarding/save")
     public ResponseEntity<?> userHasChosenDefaultAvatar(@RequestBody UserOnboardingSteps nameDefaultAvatar) {
         String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
-        if(nameAvatar == null) throw new NullPointerException("response - name avatar is NULL");
-        //TODO (Додати перевірку по колекції зображень)
+        if (nameAvatar == null && fileService.defaultImage(nameAvatar)) throw new NullPointerException("response - name avatar is NULL");
         userService.saveDefaultAvatarWithOnboarding(nameAvatar);
         return ResponseEntity.ok("Ok");
     }
+
+    @Operation(summary = "User onboarding (step: 'START') - get user")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @GetMapping("/user/onboarding/get-user")
+    @JsonView(JsonViews.ViewFieldUserOnboarding.class)
+    public ResponseEntity<User> onboardingGetUser() {
+        return ResponseEntity.ok(userService.getUserFromSecurityContextHolder());
+    }
+
+    @Operation(summary = "User onboarding (step: 'START') - end onboarding, set onboardingEnd field - 'true'")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PutMapping("/user/onboarding/end")
+    public ResponseEntity<?> onboardingEnd(@RequestBody UserOnboardingSteps onboardingEnd) {
+        if (!onboardingEnd.isOnboardingEnd()) throw new InvalidDataException("'true' - is preferred");
+        userService.userOnboardingEnd(onboardingEnd);
+        return ResponseEntity.ok("Ok");
+    }
+
 
 }

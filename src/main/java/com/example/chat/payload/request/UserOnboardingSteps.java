@@ -6,6 +6,7 @@ import lombok.Data;
 public class UserOnboardingSteps {
 
     String onboardingFieldStr;
+    boolean onboardingEnd = false;
 
 
 }
