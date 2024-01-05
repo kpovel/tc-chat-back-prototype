@@ -139,4 +139,10 @@ public class UserService {
         user.setAbout(userAbout);
         userRepository.save(user);
     }
+
+    public void saveDefaultAvatarWithOnboarding(String defaultAvatarName) {
+        User user = getUserFromSecurityContextHolder();
+        user.getImage().setName(defaultAvatarName);
+        userRepository.save(user);
+    }
 }

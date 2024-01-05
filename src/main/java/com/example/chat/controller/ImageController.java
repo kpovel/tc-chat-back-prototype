@@ -1,21 +1,21 @@
 package com.example.chat.controller;
 
-import com.example.chat.utils.exception.CustomFileNotFoundException;
-import com.example.chat.utils.exception.FileFormatException;
 import com.example.chat.servise.FileService;
 import com.example.chat.servise.ImageService;
+import com.example.chat.utils.exception.FileFormatException;
+import com.example.chat.utils.validate.ValidateFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.core.io.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,15 +33,17 @@ public class ImageController {
     @Operation(summary = "User onboarding - save user avatar")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/user/avatar/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) throws CustomFileNotFoundException {
-        String contentType = file.getContentType();
-        assert contentType != null;
-        if (contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/png")
-                || contentType.equalsIgnoreCase("image/webp") || contentType.equalsIgnoreCase("image/jpg")) {
-            String imageName = fileService.saveFileInStorage(file,  contentType.replaceAll("image/","."));
-            imageService.saveImageName(imageName);
-            return ResponseEntity.ok(imageName);
-        } else throw new FileFormatException("Дозволено тільки зображення");
+    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile file) {
+        try {
+            String contentType = file.getContentType();
+            if (ValidateFields.isSupportedImageType(contentType)) {
+                String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
+                imageService.saveImageName(imageName);
+                return ResponseEntity.ok(imageName);
+            } else throw new FileFormatException("Дозволено тільки зображення");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Помилка обробки файлу: " + e.getMessage());
+        }
     }
 
     @Operation(summary = "User avatar by image name")
@@ -62,8 +64,8 @@ public class ImageController {
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/default-avatars")
     public ResponseEntity<List<String>> defaultAvatars() {
-       List<String> defaultAvatars = List.of("no-avatar.jpeg", "avatar-1.jpeg", "avatar-2.jpeg", "avatar-3.jpeg", "avatar-4.jpeg",
-                                                "avatar-5.jpeg", "avatar-6.jpeg", "avatar-7.jpeg");
-       return ResponseEntity.ok(defaultAvatars);
+        List<String> defaultAvatars = List.of("no-avatar.jpeg", "avatar-1.jpeg", "avatar-2.jpeg", "avatar-3.jpeg", "avatar-4.jpeg",
+                "avatar-5.jpeg", "avatar-6.jpeg", "avatar-7.jpeg");
+        return ResponseEntity.ok(defaultAvatars);
     }
 }

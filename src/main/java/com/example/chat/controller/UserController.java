@@ -1,7 +1,7 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.User;
-import com.example.chat.payload.request.UserAboutField;
+import com.example.chat.payload.request.UserOnboardingSteps;
 import com.example.chat.payload.request.HashtagRequest;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.payload.request.SignupRequest;
@@ -11,7 +11,7 @@ import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.servise.AuthService;
 import com.example.chat.servise.UserService;
 import com.example.chat.utils.validate.CustomFieldError;
-import com.example.chat.utils.validate.ValidateUserField;
+import com.example.chat.utils.validate.ValidateFields;
 import com.example.chat.utils.dto.UserDto;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.mapper.UserMapper;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final ValidateUserField validate;
+    private final ValidateFields validate;
     private final MessageSource messageSource;
 
     private final AuthService authService;
@@ -158,7 +158,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/hashtags-with-onboarding/save")
     public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
-        if(hashtags == null) throw new NullPointerException("hashtags is NULL");
+        if(hashtags == null) throw new NullPointerException("response - hashtags is NULL");
         userService.saveUserHashtagsWithOnboarding(hashtags);
         return ResponseEntity.ok("Ok");
     }
@@ -166,19 +166,23 @@ public class UserController {
     @Operation(summary = "User onboarding - save user about field")
     @SecurityRequirement(name = "Bearer Authentication")
     @PutMapping("/user/user-about-with-onboarding/save")
-    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserAboutField userAbout) {
+    public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
-        if(userAboutStr == null) throw new NullPointerException("userAbout is NULL");
+        if(userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
         //TODO
         userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Ok");
     }
 
-//    @Operation(summary = "Test protected endpoint")
-//    @SecurityRequirement(name = "Bearer Authentication")
-//    @GetMapping("/chat")
-//    public ResponseEntity<String> securityPage() {
-//        return ResponseEntity.ok("It is Chat page - protected");
-//    }
+    @Operation(summary = "User onboarding - save user about field")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @PutMapping("/user/default-avatar-with-onboarding/save")
+    public ResponseEntity<?> userHasChosenDefaultAvatar(@RequestBody UserOnboardingSteps nameDefaultAvatar) {
+        String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
+        if(nameAvatar == null) throw new NullPointerException("response - name avatar is NULL");
+        //TODO (Додати перевірку по колекції зображень)
+        userService.saveDefaultAvatarWithOnboarding(nameAvatar);
+        return ResponseEntity.ok("Ok");
+    }
 
 }

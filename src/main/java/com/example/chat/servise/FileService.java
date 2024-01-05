@@ -66,7 +66,6 @@ public class FileService {
                 return resource;
             } else {
                 throw new CustomFileNotFoundException("File not found " + fileName);
-
             }
         } catch (MalformedURLException ex) {
             throw new CustomFileNotFoundException("File not found " + fileName, ex.getMessage());
