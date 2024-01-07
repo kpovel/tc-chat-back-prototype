@@ -15,7 +15,7 @@ import com.example.chat.utils.dto.UserDto;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.mapper.UserMapper;
-import com.example.chat.utils.validate.CustomFieldError;
+import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -172,7 +172,7 @@ public class UserController {
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
         if (userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
-        //TODO
+        //TODO(додати перевірку на довжину поля!!!)
         userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Ok");
     }
@@ -182,7 +182,7 @@ public class UserController {
     @PutMapping("/user/default-avatar-with-onboarding/save")
     public ResponseEntity<?> userHasChosenDefaultAvatar(@RequestBody UserOnboardingSteps nameDefaultAvatar) {
         String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
-        if (nameAvatar == null && fileService.defaultImage(nameAvatar)) throw new NullPointerException("response - name avatar is NULL");
+        if (nameAvatar == null && fileService.defaultImage(nameAvatar)) throw new NullPointerException("response - name avatar is NULL or bad name avatar");
         userService.saveDefaultAvatarWithOnboarding(nameAvatar);
         return ResponseEntity.ok("Ok");
     }

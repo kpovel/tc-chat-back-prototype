@@ -1,6 +1,6 @@
 package com.example.chat.utils.exception;
 
-import com.example.chat.utils.validate.CustomFieldError;
+import com.example.chat.utils.CustomFieldError;
 import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;

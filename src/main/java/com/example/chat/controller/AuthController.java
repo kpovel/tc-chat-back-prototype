@@ -6,7 +6,7 @@ import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.sequrity.UserDetailsImpl;
 import com.example.chat.servise.AuthService;
-import com.example.chat.utils.validate.CustomFieldError;
+import com.example.chat.utils.CustomFieldError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
