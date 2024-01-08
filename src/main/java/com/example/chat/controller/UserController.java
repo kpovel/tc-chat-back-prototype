@@ -7,9 +7,9 @@ import com.example.chat.payload.request.UserOnboardingSteps;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
-import com.example.chat.servise.AuthService;
-import com.example.chat.servise.FileService;
-import com.example.chat.servise.UserService;
+import com.example.chat.servise.impls.AuthService;
+import com.example.chat.servise.impls.FileService;
+import com.example.chat.servise.impls.UserServiceImpl;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.dto.UserDto;
 import com.example.chat.utils.exception.InvalidDataException;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", allowedHeaders = "*", maxAge = 3600)
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final ValidateFields validate;
     private final MessageSource messageSource;
     private final AuthService authService;

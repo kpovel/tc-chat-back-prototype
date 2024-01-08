@@ -1,9 +1,9 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.User;
-import com.example.chat.servise.FileService;
-import com.example.chat.servise.ImageService;
-import com.example.chat.servise.UserService;
+import com.example.chat.servise.impls.FileService;
+import com.example.chat.servise.impls.ImageService;
+import com.example.chat.servise.impls.UserServiceImpl;
 import com.example.chat.utils.exception.FileFormatException;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.validate.ValidateFields;
@@ -32,7 +32,7 @@ public class ImageController {
 
     private final FileService fileService;
     private final ImageService imageService;
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Operation(summary = "User onboarding - save user avatar")
     @SecurityRequirement(name = "Bearer Authentication")

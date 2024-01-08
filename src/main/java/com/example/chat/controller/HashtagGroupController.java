@@ -3,8 +3,8 @@ package com.example.chat.controller;
 import com.example.chat.utils.exception.ErrorServerException;
 import com.example.chat.model.HashtagsGroup;
 import com.example.chat.model.User;
-import com.example.chat.servise.HashtagGroupService;
-import com.example.chat.servise.UserService;
+import com.example.chat.servise.impls.HashtagGroupService;
+import com.example.chat.servise.impls.UserServiceImpl;
 import com.example.chat.utils.JsonViews;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +24,7 @@ public class HashtagGroupController {
 
     private final HashtagGroupService hashtagGroupService;
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
 
     @Operation(summary = "User onboarding - step: hashtags")

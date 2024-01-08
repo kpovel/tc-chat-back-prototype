@@ -1,4 +1,4 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
 import com.example.chat.repository.UserChatRoomsRepository;
 import lombok.AllArgsConstructor;

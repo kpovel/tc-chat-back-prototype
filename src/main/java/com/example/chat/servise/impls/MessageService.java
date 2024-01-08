@@ -1,4 +1,4 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
 import com.example.chat.model.ChatRoom;
 import com.example.chat.model.Message;
@@ -16,12 +16,12 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     private final ChatRoomService chatRoomService;
 
     @Transactional
-    public void saveMessage(Message message, Long chatRoomId) {
+    public void saveMessage(Message message, long chatRoomId) {
         User user = userService.getUserById(1L);
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         message.setUser(user);

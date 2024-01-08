@@ -1,4 +1,4 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;

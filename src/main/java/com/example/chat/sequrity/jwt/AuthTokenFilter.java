@@ -3,7 +3,7 @@ package com.example.chat.sequrity.jwt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.example.chat.servise.UserDetailsServiceImpl;
+import com.example.chat.servise.impls.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

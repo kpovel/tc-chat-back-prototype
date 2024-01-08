@@ -2,9 +2,8 @@ package com.example.chat.controller;
 
 import com.example.chat.model.ChatRoomType;
 import com.example.chat.model.Message;
-import com.example.chat.payload.request.ChatRoomRequest;
 import com.example.chat.payload.request.PublicChatRoomRequest;
-import com.example.chat.servise.ChatRoomService;
+import com.example.chat.servise.impls.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,7 +44,7 @@ public class ChatRoomController {
     @GetMapping("/chat-messages/{id}")
     @Operation
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<List<Message>> allChatMessages(@PathVariable("id") Long chatId) {
+    public ResponseEntity<List<Message>> allChatMessages(@PathVariable("id") long chatId) {
 
 
         return ResponseEntity.ok(null);

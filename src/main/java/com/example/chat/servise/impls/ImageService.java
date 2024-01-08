@@ -1,5 +1,6 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
+import com.example.chat.servise.impls.FileService;
 import com.example.chat.utils.exception.CustomFileNotFoundException;
 import com.example.chat.model.Image;
 import com.example.chat.model.User;

@@ -3,7 +3,7 @@ package com.example.chat.utils;
 import com.example.chat.model.Hashtag;
 import com.example.chat.model.HashtagsGroup;
 import com.example.chat.model.Image;
-import com.example.chat.servise.HashtagGroupService;
+import com.example.chat.servise.impls.HashtagGroupService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

@@ -2,7 +2,7 @@ package com.example.chat.sequrity;
 
 import com.example.chat.sequrity.jwt.AuthEntryPointJwt;
 import com.example.chat.sequrity.jwt.AuthTokenFilter;
-import com.example.chat.servise.UserDetailsServiceImpl;
+import com.example.chat.servise.impls.UserDetailsServiceImpl;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

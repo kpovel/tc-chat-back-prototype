@@ -1,4 +1,4 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
 import com.example.chat.utils.exception.UserAccountNotActivatedException;
 import com.example.chat.repository.UserRepository;

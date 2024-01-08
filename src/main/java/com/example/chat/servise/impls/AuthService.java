@@ -1,4 +1,4 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
 import com.example.chat.utils.exception.BadRefreshTokenException;
 import com.example.chat.model.User;
@@ -22,7 +22,7 @@ public class AuthService {
 
     private final JwtUtils jwtUtils;
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     private final Map<String, String> refreshStorage = new HashMap<>();
 

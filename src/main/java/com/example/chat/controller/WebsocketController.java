@@ -1,8 +1,8 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.Message;
-import com.example.chat.servise.ChatRoomService;
-import com.example.chat.servise.MessageService;
+import com.example.chat.servise.impls.ChatRoomService;
+import com.example.chat.servise.impls.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,7 +19,7 @@ public class WebsocketController {
 
     @MessageMapping("/hello/{chatRoomId}")
     @SendTo("/topic/{chatRoomId}")
-    public Message greeting(@DestinationVariable("chatRoomId") Long chatRoomId, Message message) throws Exception {
+    public Message greeting(@DestinationVariable("chatRoomId") long chatRoomId, Message message) throws Exception {
         messageService.saveMessage(message, chatRoomId);
         chatRoomService.removeChatRoom(6L);
         Thread.sleep(1000); // simulated delay

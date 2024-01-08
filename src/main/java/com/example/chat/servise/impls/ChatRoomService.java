@@ -1,4 +1,4 @@
-package com.example.chat.servise;
+package com.example.chat.servise.impls;
 
 import com.example.chat.model.ChatRoom;
 import com.example.chat.model.ChatRoomType;
@@ -11,7 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -20,7 +19,7 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     public void savePublicChatRoom(PublicChatRoomRequest chatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
