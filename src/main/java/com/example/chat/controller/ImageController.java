@@ -1,8 +1,11 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.User;
 import com.example.chat.servise.FileService;
 import com.example.chat.servise.ImageService;
+import com.example.chat.servise.UserService;
 import com.example.chat.utils.exception.FileFormatException;
+import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.validate.ValidateFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -29,6 +32,7 @@ public class ImageController {
 
     private final FileService fileService;
     private final ImageService imageService;
+    private final UserService userService;
 
     @Operation(summary = "User onboarding - save user avatar")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -37,8 +41,10 @@ public class ImageController {
         try {
             String contentType = file.getContentType();
             if (ValidateFields.isSupportedImageType(contentType)) {
+                User user = userService.getUserFromSecurityContextHolder();
+                if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
-                imageService.saveImageName(imageName);
+                imageService.saveImageName(user, imageName);
                 return ResponseEntity.ok(imageName);
             } else throw new FileFormatException("Дозволено тільки зображення");
         } catch (Exception e) {

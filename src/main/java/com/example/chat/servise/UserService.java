@@ -9,6 +9,7 @@ import com.example.chat.repository.UserRepository;
 import com.example.chat.model.Role;
 import com.example.chat.model.User;
 import com.example.chat.sequrity.UserDetailsImpl;
+import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.Transient;
@@ -127,6 +128,7 @@ public class UserService {
 
     public void saveUserHashtagsWithOnboarding(List<HashtagRequest> hashtags) {
         User user = getUserFromSecurityContextHolder();
+        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         for (HashtagRequest arr: hashtags) {
             Hashtag hashtag = hashtagMapper.toModel(arr);
             user.getHashtags().add(hashtag);
@@ -136,19 +138,23 @@ public class UserService {
 
     public void saveUserAboutWithOnboarding(String userAbout) {
         User user = getUserFromSecurityContextHolder();
+        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.setAbout(userAbout);
         userRepository.save(user);
     }
 
     public void saveDefaultAvatarWithOnboarding(String defaultAvatarName) {
         User user = getUserFromSecurityContextHolder();
+        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.getImage().setName(defaultAvatarName);
         userRepository.save(user);
     }
 
     public void userOnboardingEnd(UserOnboardingSteps onboardingEnd) {
         User user = getUserFromSecurityContextHolder();
+        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.setOnboardingEnd(onboardingEnd.isOnboardingEnd());
         userRepository.save(user);
     }
+
 }

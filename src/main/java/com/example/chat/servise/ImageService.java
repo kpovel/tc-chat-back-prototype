@@ -11,11 +11,9 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
-    private final UserService userService;
     private final FileService fileService;
 
-    public void saveImageName(String imageName) throws CustomFileNotFoundException {
-        User user = userService.getUserFromSecurityContextHolder();
+    public void saveImageName(User user, String imageName) throws CustomFileNotFoundException {
         Image image = user.getImage();
         String oldNameImage = image.getName();
         if (image.getName() != null && !fileService.defaultImage(oldNameImage)) fileService.deleteFileFromStorage(oldNameImage);
