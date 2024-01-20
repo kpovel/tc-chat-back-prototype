@@ -1,13 +1,12 @@
 package com.example.chat.servise;
 
 import com.example.chat.model.User;
-import com.example.chat.payload.request.HashtagRequest;
-import com.example.chat.payload.request.SignupRequest;
-import com.example.chat.payload.request.UserOnboardingSteps;
+import com.example.chat.payload.request.*;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 public interface UserService {
@@ -18,7 +17,8 @@ public interface UserService {
 
     Authentication userAuthentication(User user);
 
-    void forgotPasswordOneStep(String userEmail) throws MessagingException;
+    void forgotPasswordStepOne(UserEmailRequest userEmail) throws MessagingException;
+    Optional<User> forgotPasswordStepTwo(String codeFromEmail) throws MessagingException;
 
     User getUserFromSecurityContextHolder();
 
@@ -31,7 +31,9 @@ public interface UserService {
 
     User getUserById(long id);
 
-    void notIsOldPassword(String password);
+    boolean isOldUserPassword(User user,UserPasswordRequest userPassword);
+
+    void saveNewUserPassword(User user, UserPasswordRequest userPassword);
 
     void saveUserHashtagsWithOnboarding(List<HashtagRequest> hashtags);
 

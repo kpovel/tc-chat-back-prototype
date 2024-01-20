@@ -1,9 +1,7 @@
 package com.example.chat.controller;
 
 import com.example.chat.model.User;
-import com.example.chat.payload.request.HashtagRequest;
-import com.example.chat.payload.request.SignupRequest;
-import com.example.chat.payload.request.UserOnboardingSteps;
+import com.example.chat.payload.request.*;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
@@ -31,6 +29,8 @@ import lombok.Data;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
@@ -119,28 +119,84 @@ public class UserController {
     }
 
 
-    @PutMapping("/forgot-password")
-    @Operation(summary = "Forgot password, step one (-TODO-)")
+    @PutMapping("/{lang}/forgot-password")
+    @Operation(summary = "Forgot password, step one")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
             @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
-    public ResponseEntity<?> forgotUserPasswordOneStep(@RequestParam String userEmail) throws MessagingException {
-        userService.forgotPasswordOneStep(userEmail);
-        //TODO
-        return null;
+    public ResponseEntity<?> forgotUserPasswordOneStep(@Valid @RequestBody UserEmailRequest userEmail,
+                                                       BindingResult bindingResult,
+                                                       @PathVariable String lang) throws MessagingException {
+        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
+        if (lang.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        if (bindingResult.hasErrors()) {
+            try {
+                List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                        .collect(Collectors.toList());
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            } catch (NoSuchMessageException e) {
+                return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+            }
+        }
+        userService.forgotPasswordStepOne(userEmail);
+        return ResponseEntity.ok("Success");
     }
 
-    @PutMapping("/forgot-password/{code}")
-    @Operation(summary = "Forgot password, step two (-TODO-)")
+    @PutMapping("/{lang}/forgot-password/{code}")
+    @Operation(summary = "Forgot password, step two")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
             @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
-    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable("code") String code) {
+    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable String lang,
+                                                       @PathVariable String code) {
+        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
+        if (lang.equals("uk"))
+            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        Optional<User> userOptional = userService.forgotPasswordStepTwo(code);
+        if (userOptional.isPresent()) {
+            Authentication authentication = userService.userAuthentication(userOptional.get());
 
-        //TODO
-        return null;
+            final String jwtAccessToken = jwtUtils.generateJwtAccessToken(authentication);
+            final String jwtRefreshToken = jwtUtils.generateRefreshToken(authentication);
+            authService.saveJwtRefreshTokenToStorage(userOptional.get().getEmail(), jwtRefreshToken);
+            return ResponseEntity.ok(new JwtResponse(jwtAccessToken, jwtRefreshToken));
+        } else {
+            return ResponseEntity.badRequest().body(messageSource.getMessage("user.bad.code.forgot.password", null, currentLocale));
+        }
+    }
+
+    @PutMapping("/user/new-password/save")
+    @Operation(summary = "Save new User password")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
+    })
+    public ResponseEntity<?> saveNewUserPassword(@Valid @RequestBody UserPasswordRequest newUserPassword,
+                                                 BindingResult bindingResult) {
+        User user = userService.getUserFromSecurityContextHolder();
+        LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        if (bindingResult.hasErrors()) {
+            try {
+                List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                        .collect(Collectors.toList());
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            } catch (NoSuchMessageException e) {
+                return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+            }
+        }
+        if(!userService.isOldUserPassword(user, newUserPassword)) {
+            userService.saveNewUserPassword(user, newUserPassword);
+            return ResponseEntity.ok("Success");
+        }
+        return ResponseEntity.badRequest().body(messageSource.getMessage("user.bad.new.password", null, currentLocale));
     }
 
     @GetMapping("/user")
@@ -171,8 +227,9 @@ public class UserController {
     @PutMapping("/user/user-about-with-onboarding/save")
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
-        if (userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
-        //TODO(додати перевірку на довжину поля!!!)
+        if(userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
+//        if(userAboutStr.length() > 300 )
+        //TODO(додати перевірку на довжину поля userAboutStr!!!)
         userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Ok");
     }

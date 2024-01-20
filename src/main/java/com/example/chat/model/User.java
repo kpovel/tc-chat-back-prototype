@@ -50,10 +50,8 @@ public class User implements Serializable {
     @Column(length = 100)
     private String password;
 
-
-
     @Column
-    private String activationCode;
+    private String uniqueServiceCode;
 
     @Column
     private boolean enable = false;

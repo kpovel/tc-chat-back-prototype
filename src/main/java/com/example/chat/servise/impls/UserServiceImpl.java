@@ -4,9 +4,7 @@ import com.example.chat.model.Hashtag;
 import com.example.chat.model.Image;
 import com.example.chat.model.Role;
 import com.example.chat.model.User;
-import com.example.chat.payload.request.HashtagRequest;
-import com.example.chat.payload.request.SignupRequest;
-import com.example.chat.payload.request.UserOnboardingSteps;
+import com.example.chat.payload.request.*;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.sequrity.UserDetailsImpl;
 import com.example.chat.servise.UserService;
@@ -37,6 +35,7 @@ import java.util.UUID;
 @Service
 @Data
 public class UserServiceImpl implements UserService {
+
     @Value("${front.host}")
     @Transient
     private String host;
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createUser(SignupRequest signUpRequest, String XOriginatingHost) throws MessagingException {
-        if(XOriginatingHost != null) host = XOriginatingHost;
+        if (XOriginatingHost != null) host = XOriginatingHost;
         Locale currentLocale = LocaleContextHolder.getLocale();
         String email = signUpRequest.getEmail();
         User user = new User();
@@ -65,7 +64,7 @@ public class UserServiceImpl implements UserService {
         user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
         user.getAuthority().add(Role.ROLE_USER);
-        user.setActivationCode(UUID.randomUUID().toString());
+        user.setUniqueServiceCode(UUID.randomUUID().toString());
         Image defaultAvatar = new Image();
         defaultAvatar.setName("no-avatar.jpeg");
         user.setImage(defaultAvatar);
@@ -74,18 +73,18 @@ public class UserServiceImpl implements UserService {
             Context context = new Context();
             context.setVariable("username", user.getName());
             context.setVariable("host", host + "/" + user.getLocale());
-            context.setVariable("code", user.getActivationCode());
+            context.setVariable("code", user.getUniqueServiceCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.activation", null, currentLocale), "activation_message_" + currentLocale.getLanguage(), context);
         }
     }
 
     @Override
     public Optional<User> verificationUserEmail(String code) {
-        Optional<User> userOptional = userRepository.findByActivationCode(code);
-        if(userOptional.isPresent()){
+        Optional<User> userOptional = userRepository.findUsersByUniqueServiceCode(code);
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setEnable(true);
-            user.setActivationCode(null);
+            user.setUniqueServiceCode(null);
             userRepository.save(user);
             return Optional.of(user);
         }
@@ -99,28 +98,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void forgotPasswordOneStep(String userEmail) throws MessagingException {
-        Optional<User> userOptional = userRepository.findByEmail(userEmail);
-        if(userOptional.isPresent()) {
+    public void forgotPasswordStepOne(UserEmailRequest userEmail) throws MessagingException {
+        Optional<User> userOptional = userRepository.findByEmail(userEmail.getUserEmail());
+        if (userOptional.isPresent()) {
             User user = userOptional.get();
             Locale currentLocale = Locale.forLanguageTag(user.getLocale());
-            user.setActivationCode(UUID.randomUUID().toString());
+            user.setUniqueServiceCode(UUID.randomUUID().toString());
+            userRepository.save(user);
             Context context = new Context();
             context.setVariable("username", user.getName());
-            context.setVariable("host", host);
-            context.setVariable("code", user.getActivationCode());
+            context.setVariable("host", host + "/" + user.getLocale());
+            context.setVariable("code", user.getUniqueServiceCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.forgot.password.step.one", null, currentLocale), "forgot_password_message_" + currentLocale.getLanguage(), context);
-
         } else {
-
+            throw new BadCredentialsException("user.bad.email.forgot.password");
         }
     }
 
     @Override
+    public Optional<User> forgotPasswordStepTwo(String codeFromEmail) {
+        Optional<User> userOptional = userRepository.findUsersByUniqueServiceCode(codeFromEmail);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setUniqueServiceCode(null);
+            userRepository.save(user);
+        }
+        return userOptional;
+    }
+
+    @Override
     public User getUserFromSecurityContextHolder() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-    return userRepository.findByEmail(userDetails.getUsername()).get();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userRepository.findByEmail(userDetails.getUsername()).get();
     }
 
     @Override
@@ -132,15 +142,22 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void notIsOldPassword(String password){
-        //TODO(Перевірка чи не прислав юзер новий пароль при зміні таким же як старий)
+    public boolean isOldUserPassword(User user,UserPasswordRequest userPassword) {
+        String encodedPassword = user.getPassword();
+        return passwordEncoder.matches(userPassword.getUserPassword(), encodedPassword);
+    }
+
+    @Override
+    public void saveNewUserPassword(User user,UserPasswordRequest userPassword) {
+        user.setPassword(passwordEncoder.encode(userPassword.getUserPassword()));
+        userRepository.save(user);
     }
 
     @Override
     public void saveUserHashtagsWithOnboarding(List<HashtagRequest> hashtags) {
         User user = getUserFromSecurityContextHolder();
-        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
-        for (HashtagRequest arr: hashtags) {
+        if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
+        for (HashtagRequest arr : hashtags) {
             Hashtag hashtag = hashtagMapper.toModel(arr);
             user.getHashtags().add(hashtag);
         }
@@ -150,7 +167,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUserAboutWithOnboarding(String userAbout) {
         User user = getUserFromSecurityContextHolder();
-        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
+        //        if(userAbout.length() > 300 )
+        if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.setAbout(userAbout);
         userRepository.save(user);
     }
@@ -158,7 +176,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveDefaultAvatarWithOnboarding(String defaultAvatarName) {
         User user = getUserFromSecurityContextHolder();
-        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
+        if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.getImage().setName(defaultAvatarName);
         userRepository.save(user);
     }
@@ -166,7 +184,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void userOnboardingEnd(UserOnboardingSteps onboardingEnd) {
         User user = getUserFromSecurityContextHolder();
-        if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
+        if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.setOnboardingEnd(onboardingEnd.isOnboardingEnd());
         userRepository.save(user);
     }
