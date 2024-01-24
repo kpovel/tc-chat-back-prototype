@@ -1,23 +1,25 @@
 package com.example.chat.payload.request;
 
 import com.example.chat.model.ChatRoomType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.Setter;
+import com.example.chat.model.Hashtag;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class ChatRoomRequest {
 
     @NonNull
-    private Set<ChatRoomType> chatRoomType = new HashSet<>();
+    private String chatRoomName;
 
-    private Long toUserId;
+    @NonNull
+    private String chatRoomDescription;
+
+    private Hashtag hashtag;
+
+    @NonNull
+    private Set<ChatRoomType> chatRoomType = new HashSet<>();
 
 
 }

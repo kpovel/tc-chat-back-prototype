@@ -1,19 +1,21 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.ChatRoom;
 import com.example.chat.model.User;
 import com.example.chat.payload.request.*;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.servise.impls.AuthService;
+import com.example.chat.servise.impls.ChatRoomService;
 import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.UserServiceImpl;
+import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.dto.UserDto;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.mapper.UserMapper;
-import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,8 +31,6 @@ import lombok.Data;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
@@ -49,13 +49,22 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserServiceImpl userService;
+
     private final ValidateFields validate;
+
     private final MessageSource messageSource;
+
     private final AuthService authService;
+
     private final JwtUtils jwtUtils;
+
     private final UserMapper userMapper;
+
     private final HashtagMapper hashtagMapper;
+
     private final FileService fileService;
+
+    private final ChatRoomService chatRoomService;
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
@@ -206,25 +215,25 @@ public class UserController {
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
     })
-    @JsonView(JsonViews.ViewFieldUser.class)
+    @JsonView(JsonViews.ViewFieldUu.class)
     public ResponseEntity<UserDto> getUserToProfile() {
         User user = userService.getUserById(1L);
         UserDto dto = userMapper.toDto(user);
         return ResponseEntity.ok(dto);
     }
 
+    @PutMapping("/user/hashtags-with-onboarding/save")
     @Operation(summary = "User onboarding (step: 'HASHTAGS') - save hashtags")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping("/user/hashtags-with-onboarding/save")
     public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
         if (hashtags == null) throw new NullPointerException("response - hashtags is NULL");
         userService.saveUserHashtagsWithOnboarding(hashtags);
         return ResponseEntity.ok("Ok");
     }
 
+    @PutMapping("/user/user-about-with-onboarding/save")
     @Operation(summary = "User onboarding (step: 'ABOUT') - save user about field")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping("/user/user-about-with-onboarding/save")
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
         if(userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
@@ -234,9 +243,9 @@ public class UserController {
         return ResponseEntity.ok("Ok");
     }
 
+    @PutMapping("/user/default-avatar-with-onboarding/save")
     @Operation(summary = "User onboarding (step: 'AVATAR')- save default avatar")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping("/user/default-avatar-with-onboarding/save")
     public ResponseEntity<?> userHasChosenDefaultAvatar(@RequestBody UserOnboardingSteps nameDefaultAvatar) {
         String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
         if (nameAvatar == null && fileService.defaultImage(nameAvatar)) throw new NullPointerException("response - name avatar is NULL or bad name avatar");
@@ -244,20 +253,46 @@ public class UserController {
         return ResponseEntity.ok("Ok");
     }
 
+    @GetMapping("/user/onboarding/get-user")
     @Operation(summary = "User onboarding (step: 'START') - get user")
     @SecurityRequirement(name = "Bearer Authentication")
-    @GetMapping("/user/onboarding/get-user")
     @JsonView(JsonViews.ViewFieldUserOnboarding.class)
     public ResponseEntity<User> onboardingGetUser() {
         return ResponseEntity.ok(userService.getUserFromSecurityContextHolder());
     }
 
+    @PutMapping("/user/onboarding/end")
     @Operation(summary = "User onboarding (step: 'START') - end onboarding, set onboardingEnd field - 'true'")
     @SecurityRequirement(name = "Bearer Authentication")
-    @PutMapping("/user/onboarding/end")
     public ResponseEntity<?> onboardingEnd(@RequestBody UserOnboardingSteps onboardingEnd) {
         if (!onboardingEnd.isOnboardingEnd()) throw new InvalidDataException("'true' - is preferred");
         userService.userOnboardingEnd(onboardingEnd);
+        return ResponseEntity.ok("Ok");
+    }
+
+    @GetMapping("/user/chat-rooms")
+    @Operation(summary = "Get user chat rooms")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @JsonView(JsonViews.ViewFieldUuChatList.class)
+    public ResponseEntity<?> getUserChatRooms() {
+        return ResponseEntity.ok(userService.getUserChatRooms());
+    }
+
+    @PutMapping("/user/add-public-chatroom/{chatRoomUUID}")
+    @Operation(summary = "Add user in public chat rooms")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> addPublicChatRoomToUserChatRoomsSet(@PathVariable String chatRoomUUID) {
+        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomUUID);
+        userService.addPublicChatRoomToUserChatRoomsSet(chatRoom);
+        return ResponseEntity.ok("Ok");
+    }
+
+
+    @Operation(summary = "Delete user")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping("/user/delete")
+    public ResponseEntity<?> deleteUser() {
+        userService.deleteUser();
         return ResponseEntity.ok("Ok");
     }
 

@@ -28,7 +28,7 @@ public class HashtagGroupService {
     public List<HashtagsGroup> allHashtagsGroupUserLocale(User user) throws ErrorServerException {
         Optional<List<HashtagsGroup>> hashtagsGroupList = repository.findAllByLocale(user.getLocale());
         if(hashtagsGroupList.isPresent()) return hashtagsGroupList.get();
-        throw new ErrorServerException("Error in method 'allHashtagsGroupUserLocale'");
+        else throw new ErrorServerException("Error in method 'allHashtagsGroupUserLocale'");
     }
 
 }

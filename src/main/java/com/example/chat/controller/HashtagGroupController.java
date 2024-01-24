@@ -30,7 +30,7 @@ public class HashtagGroupController {
     @Operation(summary = "User onboarding - step: hashtags")
     @SecurityRequirement(name = "Bearer Authentication")
     @GetMapping("/user-onboarding/hashtags-group")
-    @JsonView(JsonViews.ViewFieldHashtagsGroups.class)
+    @JsonView(JsonViews.ViewFieldUuHashtagsGroups.class)
     public ResponseEntity<List<HashtagsGroup>> allHashtagGroupsUserLocale() throws ErrorServerException {
         User user = userService.getUserFromSecurityContextHolder();
         return ResponseEntity.ok(hashtagGroupService.allHashtagsGroupUserLocale(user));

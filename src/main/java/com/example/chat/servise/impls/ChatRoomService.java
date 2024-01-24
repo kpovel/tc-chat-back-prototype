@@ -1,17 +1,16 @@
 package com.example.chat.servise.impls;
 
 import com.example.chat.model.ChatRoom;
-import com.example.chat.model.ChatRoomType;
 import com.example.chat.model.User;
-import com.example.chat.model.UserChatRooms;
+import com.example.chat.model.UserChatRoom;
 import com.example.chat.payload.request.ChatRoomRequest;
-import com.example.chat.payload.request.PublicChatRoomRequest;
 import com.example.chat.repository.ChatRoomRepository;
+import com.example.chat.utils.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -21,44 +20,53 @@ public class ChatRoomService {
 
     private final UserServiceImpl userService;
 
-    public void savePublicChatRoom(PublicChatRoomRequest chatRoomRequest) {
+    public void saveNewPublicChatRoom(ChatRoomRequest chatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
+
         ChatRoom chatRoom = new ChatRoom();
-        Set<ChatRoomType> chatRoomType = chatRoomRequest.getChatRoomType();
-        chatRoom.setName(chatRoomRequest.getChatRoom().getName());
+        chatRoom.setChatRoomType(chatRoomRequest.getChatRoomType());
+        chatRoom.setName(chatRoomRequest.getChatRoomName());
+        chatRoom.setDescription(chatRoomRequest.getChatRoomDescription());
+        chatRoom.setHashtag(chatRoomRequest.getHashtag());
+
+        UserChatRoom userChatRoom = new UserChatRoom();
+        userChatRoom.setUser(user);
+        userChatRoom.setChatName(chatRoomRequest.getChatRoomName());
+        userChatRoom.setChatRoom(chatRoom);
+
+        user.getUserChatRoomsAdmin().add(chatRoom);
         chatRoom.setUserAminChatRoom(user);
-//        chatRoom.getHashtags().add(hashtag);
-        chatRoom.getUsersChatRoom().add(user);
+        chatRoom.getUserChatRooms().add(userChatRoom);
+
         chatRoomRepository.save(chatRoom);
     }
 
     @Transactional
     public void savePrivateChatRoom(ChatRoomRequest chatRoomRequest) {
-        User userInitiatorConversation = userService.getUserFromSecurityContextHolder();
-        User otherUser = userService.getUserById(chatRoomRequest.getToUserId());
-        ChatRoom chatRoom = new ChatRoom();
-        chatRoom.getChatRoomType().add(ChatRoomType.PRIVATE);
-        UserChatRooms userInitiatorChat = new UserChatRooms();
-        userInitiatorChat.setChatName(otherUser.getUserLogin());
-        userInitiatorChat.setUser(userInitiatorConversation);
-        userInitiatorChat.setChatRoom(chatRoom);
-        UserChatRooms otherUserChat = new UserChatRooms();
-        otherUserChat.setChatName(userInitiatorConversation.getUserLogin());
-        otherUserChat.setUser(otherUser);
-        otherUserChat.setChatRoom(chatRoom);
-        chatRoom.getUserChatRooms().add(userInitiatorChat);
-        chatRoom.getUserChatRooms().add(otherUserChat);
-        chatRoomRepository.save(chatRoom);
-
-
-
-
-
+//        User userInitiatorConversation = userService.getUserFromSecurityContextHolder();
+//        User otherUser = userService.getUserById(chatRoomRequest.getToUserId());
+//        ChatRoom chatRoom = new ChatRoom();
+//        chatRoom.getChatRoomType().add(ChatRoomType.PRIVATE);
+//        UserChatRoom userInitiatorChat = new UserChatRoom();
+//        userInitiatorChat.setChatName(otherUser.getUserLogin());
+//        userInitiatorChat.setUser(userInitiatorConversation);
+//        userInitiatorChat.setChatRoom(chatRoom);
+//        UserChatRoom otherUserChat = new UserChatRoom();
+//        otherUserChat.setChatName(userInitiatorConversation.getUserLogin());
+//        otherUserChat.setUser(otherUser);
+//        otherUserChat.setChatRoom(chatRoom);
+//        chatRoom.getUserChatRooms().add(userInitiatorChat);
+//        chatRoom.getUserChatRooms().add(otherUserChat);
+//        chatRoomRepository.save(chatRoom);
     }
 
     @Transactional
-    public ChatRoom getChatRoom(Long id) {
-        return chatRoomRepository.findById(id).get();
+    public ChatRoom getChatRoom(String chatRoomUUID) {
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findChatRoomByUuid(chatRoomUUID);
+        if(chatRoomOptional.isPresent()){
+            return chatRoomOptional.get();
+            //TODO: Localisation response
+        } else throw new ObjectNotFoundException("Chat room with id: " + chatRoomUUID + " not found");
     }
 
     public void saveTest(ChatRoom chatRoom) {
@@ -66,8 +74,8 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void removeChatRoom(Long id) {
-        ChatRoom chatRoom = getChatRoom(id);
-        chatRoomRepository.delete(chatRoom);
+    public void removeChatRoom(long chatRoomId) {
+//        ChatRoom chatRoom = getChatRoom(chatRoomId);
+//        chatRoomRepository.delete(chatRoom);
     }
 }

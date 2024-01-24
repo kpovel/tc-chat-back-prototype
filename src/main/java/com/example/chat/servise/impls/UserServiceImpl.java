@@ -1,9 +1,6 @@
 package com.example.chat.servise.impls;
 
-import com.example.chat.model.Hashtag;
-import com.example.chat.model.Image;
-import com.example.chat.model.Role;
-import com.example.chat.model.User;
+import com.example.chat.model.*;
 import com.example.chat.payload.request.*;
 import com.example.chat.repository.UserRepository;
 import com.example.chat.sequrity.UserDetailsImpl;
@@ -26,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.Context;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 //@Slf4j
 @Service
@@ -142,13 +136,13 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean isOldUserPassword(User user,UserPasswordRequest userPassword) {
+    public boolean isOldUserPassword(User user, UserPasswordRequest userPassword) {
         String encodedPassword = user.getPassword();
         return passwordEncoder.matches(userPassword.getUserPassword(), encodedPassword);
     }
 
     @Override
-    public void saveNewUserPassword(User user,UserPasswordRequest userPassword) {
+    public void saveNewUserPassword(User user, UserPasswordRequest userPassword) {
         user.setPassword(passwordEncoder.encode(userPassword.getUserPassword()));
         userRepository.save(user);
     }
@@ -187,6 +181,49 @@ public class UserServiceImpl implements UserService {
         if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.setOnboardingEnd(onboardingEnd.isOnboardingEnd());
         userRepository.save(user);
+    }
+
+    @Override
+    @Transient
+    public List<UserChatRoom> getUserChatRooms() {
+        User user = getUserFromSecurityContextHolder();
+        List<UserChatRoom> userChatRooms = user.getUserChatRooms();
+        if (!userChatRooms.isEmpty()) {
+            for (int i = 0; i < userChatRooms.size(); i++) {
+                if (!userChatRooms.get(i).getChatRoom().getMessages().isEmpty()) {
+                    List<Message> messages = userChatRooms.get(i).getChatRoom().getMessages();
+                    Message lastMessage = messages.stream()
+                            .max(Comparator.comparing(Message::getId))
+                            .orElse(null);
+                    userChatRooms.get(i).setLastMessage(lastMessage);
+                }
+            }
+        }
+        return userChatRooms;
+    }
+
+    @Override
+    @Transient
+    public void addPublicChatRoomToUserChatRoomsSet(ChatRoom chatRoom) {
+        User user = getUserFromSecurityContextHolder();
+        List<UserChatRoom> userChatRooms = user.getUserChatRooms();
+        for (UserChatRoom arr : userChatRooms) {
+            if (arr.getChatRoom().getId().equals(chatRoom.getId())) throw new InvalidDataException(" ");
+        }
+
+        UserChatRoom userChatRoom = new UserChatRoom();
+        userChatRoom.setChatName(chatRoom.getName());
+        userChatRoom.setChatRoom(chatRoom);
+        userChatRoom.setUser(user);
+        user.getUserChatRooms().add(userChatRoom);
+        userRepository.save(user);
+
+    }
+
+    @Override
+    public void deleteUser() {
+        User user = getUserFromSecurityContextHolder();
+        userRepository.delete(user);
     }
 
 }

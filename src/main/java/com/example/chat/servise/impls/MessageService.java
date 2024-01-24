@@ -22,12 +22,12 @@ public class MessageService {
 
     @Transactional
     public void saveMessage(Message message, long chatRoomId) {
-        User user = userService.getUserById(1L);
-        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        message.setUser(user);
-        message.setDateOfCreated(LocalDateTime.now());
-//        chatRoom.getMessage().add(message);
-        message.setChatRoom(chatRoom);
-        messageRepository.save(message);
+//        User user = userService.getUserById(1L);
+//        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
+//        message.setUser(user);
+//        message.setDateOfCreated(LocalDateTime.now());
+////        chatRoom.getMessage().add(message);
+//        message.setChatRoom(chatRoom);
+//        messageRepository.save(message);
     }
 }

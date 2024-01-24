@@ -10,4 +10,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
 //    @Query("SELECT r FROM ChatRoom r INNER JOIN UserChatRooms ur ON r.id = ur.chatRoom WHERE ur.user.id = :userId AND tu.lesson.id = :lessonId AND tu.isRepeatable = true ORDER BY RANDOM() LIMIT 1")
 //    Optional<ChatRoom> getChatRoom();
+
+    Optional<ChatRoom> findChatRoomByUuid(String uuid);
 }

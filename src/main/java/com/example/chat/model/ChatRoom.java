@@ -1,15 +1,15 @@
 package com.example.chat.model;
 
+import com.example.chat.utils.JsonViews;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -23,9 +23,14 @@ public class ChatRoom implements Serializable {
     private Long id;
 
     @Column
+    @JsonView(JsonViews.ViewFieldUuId.class)
+    private String uuid;
+
+    @Column
     private String name;
 
     @Column(length = 1000)
+    @JsonView(JsonViews.ViewFieldDescription.class)
     private String description;
 
     @Column
@@ -34,6 +39,7 @@ public class ChatRoom implements Serializable {
     @Transient
     private List<User> usersChatRoom = new ArrayList<>();
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_admin_id")
     private User userAminChatRoom;
@@ -46,12 +52,20 @@ public class ChatRoom implements Serializable {
 
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinColumn(name = "hashtag_id")
-    private Hashtag hashtags;
+    @JsonView(JsonViews.ViewFieldHashtag.class)
+    private Hashtag hashtag;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Message> message = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private List<UserChatRooms> userChatRooms = new ArrayList<>();
+    private List<UserChatRoom> userChatRooms = new ArrayList<>();
+
+    @PrePersist
+    private void init(){
+        this.uuid = java.util.UUID.randomUUID().toString();
+    }
+
 }

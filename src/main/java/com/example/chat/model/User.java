@@ -24,7 +24,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(JsonViews.ViewFieldId.class)
+    @JsonView(JsonViews.ViewFieldUuId.class)
     private Long id;
 
     @Column
@@ -66,14 +66,21 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Set<Role> authority = new HashSet<>();
 
-    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id")
     @JsonView(JsonViews.ViewFieldOther.class)
     private Image image;
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserChatRoom> userChatRooms = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "userAminChatRoom", cascade = CascadeType.ALL)
+    private List<ChatRoom> userChatRoomsAdmin = new ArrayList<>();
+
+
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(name = "users_hashtags",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
@@ -86,7 +93,7 @@ public class User implements Serializable {
 
     @Column(name = "date_of_created", updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonView(JsonViews.ViewFieldUserDateOfCreated.class)
+    @JsonView(JsonViews.ViewFieldDateOfCreated.class)
     private LocalDateTime dateOfCreated;
 
     @PrePersist

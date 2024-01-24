@@ -21,7 +21,7 @@ public class WebsocketController {
     @SendTo("/topic/{chatRoomId}")
     public Message greeting(@DestinationVariable("chatRoomId") long chatRoomId, Message message) throws Exception {
         messageService.saveMessage(message, chatRoomId);
-        chatRoomService.removeChatRoom(6L);
+//        chatRoomService.removeChatRoom(6L);
         Thread.sleep(1000); // simulated delay
         return message;
     }

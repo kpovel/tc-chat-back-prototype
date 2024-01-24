@@ -1,6 +1,8 @@
 package com.example.chat.servise;
 
+import com.example.chat.model.ChatRoom;
 import com.example.chat.model.User;
+import com.example.chat.model.UserChatRoom;
 import com.example.chat.payload.request.*;
 import jakarta.mail.MessagingException;
 import org.springframework.security.core.Authentication;
@@ -8,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserService {
 
@@ -42,4 +45,10 @@ public interface UserService {
     void saveDefaultAvatarWithOnboarding(String defaultAvatarName);
 
     void userOnboardingEnd(UserOnboardingSteps onboardingEnd);
+
+    List<UserChatRoom> getUserChatRooms();
+
+    void addPublicChatRoomToUserChatRoomsSet(ChatRoom chatRoom);
+
+    void deleteUser();
 }
