@@ -26,7 +26,8 @@ public class FileService {
 
     private final Path fileStorageLocation;
 
-    private static List<String> defaultAvatars = List.of("no-avatar.jpeg", "avatar-1.jpeg", "avatar-2.jpeg", "avatar-3.jpeg", "avatar-4.jpeg", "avatar-5.jpeg", "avatar-6.jpeg", "avatar-7.jpeg");
+    private static List<String> defaultAvatars = List.of("avatar-1.svg", "avatar-2.svg", "avatar-3.svg", "avatar-4.svg", "avatar-5.svg", "avatar-6.svg", "avatar-7.svg", "avatar-8.svg",
+            "avatar-9.svg", "avatar-10.svg", "avatar-11.svg", "avatar-12.svg", "avatar-13.svg", "avatar-14.svg", "avatar-15.svg", "avatar-16.svg", "no-avatar.svg");
 
     @Autowired
     public FileService(FileStorageProperties fileStorageProperties) {
