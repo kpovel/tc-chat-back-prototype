@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         user.getAuthority().add(Role.ROLE_USER);
         user.setUniqueServiceCode(UUID.randomUUID().toString());
         Image defaultAvatar = new Image();
-        defaultAvatar.setName("no-avatar.jpeg");
+        defaultAvatar.setName("no-avatar.svg");
         user.setImage(defaultAvatar);
         userRepository.save(user);
         if (!StringUtils.isEmpty(user.getEmail())) {
