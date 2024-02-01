@@ -74,8 +74,7 @@ public class UserController {
                                           @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
                                           @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) throws MessagingException {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
         List<CustomFieldError> errorFields = new ArrayList<>();
         if (bindingResult.hasErrors()) {

@@ -7,32 +7,44 @@ import com.example.chat.servise.impls.UserServiceImpl;
 import com.example.chat.utils.exception.FileFormatException;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.validate.ValidateFields;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.io.IOUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import lombok.AllArgsConstructor;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.beans.factory.annotation.Value;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("api")
-@AllArgsConstructor
+@Data
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class ImageController {
 
     private final FileService fileService;
+
     private final ImageService imageService;
+
     private final UserServiceImpl userService;
+
+    private final MessageSource messageSource;
 
     @Operation(summary = "User onboarding - save user avatar")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -74,4 +86,5 @@ public class ImageController {
                 "avatar-9.svg", "avatar-10.svg", "avatar-11.svg", "avatar-12.svg", "avatar-13.svg", "avatar-14.svg", "avatar-15.svg", "avatar-16.svg");
         return ResponseEntity.ok(defaultAvatars);
     }
+
 }

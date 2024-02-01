@@ -1,8 +1,12 @@
 package com.example.chat.utils.exception;
 
+import com.example.chat.model.User;
+import com.example.chat.servise.UserService;
 import com.example.chat.utils.CustomFieldError;
 import jakarta.security.auth.message.AuthException;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
 import java.util.ArrayList;
@@ -19,8 +24,13 @@ import java.util.List;
 import java.util.Locale;
 
 @ControllerAdvice
-@AllArgsConstructor
+@Data
 public class GlobalExceptionHandler {
+
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxFileSize;
+
+    private final UserService userService;
 
     private final MessageSource messageSource;
 
@@ -106,6 +116,17 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<String> objectNotFound(ObjectNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<String> maxFilesizeException(MaxUploadSizeExceededException l) {
+        User user = userService.getUserFromSecurityContextHolder();
+        LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        String message = String.format(messageSource.getMessage("max.file.size", null, currentLocale), maxFileSize);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
 }
