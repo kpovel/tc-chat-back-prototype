@@ -36,6 +36,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -68,11 +69,6 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ParserToResponseFromCustomFieldError.class), mediaType = "application/json")})
-    })
-
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult,
                                           @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
@@ -81,21 +77,26 @@ public class UserController {
         if (acceptLanguage != null && acceptLanguage.equals("uk"))
             LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
         Locale currentLocale = LocaleContextHolder.getLocale();
+        List<CustomFieldError> errorFields = new ArrayList<>();
         if (bindingResult.hasErrors()) {
             try {
-                List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
+                errorFields = bindingResult.getFieldErrors().stream()
                         .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
                         .collect(Collectors.toList());
                 return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             } catch (NoSuchMessageException e) {
-                return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                errorFields.clear();
+                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             }
         }
         if (validate.existsByLogin(signUpRequest.getLogin())) {
-            return ResponseEntity.badRequest().body(new CustomFieldError("loginDuplicate", messageSource.getMessage("login.duplicate", null, currentLocale)));
+            errorFields.add(new CustomFieldError("login", messageSource.getMessage("login.duplicate", null, currentLocale)));
+            return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
         }
         if (validate.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)));
+            errorFields.add(new CustomFieldError("email", messageSource.getMessage("email.duplicate", null, currentLocale)));
+            return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
         }
         userService.createUser(signUpRequest, XOriginatingHost);
         return ResponseEntity.ok(messageSource.getMessage("user.signup.success", null, currentLocale));
@@ -104,10 +105,6 @@ public class UserController {
 
     @PutMapping("/validate-email/{code}")
     @Operation(summary = "Verification user email and authentication")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     public ResponseEntity<?> verificationUserEmail(@PathVariable("code") String code,
                                                    @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
@@ -130,10 +127,6 @@ public class UserController {
 
     @PutMapping("/{lang}/forgot-password")
     @Operation(summary = "Forgot password, step one")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     public ResponseEntity<?> forgotUserPasswordOneStep(@Valid @RequestBody UserEmailRequest userEmail,
                                                        BindingResult bindingResult,
                                                        @PathVariable String lang) throws MessagingException {
@@ -156,10 +149,6 @@ public class UserController {
 
     @PutMapping("/{lang}/forgot-password/{code}")
     @Operation(summary = "Forgot password, step two")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable String lang,
                                                        @PathVariable String code) {
         LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
@@ -182,26 +171,24 @@ public class UserController {
     @PutMapping("/user/new-password/save")
     @Operation(summary = "Save new User password")
     @SecurityRequirement(name = "Bearer Authentication")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     public ResponseEntity<?> saveNewUserPassword(@Valid @RequestBody UserPasswordRequest newUserPassword,
                                                  BindingResult bindingResult) {
         User user = userService.getUserFromSecurityContextHolder();
         LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
+            List<CustomFieldError> errorFields = new ArrayList<>();
             try {
-                List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
+                errorFields = bindingResult.getFieldErrors().stream()
                         .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
                         .collect(Collectors.toList());
                 return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             } catch (NoSuchMessageException e) {
-                return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             }
         }
-        if(!userService.isOldUserPassword(user, newUserPassword)) {
+        if (!userService.isOldUserPassword(user, newUserPassword)) {
             userService.saveNewUserPassword(user, newUserPassword);
             return ResponseEntity.ok("Success");
         }
@@ -211,10 +198,6 @@ public class UserController {
     @GetMapping("/user")
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Get User (-TODO-)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = User.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     @JsonView(JsonViews.ViewFieldUu.class)
     public ResponseEntity<UserDto> getUserToProfile() {
         User user = userService.getUserById(1L);
@@ -236,9 +219,8 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
-        if(userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
-//        if(userAboutStr.length() > 300 )
-        //TODO(додати перевірку на довжину поля userAboutStr!!!)
+        if (userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
+        if(userAboutStr.length() > 300 ) throw new InvalidDataException("userAbout field max size 300 characters");
         userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Ok");
     }
@@ -248,7 +230,8 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> userHasChosenDefaultAvatar(@RequestBody UserOnboardingSteps nameDefaultAvatar) {
         String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
-        if (nameAvatar == null && fileService.defaultImage(nameAvatar)) throw new NullPointerException("response - name avatar is NULL or bad name avatar");
+        if (nameAvatar == null && fileService.defaultImage(nameAvatar))
+            throw new NullPointerException("response - name avatar is NULL or bad name avatar");
         userService.saveDefaultAvatarWithOnboarding(nameAvatar);
         return ResponseEntity.ok("Ok");
     }

@@ -22,10 +22,8 @@ public class ParserToResponseFromCustomFieldError {
             String fieldName = arr.getFieldName();
             String fieldMessage = arr.getFieldMessage();
 
-            // Використовуємо merge для додавання значень до fieldErrors
-            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + ", " + newValue);
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + " " + newValue);
         }
-
         return fieldErrors;
     }
 }
