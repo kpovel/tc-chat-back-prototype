@@ -63,6 +63,10 @@ public class ChatRoom implements Serializable {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<UserChatRoom> userChatRooms = new ArrayList<>();
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    private Image image;
+
     @PrePersist
     private void init(){
         this.uuid = java.util.UUID.randomUUID().toString();

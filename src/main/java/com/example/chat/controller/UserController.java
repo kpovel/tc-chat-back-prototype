@@ -71,10 +71,8 @@ public class UserController {
     @Operation(summary = "Registration new user")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult,
-                                          @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
                                           @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) throws MessagingException {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+
         Locale currentLocale = LocaleContextHolder.getLocale();
         List<CustomFieldError> errorFields = new ArrayList<>();
         if (bindingResult.hasErrors()) {
@@ -104,11 +102,7 @@ public class UserController {
 
     @PutMapping("/validate-email/{code}")
     @Operation(summary = "Verification user email and authentication")
-    public ResponseEntity<?> verificationUserEmail(@PathVariable("code") String code,
-                                                   @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+    public ResponseEntity<?> verificationUserEmail(@PathVariable("code") String code) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<User> optionalUser = userService.verificationUserEmail(code);
         if (optionalUser.isPresent()) {
@@ -124,13 +118,10 @@ public class UserController {
     }
 
 
-    @PutMapping("/{lang}/forgot-password")
+    @PutMapping("/forgot-password")
     @Operation(summary = "Forgot password, step one")
     public ResponseEntity<?> forgotUserPasswordOneStep(@Valid @RequestBody UserEmailRequest userEmail,
-                                                       BindingResult bindingResult,
-                                                       @PathVariable String lang) throws MessagingException {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (lang.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+                                                       BindingResult bindingResult) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             try {
@@ -146,13 +137,10 @@ public class UserController {
         return ResponseEntity.ok("Success");
     }
 
-    @PutMapping("/{lang}/forgot-password/{code}")
+    @PutMapping("/forgot-password/{code}")
     @Operation(summary = "Forgot password, step two")
-    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable String lang,
-                                                       @PathVariable String code) {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (lang.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable String code) {
+
         Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<User> userOptional = userService.forgotPasswordStepTwo(code);
         if (userOptional.isPresent()) {
@@ -172,9 +160,9 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> saveNewUserPassword(@Valid @RequestBody UserPasswordRequest newUserPassword,
                                                  BindingResult bindingResult) {
-        User user = userService.getUserFromSecurityContextHolder();
-        LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
+
         Locale currentLocale = LocaleContextHolder.getLocale();
+        User user = userService.getUserFromSecurityContextHolder();
         if (bindingResult.hasErrors()) {
             List<CustomFieldError> errorFields = new ArrayList<>();
             try {
@@ -210,7 +198,7 @@ public class UserController {
     public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
         if (hashtags == null) throw new NullPointerException("response - hashtags is NULL");
         userService.saveUserHashtagsWithOnboarding(hashtags);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
     @PutMapping("/user/user-about-with-onboarding/save")

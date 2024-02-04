@@ -84,7 +84,7 @@ public class SecurityConfig {
 
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login", "/api/signup", "/api/validate-email/*", "/api/refresh/access-token", "/api/{lang}/forgot-password", "/api/{lang}/forgot-password/*").permitAll()
+                        .requestMatchers("/api/login", "/api/signup", "/api/validate-email/*", "/api/refresh/access-token", "/api/forgot-password", "/api/forgot-password/*").permitAll()
                         .requestMatchers("/*","/js/*").permitAll()
                         .requestMatchers("/v3/api-docs/**","/open-api/**").permitAll()
                         .anyRequest().authenticated()

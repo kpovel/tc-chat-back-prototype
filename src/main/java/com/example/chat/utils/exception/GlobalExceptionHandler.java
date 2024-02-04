@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> emailNotVerificationException(UserAccountNotActivatedException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)));
+                new CustomFieldError("login", messageSource.getMessage(ex.getMessage(), null, currentLocale)));
     }
 
     @ExceptionHandler(AssertionError.class) // add message to messages localizations files
