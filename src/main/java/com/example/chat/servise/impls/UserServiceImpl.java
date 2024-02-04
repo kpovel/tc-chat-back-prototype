@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         String email = signUpRequest.getEmail();
         User user = new User();
         user.setEmail(email);
-        user.setLocale(currentLocale.getLanguage());
+//        user.setLocale(currentLocale.getLanguage());
         user.setUserLogin(signUpRequest.getLogin());
         user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         if (!StringUtils.isEmpty(user.getEmail())) {
             Context context = new Context();
             context.setVariable("username", user.getName());
-            context.setVariable("host", host + "/" + user.getLocale());
+            context.setVariable("host", host + "/" + currentLocale.getLanguage());
             context.setVariable("code", user.getUniqueServiceCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.activation", null, currentLocale), "activation_message_" + currentLocale.getLanguage(), context);
         }

@@ -42,17 +42,13 @@ public class AuthController {
     private final AuthService authService;
 
 
-    @PostMapping("/login")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class), mediaType = "application/json")}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = CustomFieldError.class), mediaType = "application/json")})
-    })
+    @PostMapping("/{lang}/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
                                               @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
 
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+//        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
+//        if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
+//            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class ImageService {
+
     private final ImageRepository imageRepository;
+
     private final FileService fileService;
 
     public void saveImageName(User user, String imageName) throws CustomFileNotFoundException {

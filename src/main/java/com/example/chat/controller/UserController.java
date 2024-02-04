@@ -68,18 +68,10 @@ public class UserController {
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ParserToResponseFromCustomFieldError.class), mediaType = "application/json")})
-    })
-
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
                                           BindingResult bindingResult,
-                                          @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage,
                                           @RequestHeader(value = "X-Originating-Host", required = false) String XOriginatingHost) throws MessagingException {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             try {
@@ -95,7 +87,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(new CustomFieldError("loginDuplicate", messageSource.getMessage("login.duplicate", null, currentLocale)));
         }
         if (validate.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)));
+             return ResponseEntity.badRequest().body(new CustomFieldError("emailDuplicate", messageSource.getMessage("email.duplicate", null, currentLocale)));
         }
         userService.createUser(signUpRequest, XOriginatingHost);
         return ResponseEntity.ok(messageSource.getMessage("user.signup.success", null, currentLocale));
@@ -104,15 +96,7 @@ public class UserController {
 
     @PutMapping("/validate-email/{code}")
     @Operation(summary = "Verification user email and authentication")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = JwtResponse.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
-    public ResponseEntity<?> verificationUserEmail(@PathVariable("code") String code,
-                                                   @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+    public ResponseEntity<?> verificationUserEmail(@PathVariable("code") String code) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<User> optionalUser = userService.verificationUserEmail(code);
         if (optionalUser.isPresent()) {
@@ -128,17 +112,10 @@ public class UserController {
     }
 
 
-    @PutMapping("/{lang}/forgot-password")
+    @PutMapping("/forgot-password")
     @Operation(summary = "Forgot password, step one")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     public ResponseEntity<?> forgotUserPasswordOneStep(@Valid @RequestBody UserEmailRequest userEmail,
-                                                       BindingResult bindingResult,
-                                                       @PathVariable String lang) throws MessagingException {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (lang.equals("uk")) LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+                                                       BindingResult bindingResult) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             try {
@@ -154,17 +131,10 @@ public class UserController {
         return ResponseEntity.ok("Success");
     }
 
-    @PutMapping("/{lang}/forgot-password/{code}")
+    @PutMapping("/forgot-password/{code}")
     @Operation(summary = "Forgot password, step two")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
-    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable String lang,
-                                                       @PathVariable String code) {
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (lang.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+    public ResponseEntity<?> forgotUserPasswordTwoStep(@PathVariable String code) {
+
         Locale currentLocale = LocaleContextHolder.getLocale();
         Optional<User> userOptional = userService.forgotPasswordStepTwo(code);
         if (userOptional.isPresent()) {
@@ -182,15 +152,11 @@ public class UserController {
     @PutMapping("/user/new-password/save")
     @Operation(summary = "Save new User password")
     @SecurityRequirement(name = "Bearer Authentication")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     public ResponseEntity<?> saveNewUserPassword(@Valid @RequestBody UserPasswordRequest newUserPassword,
                                                  BindingResult bindingResult) {
-        User user = userService.getUserFromSecurityContextHolder();
-        LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
+
         Locale currentLocale = LocaleContextHolder.getLocale();
+        User user = userService.getUserFromSecurityContextHolder();
         if (bindingResult.hasErrors()) {
             try {
                 List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
@@ -211,10 +177,6 @@ public class UserController {
     @GetMapping("/user")
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Get User (-TODO-)")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = User.class))}),
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = String.class))})
-    })
     @JsonView(JsonViews.ViewFieldUu.class)
     public ResponseEntity<UserDto> getUserToProfile() {
         User user = userService.getUserById(1L);
@@ -228,7 +190,7 @@ public class UserController {
     public ResponseEntity<?> saveUserHashtagsWithOnboarding(@RequestBody List<HashtagRequest> hashtags) {
         if (hashtags == null) throw new NullPointerException("response - hashtags is NULL");
         userService.saveUserHashtagsWithOnboarding(hashtags);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
     @PutMapping("/user/user-about-with-onboarding/save")

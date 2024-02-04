@@ -20,13 +20,13 @@ public class HashtagGroupService {
         repository.save(hashtagsGroup);
     }
 
-    public Long countHashtagGroup() {
+    public long countHashtagGroup() {
         return repository.count();
     }
 
     @Transactional
-    public List<HashtagsGroup> allHashtagsGroupUserLocale(User user) throws ErrorServerException {
-        Optional<List<HashtagsGroup>> hashtagsGroupList = repository.findAllByLocale(user.getLocale());
+    public List<HashtagsGroup> allHashtagsGroupUserLocale(String lang) throws ErrorServerException {
+        Optional<List<HashtagsGroup>> hashtagsGroupList = repository.findAllByLocale(lang);
         if(hashtagsGroupList.isPresent()) return hashtagsGroupList.get();
         else throw new ErrorServerException("Error in method 'allHashtagsGroupUserLocale'");
     }

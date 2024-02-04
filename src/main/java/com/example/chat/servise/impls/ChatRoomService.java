@@ -1,6 +1,7 @@
 package com.example.chat.servise.impls;
 
 import com.example.chat.model.ChatRoom;
+import com.example.chat.model.Image;
 import com.example.chat.model.User;
 import com.example.chat.model.UserChatRoom;
 import com.example.chat.payload.request.ChatRoomRequest;
@@ -18,12 +19,14 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    private final UserServiceImpl userService;
-
-    public void saveNewPublicChatRoom(ChatRoomRequest chatRoomRequest) {
-        User user = userService.getUserFromSecurityContextHolder();
+    public void saveNewPublicChatRoomDemoData(User user, ChatRoomRequest chatRoomRequest, Image image) {
 
         ChatRoom chatRoom = new ChatRoom();
+
+        //TODO: Add default image !!!!!
+        chatRoom.setImage(image);
+
+
         chatRoom.setChatRoomType(chatRoomRequest.getChatRoomType());
         chatRoom.setName(chatRoomRequest.getChatRoomName());
         chatRoom.setDescription(chatRoomRequest.getChatRoomDescription());
