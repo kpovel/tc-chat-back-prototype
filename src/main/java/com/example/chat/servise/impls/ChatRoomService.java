@@ -1,11 +1,11 @@
 package com.example.chat.servise.impls;
 
-import com.example.chat.model.ChatRoom;
-import com.example.chat.model.Image;
-import com.example.chat.model.User;
-import com.example.chat.model.UserChatRoom;
-import com.example.chat.payload.request.ChatRoomRequest;
+import com.example.chat.model.*;
+import com.example.chat.payload.request.CreatePublicChatRoomRequest;
+import com.example.chat.payload.request.DemoDataPublicChat;
+import com.example.chat.payload.request.EditChatRoomRequest;
 import com.example.chat.repository.ChatRoomRepository;
+import com.example.chat.utils.exception.ForbiddenException;
 import com.example.chat.utils.exception.ObjectNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -19,11 +19,12 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
-    public void saveNewPublicChatRoomDemoData(User user, ChatRoomRequest chatRoomRequest, Image image) {
+
+    public void saveNewPublicChatRoomDemoData(User user, DemoDataPublicChat chatRoomRequest, Image image) {
 
         ChatRoom chatRoom = new ChatRoom();
 
-        //TODO: Add default image !!!!!
+        if(image.getName() == null) image.setName("no-image.svg");
         chatRoom.setImage(image);
 
 
@@ -45,7 +46,61 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void savePrivateChatRoom(ChatRoomRequest chatRoomRequest) {
+    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest) {
+
+        ChatRoom chatRoom = new ChatRoom();
+
+        Image image = new Image();
+        image.setName("no-image.svg");
+        chatRoom.setImage(image);
+
+
+        chatRoom.setChatRoomType(chatRoomRequest.getChatRoomType());
+        chatRoom.setName(chatRoomRequest.getChatRoomName());
+
+        UserChatRoom userChatRoom = new UserChatRoom();
+        userChatRoom.setUser(user);
+        userChatRoom.setChatName(chatRoomRequest.getChatRoomName());
+        userChatRoom.setChatRoom(chatRoom);
+
+        user.getUserChatRoomsAdmin().add(chatRoom);
+
+        chatRoom.setUserAminChatRoom(user);
+        chatRoom.getUserChatRooms().add(userChatRoom);
+
+        chatRoomRepository.save(chatRoom);
+        return chatRoom;
+    }
+
+    public ChatRoom editDescriptionPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest) {
+        ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
+        if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
+           chatRoom.setDescription(chatRoomRequest.getChatRoomDescription());
+           chatRoomRepository.save(chatRoom);
+           return chatRoom;
+        }
+        else throw new ForbiddenException("forbidden");
+    }
+    public ChatRoom editHashtagPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest, Hashtag hashtag) {
+        ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
+        if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
+           chatRoom.setHashtag(hashtag);
+           chatRoomRepository.save(chatRoom);
+           return chatRoom;
+        }
+        else throw new ForbiddenException("forbidden");
+    }
+    public ChatRoom editImagePublicChatRoom(User user, ChatRoom chatRoom, String newImageName) {
+        if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
+           chatRoom.getImage().setName(newImageName);
+           chatRoomRepository.save(chatRoom);
+           return chatRoom;
+        }
+        else throw new ForbiddenException("forbidden");
+    }
+
+    @Transactional
+    public void savePrivateChatRoom(EditChatRoomRequest editChatRoomRequest) {
 //        User userInitiatorConversation = userService.getUserFromSecurityContextHolder();
 //        User otherUser = userService.getUserById(chatRoomRequest.getToUserId());
 //        ChatRoom chatRoom = new ChatRoom();
@@ -64,12 +119,11 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoom getChatRoom(String chatRoomUUID) {
+    public ChatRoom getChatRoomByUIID(String chatRoomUUID) {
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findChatRoomByUuid(chatRoomUUID);
         if(chatRoomOptional.isPresent()){
             return chatRoomOptional.get();
-            //TODO: Localisation response
-        } else throw new ObjectNotFoundException("Chat room with id: " + chatRoomUUID + " not found");
+        } else throw new ObjectNotFoundException("chatroom.not.found");
     }
 
     public void saveTest(ChatRoom chatRoom) {

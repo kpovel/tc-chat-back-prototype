@@ -30,8 +30,6 @@ public class GlobalExceptionHandler {
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
-    private final UserService userService;
-
     private final MessageSource messageSource;
 
 
@@ -115,6 +113,10 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<String> objectNotFound(ObjectNotFoundException ex) {
+        if(ex.getMessage().equals("chatroom.not.found")) {
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageSource.getMessage(ex.getMessage(), null, currentLocale));
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
@@ -122,11 +124,18 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<String> maxFilesizeException(MaxUploadSizeExceededException l) {
-        User user = userService.getUserFromSecurityContextHolder();
-        LocaleContextHolder.setLocale(Locale.forLanguageTag(user.getLocale()));
         Locale currentLocale = LocaleContextHolder.getLocale();
         String message = String.format(messageSource.getMessage("max.file.size", null, currentLocale), maxFileSize);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public ResponseEntity<String> maxFilesizeException(ForbiddenException e) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        String message = String.format(messageSource.getMessage(e.getMessage(), null, currentLocale), maxFileSize);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
     }
 
 }

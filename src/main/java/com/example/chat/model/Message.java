@@ -21,7 +21,7 @@ public class Message {
     private Long id;
 
     @Column
-    @JsonView(JsonViews.ViewFieldUuId.class)
+    @JsonView(JsonViews.ViewFieldUiid.class)
     private String uuid;
 
     @Column

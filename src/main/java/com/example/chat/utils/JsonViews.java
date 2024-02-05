@@ -1,7 +1,7 @@
 package com.example.chat.utils;
 
 public final class JsonViews {
-    public interface ViewFieldUuId {}
+    public interface ViewFieldUiid {}
     public interface ViewFieldName{}
     public interface ViewFieldUserLogin{}
     public interface ViewFieldUserEmail{}
@@ -10,15 +10,18 @@ public final class JsonViews {
     public interface ViewFieldUserDateLastVisit{}
     public interface ViewFieldDescription{}
     public interface ViewFieldMessageContent{}
+    public interface ViewFieldChatName{}
 
 
     public interface ViewFieldOther{}
 
-    public interface ViewFieldChatRoom {}
-    public interface ViewFieldUu extends ViewFieldUuId, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldDateOfCreated, ViewFieldUserDateLastVisit{}
+    public interface ViewFieldChat extends ViewFieldUiid, ViewFieldChatName, ViewFieldDescription, ViewFieldOther {}
+
+    public interface ViewFieldUu extends ViewFieldUiid, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldDateOfCreated, ViewFieldUserDateLastVisit{}
     public interface ViewFieldUserOnboarding extends ViewFieldName, ViewFieldUserLogin, ViewFieldOther {}
 
-    public interface ViewFieldUuHashtagsGroups extends ViewFieldUuId, ViewFieldName, ViewFieldOther{}
-    public interface ViewFieldUuChatList extends ViewFieldUuId, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
+    public interface ViewFieldUiidHashtagsGroups extends ViewFieldUiid, ViewFieldName, ViewFieldOther{}
+    public interface ViewFieldUiidChatList extends ViewFieldUiid, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
+
 
 }

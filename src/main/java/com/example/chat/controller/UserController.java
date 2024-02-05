@@ -19,10 +19,6 @@ import com.example.chat.utils.mapper.UserMapper;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -209,7 +205,7 @@ public class UserController {
         if (userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
         if(userAboutStr.length() > 300 ) throw new InvalidDataException("userAbout field max size 300 characters");
         userService.saveUserAboutWithOnboarding(userAboutStr);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
     @PutMapping("/user/default-avatar-with-onboarding/save")
@@ -219,8 +215,9 @@ public class UserController {
         String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
         if (nameAvatar == null && fileService.defaultImage(nameAvatar))
             throw new NullPointerException("response - name avatar is NULL or bad name avatar");
+        if(!fileService.defaultImage(nameDefaultAvatar.getOnboardingFieldStr())) throw new InvalidDataException("Bad name image");
         userService.saveDefaultAvatarWithOnboarding(nameAvatar);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
     @GetMapping("/user/onboarding/get-user")
@@ -237,13 +234,13 @@ public class UserController {
     public ResponseEntity<?> onboardingEnd(@RequestBody UserOnboardingSteps onboardingEnd) {
         if (!onboardingEnd.isOnboardingEnd()) throw new InvalidDataException("'true' - is preferred");
         userService.userOnboardingEnd(onboardingEnd);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
     @GetMapping("/user/chat-rooms")
     @Operation(summary = "Get user chat rooms")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUuChatList.class)
+    @JsonView(JsonViews.ViewFieldUiidChatList.class)
     public ResponseEntity<?> getUserChatRooms() {
         return ResponseEntity.ok(userService.getUserChatRooms());
     }
@@ -252,9 +249,9 @@ public class UserController {
     @Operation(summary = "Add user in public chat rooms")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> addPublicChatRoomToUserChatRoomsSet(@PathVariable String chatRoomUUID) {
-        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomUUID);
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(chatRoomUUID);
         userService.addPublicChatRoomToUserChatRoomsSet(chatRoom);
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
 
@@ -263,7 +260,7 @@ public class UserController {
     @DeleteMapping("/user/delete")
     public ResponseEntity<?> deleteUser() {
         userService.deleteUser();
-        return ResponseEntity.ok("Ok");
+        return ResponseEntity.ok("Success");
     }
 
 

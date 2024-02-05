@@ -23,10 +23,11 @@ public class ChatRoom implements Serializable {
     private Long id;
 
     @Column
-    @JsonView(JsonViews.ViewFieldUuId.class)
+    @JsonView(JsonViews.ViewFieldUiid.class)
     private String uuid;
 
     @Column
+    @JsonView(JsonViews.ViewFieldChatName.class)
     private String name;
 
     @Column(length = 1000)
@@ -65,6 +66,7 @@ public class ChatRoom implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
+    @JsonView(JsonViews.ViewFieldOther.class)
     private Image image;
 
     @PrePersist

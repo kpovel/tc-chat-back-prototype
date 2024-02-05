@@ -1,36 +1,34 @@
 package com.example.chat.controller;
 
+import com.example.chat.model.ChatRoom;
 import com.example.chat.model.User;
+import com.example.chat.servise.impls.ChatRoomService;
 import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.ImageService;
 import com.example.chat.servise.impls.UserServiceImpl;
+import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.exception.FileFormatException;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.validate.ValidateFields;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import lombok.AllArgsConstructor;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.beans.factory.annotation.Value;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
 
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("api")
@@ -46,6 +44,8 @@ public class ImageController {
 
     private final MessageSource messageSource;
 
+    private final ChatRoomService chatRoomService;
+
     @Operation(summary = "User onboarding - save user avatar")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/user/avatar/upload")
@@ -54,11 +54,34 @@ public class ImageController {
             String contentType = file.getContentType();
             if (ValidateFields.isSupportedImageType(contentType)) {
                 User user = userService.getUserFromSecurityContextHolder();
-                if(user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
+                if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
                 imageService.saveImageName(user, imageName);
                 return ResponseEntity.ok(imageName);
             } else throw new FileFormatException("Дозволено тільки зображення");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Помилка обробки файлу: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/edit-image/public-chat-room/{uiid}")
+    @Operation(summary = "Edit public chat room step five", description = "Step five - upload image chat room")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    public ResponseEntity<?> editImagePublicChatRoom(@PathVariable String uiid,
+                                                     @RequestParam("image") MultipartFile file) {
+        try {
+            String contentType = file.getContentType();
+            if (ValidateFields.isSupportedImageType(contentType)) {
+                User user = userService.getUserFromSecurityContextHolder();
+                String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
+                ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(uiid);
+                if (!chatRoom.getImage().getName().equals("no-image.svg"))
+                    fileService.deleteFileFromStorage(chatRoom.getImage().getName());
+                return ResponseEntity.ok(chatRoomService.editImagePublicChatRoom(user, chatRoom, imageName));
+
+            }
+            else throw new FileFormatException("Дозволено тільки зображення");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Помилка обробки файлу: " + e.getMessage());
         }

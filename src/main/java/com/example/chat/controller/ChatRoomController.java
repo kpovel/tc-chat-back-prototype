@@ -1,16 +1,18 @@
 package com.example.chat.controller;
 
-import com.example.chat.model.Hashtag;
-import com.example.chat.model.Image;
-import com.example.chat.model.Message;
-import com.example.chat.model.User;
-import com.example.chat.payload.request.ChatRoomRequest;
+import com.example.chat.model.*;
+import com.example.chat.payload.request.CreatePublicChatRoomRequest;
+import com.example.chat.payload.request.DemoDataPublicChat;
+import com.example.chat.payload.request.EditChatRoomRequest;
 import com.example.chat.servise.UserService;
 import com.example.chat.servise.impls.ChatRoomService;
 import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.HashtagService;
+import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.exception.FileFormatException;
+import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.validate.ValidateFields;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,18 +40,19 @@ public class ChatRoomController {
     private final FileService fileService;
 
 
-    @PostMapping("/public-chat-room/create-demo-data")
+    @PostMapping("/public-chat-room/create/demo-data")
     @Operation(summary = "(DEMO!!!) Create New public chat room", description = "Create demo data for test")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<?> saveNewPublicChatRoom(@RequestPart(name = "file", required = false) MultipartFile file,
-                                                   @RequestPart(name = "chatRoom") ChatRoomRequest chatRoomRequest) {
+    public ResponseEntity<?> saveNewPublicChatRoomDemo(@RequestPart(name = "file", required = false) MultipartFile file,
+                                                   @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
         Image image = new Image();
-        String contentType = file.getContentType();
-        if (ValidateFields.isSupportedImageType(contentType)) {
-            String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
-            image.setName(imageName);
-        } else throw new FileFormatException("Дозволено тільки зображення");
-
+        if(file != null) {
+            String contentType = file.getContentType();
+            if (ValidateFields.isSupportedImageType(contentType)) {
+                String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
+                image.setName(imageName);
+            } else throw new FileFormatException("Дозволено тільки зображення");
+        }
         User user = userService.getUserFromSecurityContextHolder();
         if (chatRoomRequest.getHashtag() != null) {
             Hashtag hashtag = hashtagService.getHashtagById(chatRoomRequest.getHashtag().getId());
@@ -62,23 +65,53 @@ public class ChatRoomController {
         return ResponseEntity.ok("Success");
     }
 
+    @PostMapping("/public-chat-room/create")
+    @Operation(summary = "Create New public chat room step one", description = "Step one - name and chat type")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @JsonView(JsonViews.ViewFieldChat.class)
+    public ResponseEntity<ChatRoom> createNewPublicChatRoom(@RequestBody CreatePublicChatRoomRequest chatRoomRequest) {
+        User user = userService.getUserFromSecurityContextHolder();
+        return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest));
+    }
+
+    @PutMapping("/public-chat-room/edit-description")
+    @Operation(summary = "Edit public chat room step two", description = "Step two - chat description")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    public ResponseEntity<ChatRoom> editDescriptionPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
+        User user = userService.getUserFromSecurityContextHolder();
+        if(chatRoomRequest.getChatRoomDescription().length() > 300 ) throw new InvalidDataException("chat description field max size 300 characters");
+        return ResponseEntity.ok(chatRoomService.editDescriptionPublicChatRoom(user, chatRoomRequest));
+    }
+
+    @PutMapping("/public-chat-room/edit-hashtag")
+    @Operation(summary = "Edit public chat room step four", description = "Step four - chat hashtag ")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    public ResponseEntity<ChatRoom> editHashtagPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
+        User user = userService.getUserFromSecurityContextHolder();
+        Hashtag hashtag = hashtagService.getHashtagById(chatRoomRequest.getHashtag().getId());
+        return ResponseEntity.ok(chatRoomService.editHashtagPublicChatRoom(user, chatRoomRequest, hashtag));
+    }
+
+    @GetMapping("/get-chat-room/{chatRoomUUID}")
+    @Operation(summary = "Get chat room by uiid")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> getChatRoomByUiid(@PathVariable String chatRoomUUID) {
+        return ResponseEntity.ok(chatRoomService.getChatRoomByUIID(chatRoomUUID));
+    }
+
     @PostMapping("/create-private-chat-room/to-user/{userId}")
     @Operation(summary = "New chat room (-TODO-)")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<?> saveNewPrivateChatRoom(@PathVariable long userId, @RequestBody ChatRoomRequest chatRoomRequest) {
+    public ResponseEntity<?> saveNewPrivateChatRoom(@PathVariable long userId, @RequestBody EditChatRoomRequest editChatRoomRequest) {
         //TODO: userId replace with uuid
 //        chatRoomService.savePrivateChatRoom(chatRoomRequest);
 
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/get-chat-room/{chatRoomUUID}")
-    @Operation(summary = "Get chat room (--TODO--)")
-    @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<?> getChatRoom(@PathVariable String chatRoomUUID) {
-        //TODO
-        return null;
-    }
+
 
     @GetMapping("/chat-messages/{id}")
     @Operation

@@ -9,7 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class LoginRequest {
 
     @NotNull( message = "login.minsize")
@@ -20,4 +21,6 @@ public class LoginRequest {
     @Size(max = 50, message = "email.maxsize")
     private String password;
 
+    public LoginRequest() {
+    }
 }

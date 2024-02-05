@@ -1,8 +1,14 @@
 package com.example.chat.payload.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class HashtagRequest {
+
     private Long id;
+
+    public HashtagRequest() {
+    }
 }

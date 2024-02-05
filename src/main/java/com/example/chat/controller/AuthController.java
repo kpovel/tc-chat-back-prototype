@@ -52,19 +52,16 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    @Operation(summary = "User login", description = " 'Accept-Language' parameter - 'uk' ")
+    @Operation(summary = "User login", description = " 'uk' ")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
-                                              BindingResult bindingResult,
-                                              @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
+                                              BindingResult bindingResult) {
 
-        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-        if (acceptLanguage != null && acceptLanguage.equals("uk"))
-            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+        Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             List<CustomFieldError> errorFields = new ArrayList<>();
             try {
                 errorFields = bindingResult.getFieldErrors().stream()
-                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, LocaleContextHolder.getLocale())))
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
                         .collect(Collectors.toList());
                 return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             } catch (NoSuchMessageException e) {

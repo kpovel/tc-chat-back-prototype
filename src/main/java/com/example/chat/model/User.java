@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +23,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(JsonViews.ViewFieldUuId.class)
+    @JsonView(JsonViews.ViewFieldUiid.class)
     private Long id;
 
     @Column
@@ -38,7 +37,6 @@ public class User implements Serializable {
     @Column(columnDefinition = "text", length = 450)
     private String about = "A little bit about me";
 
-    @NotBlank
     @Column
     @JsonView(JsonViews.ViewFieldUserEmail.class)
     private String email;
@@ -46,7 +44,6 @@ public class User implements Serializable {
     @Column
     private String locale;
 
-    @NotBlank
     @Column(length = 100)
     private String password;
 

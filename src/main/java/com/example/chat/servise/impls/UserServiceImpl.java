@@ -96,12 +96,12 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findByEmail(userEmail.getUserEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            Locale currentLocale = Locale.forLanguageTag(user.getLocale());
+            Locale currentLocale = LocaleContextHolder.getLocale();
             user.setUniqueServiceCode(UUID.randomUUID().toString());
             userRepository.save(user);
             Context context = new Context();
             context.setVariable("username", user.getName());
-            context.setVariable("host", host + "/" + user.getLocale());
+            context.setVariable("host", host + "/" + currentLocale.getLanguage());
             context.setVariable("code", user.getUniqueServiceCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.forgot.password.step.one", null, currentLocale), "forgot_password_message_" + currentLocale.getLanguage(), context);
         } else {
@@ -161,7 +161,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUserAboutWithOnboarding(String userAbout) {
         User user = getUserFromSecurityContextHolder();
-        //        if(userAbout.length() > 300 )
         if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
         user.setAbout(userAbout);
         userRepository.save(user);
@@ -171,6 +170,7 @@ public class UserServiceImpl implements UserService {
     public void saveDefaultAvatarWithOnboarding(String defaultAvatarName) {
         User user = getUserFromSecurityContextHolder();
         if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");
+
         user.getImage().setName(defaultAvatarName);
         userRepository.save(user);
     }
