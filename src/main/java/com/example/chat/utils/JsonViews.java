@@ -15,7 +15,7 @@ public final class JsonViews {
 
     public interface ViewFieldOther{}
 
-    public interface ViewFieldChat extends ViewFieldUiid, ViewFieldChatName, ViewFieldDescription, ViewFieldOther {}
+    public interface ViewFieldChat extends ViewFieldUiid, ViewFieldChatName, ViewFieldDescription, ViewFieldOther, ViewFieldName {}
 
     public interface ViewFieldUu extends ViewFieldUiid, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldDateOfCreated, ViewFieldUserDateLastVisit{}
     public interface ViewFieldUserOnboarding extends ViewFieldName, ViewFieldUserLogin, ViewFieldOther {}

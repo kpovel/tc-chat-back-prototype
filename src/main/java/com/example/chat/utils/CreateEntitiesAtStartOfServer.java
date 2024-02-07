@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class CreateEtitiesAtStartOfServer implements ApplicationRunner {
+public class CreateEntitiesAtStartOfServer implements ApplicationRunner {
 
     private final HashtagGroupService hashtagGroupService;
 

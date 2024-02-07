@@ -12,9 +12,7 @@ public class EditChatRoomRequest {
     @NonNull
     private String uiid;
 
-    @NonNull
     private String chatRoomDescription;
-
 
     private Hashtag hashtag;
 

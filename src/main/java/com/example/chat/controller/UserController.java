@@ -12,10 +12,8 @@ import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.UserServiceImpl;
 import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
-import com.example.chat.utils.dto.UserDto;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
-import com.example.chat.utils.mapper.UserMapper;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,8 +52,6 @@ public class UserController {
     private final AuthService authService;
 
     private final JwtUtils jwtUtils;
-
-    private final UserMapper userMapper;
 
     private final HashtagMapper hashtagMapper;
 
@@ -182,10 +178,10 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Get User (-TODO-)")
     @JsonView(JsonViews.ViewFieldUu.class)
-    public ResponseEntity<UserDto> getUserToProfile() {
+    public ResponseEntity<?> getUserToProfile() {
         User user = userService.getUserById(1L);
-        UserDto dto = userMapper.toDto(user);
-        return ResponseEntity.ok(dto);
+//        UserDto dto = userMapper.toDto(user);
+        return ResponseEntity.ok("dto");
     }
 
     @PutMapping("/user/hashtags-with-onboarding/save")

@@ -16,10 +16,6 @@ public class CreatePublicChatRoomRequest {
     @NonNull
     private String chatRoomName;
 
-    @NonNull
-//    @Size(min = 1)
-    private Set<ChatRoomType> chatRoomType = new HashSet<>();
-
     public CreatePublicChatRoomRequest() {
     }
 }

@@ -41,7 +41,7 @@ public class User implements Serializable {
     @JsonView(JsonViews.ViewFieldUserEmail.class)
     private String email;
 
-    @Column
+    @Transient
     private String locale;
 
     @Column(length = 100)

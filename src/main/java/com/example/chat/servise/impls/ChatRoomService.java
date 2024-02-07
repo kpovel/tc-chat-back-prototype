@@ -20,6 +20,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 
 
+    @Transactional
     public void saveNewPublicChatRoomDemoData(User user, DemoDataPublicChat chatRoomRequest, Image image) {
 
         ChatRoom chatRoom = new ChatRoom();
@@ -28,7 +29,7 @@ public class ChatRoomService {
         chatRoom.setImage(image);
 
 
-        chatRoom.setChatRoomType(chatRoomRequest.getChatRoomType());
+        chatRoom.getChatRoomType().add(ChatRoomType.PUBLIC);
         chatRoom.setName(chatRoomRequest.getChatRoomName());
         chatRoom.setDescription(chatRoomRequest.getChatRoomDescription());
         chatRoom.setHashtag(chatRoomRequest.getHashtag());
@@ -46,16 +47,12 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest) {
+    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest, Image image) {
 
         ChatRoom chatRoom = new ChatRoom();
-
-        Image image = new Image();
-        image.setName("no-image.svg");
+        if(image.getName() == null)image.setName("no-image.svg");
         chatRoom.setImage(image);
-
-
-        chatRoom.setChatRoomType(chatRoomRequest.getChatRoomType());
+        chatRoom.getChatRoomType().add(ChatRoomType.PUBLIC);
         chatRoom.setName(chatRoomRequest.getChatRoomName());
 
         UserChatRoom userChatRoom = new UserChatRoom();
@@ -81,6 +78,7 @@ public class ChatRoomService {
         }
         else throw new ForbiddenException("forbidden");
     }
+
     public ChatRoom editHashtagPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest, Hashtag hashtag) {
         ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
