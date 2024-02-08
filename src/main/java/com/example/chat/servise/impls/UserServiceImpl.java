@@ -53,7 +53,6 @@ public class UserServiceImpl implements UserService {
         String email = signUpRequest.getEmail();
         User user = new User();
         user.setEmail(email);
-//        user.setLocale(currentLocale.getLanguage());
         user.setUserLogin(signUpRequest.getLogin());
         user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
@@ -92,16 +91,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void forgotPasswordStepOne(UserEmailRequest userEmail) throws MessagingException {
+    public void forgotPasswordStepOne(UserEmailRequest userEmail, String XOriginatingHost) throws MessagingException {
+        if (XOriginatingHost != null) host = XOriginatingHost;
         Optional<User> userOptional = userRepository.findByEmail(userEmail.getUserEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            Locale currentLocale = Locale.forLanguageTag(user.getLocale());
+            Locale currentLocale = LocaleContextHolder.getLocale();
             user.setUniqueServiceCode(UUID.randomUUID().toString());
             userRepository.save(user);
             Context context = new Context();
             context.setVariable("username", user.getName());
-            context.setVariable("host", host + "/" + user.getLocale());
+            context.setVariable("host", host + "/" + currentLocale.getLanguage());
             context.setVariable("code", user.getUniqueServiceCode());
             mailSenderService.sendSimpleMessage(user.getEmail(), messageSource.getMessage("mail.subject.forgot.password.step.one", null, currentLocale), "forgot_password_message_" + currentLocale.getLanguage(), context);
         } else {
