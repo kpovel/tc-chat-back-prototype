@@ -1,5 +1,6 @@
 package com.example.chat.controller;
 
+import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.utils.exception.BadRefreshTokenException;
 import com.example.chat.payload.request.LoginRequest;
 import com.example.chat.payload.response.JwtResponse;
@@ -17,15 +18,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.security.auth.message.AuthException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -41,14 +48,26 @@ public class AuthController {
 
     private final AuthService authService;
 
+    private final MessageSource messageSource;
 
-    @PostMapping("/{lang}/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
-                                              @RequestHeader(value = "Accept-Language", required = false) String acceptLanguage) {
 
-//        LocaleContextHolder.setLocale(Locale.forLanguageTag("en"));
-//        if (acceptLanguage != null && acceptLanguage.equals("uk-UA"))
-//            LocaleContextHolder.setLocale(Locale.forLanguageTag("uk"));
+    @PostMapping("/login")
+    @Operation(summary = "User login", description = "add ?lang=uk or ?lang=en")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
+
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        if (bindingResult.hasErrors()) {
+            List<CustomFieldError> errorFields = new ArrayList<>();
+            try {
+                errorFields = bindingResult.getFieldErrors().stream()
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                        .collect(Collectors.toList());
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            } catch (NoSuchMessageException e) {
+                errorFields.clear();
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            }
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
