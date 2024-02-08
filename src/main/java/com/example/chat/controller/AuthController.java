@@ -53,8 +53,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "User login", description = " 'uk' ")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest,
-                                              BindingResult bindingResult) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
 
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
