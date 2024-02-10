@@ -12,6 +12,7 @@ import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.UserServiceImpl;
 import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
+import com.example.chat.utils.exception.BadRefreshTokenException;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.validate.ValidateFields;
@@ -199,7 +200,7 @@ public class UserController {
     public ResponseEntity<?> saveUserAboutFieldOnboarding(@RequestBody UserOnboardingSteps userAbout) {
         String userAboutStr = userAbout.getOnboardingFieldStr();
         if (userAboutStr == null) throw new NullPointerException("response - user about field is NULL");
-        if(userAboutStr.length() > 300 ) throw new InvalidDataException("userAbout field max size 300 characters");
+        if (userAboutStr.length() > 300) throw new InvalidDataException("userAbout field max size 300 characters");
         userService.saveUserAboutWithOnboarding(userAboutStr);
         return ResponseEntity.ok("Success");
     }
@@ -211,7 +212,8 @@ public class UserController {
         String nameAvatar = nameDefaultAvatar.getOnboardingFieldStr();
         if (nameAvatar == null && fileService.defaultImage(nameAvatar))
             throw new NullPointerException("response - name avatar is NULL or bad name avatar");
-        if(!fileService.defaultImage(nameDefaultAvatar.getOnboardingFieldStr())) throw new InvalidDataException("Bad name image");
+        if (!fileService.defaultImage(nameDefaultAvatar.getOnboardingFieldStr()))
+            throw new InvalidDataException("Bad name image");
         userService.saveDefaultAvatarWithOnboarding(nameAvatar);
         return ResponseEntity.ok("Success");
     }
@@ -254,9 +256,13 @@ public class UserController {
     @Operation(summary = "Delete user")
     @SecurityRequirement(name = "Bearer Authentication")
     @DeleteMapping("/user/delete")
-    public ResponseEntity<?> deleteUser() {
-        userService.deleteUser();
-        return ResponseEntity.ok("Success");
+    public ResponseEntity<?> deleteUser() throws BadRefreshTokenException {
+        User user = userService.getUserFromSecurityContextHolder();
+        if (authService.userSearchByRefreshStorage(user.getEmail())) {
+            authService.userDeleteByRefreshStorage(user.getEmail());
+            userService.deleteUser(user);
+            return ResponseEntity.ok("Success");
+        } else throw new BadRefreshTokenException(" ");
     }
 
 

@@ -26,7 +26,8 @@ public class AuthService {
 
     private final Map<String, String> refreshStorage = new HashMap<>();
 
-    public void saveJwtRefreshTokenToStorage(String userEmail, String jwtRefreshToken){
+    public void saveJwtRefreshTokenToStorage(String userEmail, String jwtRefreshToken) {
+        refreshStorage.remove(userEmail);
         refreshStorage.put(userEmail, jwtRefreshToken);
     }
 
@@ -66,6 +67,16 @@ public class AuthService {
             }
         }
         throw new BadRefreshTokenException("It is not correct refresh token");
+    }
+
+    public boolean userSearchByRefreshStorage(String userEmail) {
+        return  refreshStorage.get(userEmail) != null;
+
+    }
+
+    public void userDeleteByRefreshStorage(String userEmail) {
+        refreshStorage.remove(userEmail);
+
     }
 
 }

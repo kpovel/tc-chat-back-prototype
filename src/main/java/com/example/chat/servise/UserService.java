@@ -50,5 +50,5 @@ public interface UserService {
 
     void addPublicChatRoomToUserChatRoomsSet(ChatRoom chatRoom);
 
-    void deleteUser();
+    void deleteUser(User user);
 }
