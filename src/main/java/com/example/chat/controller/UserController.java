@@ -2,6 +2,7 @@ package com.example.chat.controller;
 
 import com.example.chat.model.ChatRoom;
 import com.example.chat.model.User;
+import com.example.chat.model.UserChatRoom;
 import com.example.chat.payload.request.*;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
@@ -18,6 +19,10 @@ import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -239,7 +244,7 @@ public class UserController {
     @Operation(summary = "Get user chat rooms")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldUiidChatList.class)
-    public ResponseEntity<?> getUserChatRooms() {
+    public ResponseEntity<List<UserChatRoom>> getUserChatRooms() {
         return ResponseEntity.ok(userService.getUserChatRooms());
     }
 
