@@ -69,7 +69,7 @@ public class ChatRoomController {
     @Operation(summary = "Create New public chat room step one", description = "Step one - name, chat type and image file")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldChat.class)
-    public ResponseEntity<ChatRoom> createNewPublicChatRoom(@RequestPart(name = "file") MultipartFile file,
+    public ResponseEntity<ChatRoom> createNewPublicChatRoom(@RequestPart(name = "file", required = false) MultipartFile file,
                                                             @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest) {
         Image image = new Image();
         if(file != null) {
@@ -78,6 +78,7 @@ public class ChatRoomController {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
                 image.setName(imageName);
             } else throw new FileFormatException("Дозволено тільки зображення");
+            //TODO: add GlobalHandler FileFormatException
         }
         User user = userService.getUserFromSecurityContextHolder();
         return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image));

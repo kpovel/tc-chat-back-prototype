@@ -47,6 +47,7 @@ public class FileService {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
             String uuidFile = UUID.randomUUID().toString();
+            //TODO: svg+xml
             String resultFilename = uuidFile + contentType.replaceAll("image/", ".");
             Path targetLocation = this.fileStorageLocation.resolve(resultFilename);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
