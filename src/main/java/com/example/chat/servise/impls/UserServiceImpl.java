@@ -115,6 +115,7 @@ public class UserServiceImpl implements UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setUniqueServiceCode(null);
+            user.setEnable(true);
             userRepository.save(user);
         }
         return userOptional;
