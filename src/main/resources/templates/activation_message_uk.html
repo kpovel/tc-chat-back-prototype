@@ -125,7 +125,7 @@
                           </p>
                           <p>
                             Будь ласка, перейдіть за наступним посиланням, для активації облікового запису:
-                            <a th:href="@{{host}/validate-email/{code}(host=${host}, code=${code})}">
+                            <a th:href="@{{host}/validate-email/{code}(host=${host}, code=${code})}" target="_blank">
                               <span th:text="${host + '/validate-email/' + code}"></span>
                             </a>
                           </p>

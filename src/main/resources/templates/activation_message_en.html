@@ -125,7 +125,7 @@
                           </p>
                           <p>
                             Please follow the link below to activate your account:
-                            <a th:href="@{{host}/validate-email/{code}(host=${host}, code=${code})}">
+                            <a th:href="@{{host}/validate-email/{code}(host=${host}, code=${code})}" target="_blank">
                               <span th:text="${host + '/validate-email/' + code}"></span>
                             </a>
                           </p>
