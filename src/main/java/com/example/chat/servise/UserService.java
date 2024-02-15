@@ -20,7 +20,7 @@ public interface UserService {
 
     Authentication userAuthentication(User user);
 
-    void forgotPasswordStepOne(UserEmailRequest userEmail) throws MessagingException;
+    void forgotPasswordStepOne(UserEmailRequest userEmail, String XOriginatingHost) throws MessagingException;
     Optional<User> forgotPasswordStepTwo(String codeFromEmail) throws MessagingException;
 
     User getUserFromSecurityContextHolder();

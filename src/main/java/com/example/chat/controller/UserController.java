@@ -119,7 +119,8 @@ public class UserController {
     @PutMapping("/forgot-password")
     @Operation(summary = "Forgot password, step one")
     public ResponseEntity<?> forgotUserPasswordOneStep(@Valid @RequestBody UserEmailRequest userEmail,
-                                                       BindingResult bindingResult) throws MessagingException {
+                                                       BindingResult bindingResult,
+                                                       @RequestHeader(value = "X-Originating-Host", required = false) String xOriginatingHost) throws MessagingException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
             try {
@@ -131,7 +132,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
             }
         }
-        userService.forgotPasswordStepOne(userEmail);
+        userService.forgotPasswordStepOne(userEmail, xOriginatingHost);
         return ResponseEntity.ok("Success");
     }
 

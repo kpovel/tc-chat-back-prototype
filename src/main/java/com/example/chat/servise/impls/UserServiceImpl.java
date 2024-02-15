@@ -53,7 +53,6 @@ public class UserServiceImpl implements UserService {
         String email = signUpRequest.getEmail();
         User user = new User();
         user.setEmail(email);
-//        user.setLocale(currentLocale.getLanguage());
         user.setUserLogin(signUpRequest.getLogin());
         user.setName(signUpRequest.getLogin());
         user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
@@ -92,7 +91,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void forgotPasswordStepOne(UserEmailRequest userEmail) throws MessagingException {
+    public void forgotPasswordStepOne(UserEmailRequest userEmail, String XOriginatingHost) throws MessagingException {
+        if (XOriginatingHost != null) host = XOriginatingHost;
         Optional<User> userOptional = userRepository.findByEmail(userEmail.getUserEmail());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
