@@ -18,7 +18,6 @@ public class ValidateFields {
 
     public static boolean isSupportedImageType(String contentType) {
         return contentType != null && (contentType.equalsIgnoreCase("image/jpeg") || contentType.equalsIgnoreCase("image/png")
-                                        || contentType.equalsIgnoreCase("image/webp") || contentType.equalsIgnoreCase("image/jpg")
-                                         || contentType.equalsIgnoreCase("image/svg+xml"));
+                                        || contentType.equalsIgnoreCase("image/webp") || contentType.equalsIgnoreCase("image/jpg"));
     }
 }

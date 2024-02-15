@@ -95,7 +95,7 @@ public class ChatRoomController {
     }
 
     @PutMapping("/public-chat-room/edit-hashtag")
-    @Operation(summary = "Edit public chat room step four", description = "Step four - chat hashtag ")
+    @Operation(summary = "Edit public chat room step four", description = "Step three - chat hashtag ")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldUiidChatList.class)
     public ResponseEntity<ChatRoom> editHashtagPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
