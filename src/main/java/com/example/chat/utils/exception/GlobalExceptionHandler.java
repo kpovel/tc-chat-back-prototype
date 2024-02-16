@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
         if (ex.getMessage().equals("user.bad.email.forgot.password")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(messageSource.getMessage(ex.getMessage(), null, currentLocale));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(messageSource.getMessage("user.bad.authorisation", null, currentLocale));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new CustomFieldError("general",messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
 
     }
 
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleRefreshJwtAccessTokenExceptions(AuthException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(messageSource.getMessage("user.bad.authorisation", null, currentLocale));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new CustomFieldError("general", messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
     }
 
     @ExceptionHandler(BadRefreshTokenException.class)

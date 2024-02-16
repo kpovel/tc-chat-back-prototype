@@ -14,10 +14,12 @@ import lombok.Setter;
 public class LoginRequest {
 
     @NotNull( message = "login.minsize")
+    @Size(min = 3, message = "login.minsize")
     @Size(max = 50, message = "login.maxsize")
     private String login;
 
     @NotBlank(message = "password.minsize")
+    @Size(min = 6, message = "password.minsize")
     @Size(max = 50, message = "email.maxsize")
     private String password;
 
