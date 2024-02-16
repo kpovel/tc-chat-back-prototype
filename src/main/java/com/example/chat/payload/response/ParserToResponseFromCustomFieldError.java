@@ -1,6 +1,6 @@
 package com.example.chat.payload.response;
 
-import com.example.chat.validate.CustomFieldError;
+import com.example.chat.utils.CustomFieldError;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,16 +22,17 @@ public class ParserToResponseFromCustomFieldError {
             String fieldName = arr.getFieldName();
             String fieldMessage = arr.getFieldMessage();
 
-            // Використовуємо computeIfAbsent для додавання значень до fieldErrors
-            fieldErrors.computeIfAbsent(fieldName, k -> fieldMessage);
-
-            // Якщо значення вже існує, доповнюємо його
-            if (fieldErrors.containsKey(fieldName)) {
-                String existingValue = fieldErrors.get(fieldName);
-                fieldErrors.put(fieldName, existingValue + ", " + fieldMessage);
-            }
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + " " + newValue);
         }
+        return fieldErrors;
+    }
+    public static Map<String, String> parseCustomFieldError(CustomFieldError error) {
+        Map<String, String> fieldErrors = new HashMap<>();
 
+            String fieldName = error.getFieldName();
+            String fieldMessage = error.getFieldMessage();
+
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + " " + newValue);
         return fieldErrors;
     }
 }

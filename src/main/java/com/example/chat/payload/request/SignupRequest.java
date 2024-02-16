@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SignupRequest {
+
+  @NotNull( message = "login.minsize")
   @Size(min = 3, message = "login.minsize")
   @Size(max = 50, message = "login.maxsize")
   @Pattern(regexp = "^\\S*$", message = "login.spaces")
@@ -23,7 +25,7 @@ public class SignupRequest {
   @Size(min = 6, message = "password.minsize")
   @Size(max = 72, message = "password.maxsize")
   @Pattern(regexp = "^\\S*$", message = "password.spaces")
-  @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$^#!%*?&()])[A-Za-z\\d@$^#!%*?&()]+$", message = "password.pattern")
+  @Pattern(regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@<>'$^+#~!%*=?/;:_&|()+-])[A-Za-z\\d@<>'$^+#~!%*=?/;:_&|()+-]+$", message = "password.pattern")
   private String password;
 
 }

@@ -21,7 +21,10 @@ public class OpenApiConfig {
                         .description("REST API documentation")
                         .termsOfService("s"))
                 .addServersItem(new Server()
-                        .url(host + "/")
+                        .url(host)
+                        .description("Future Server for application"))
+                .addServersItem(new Server()
+                        .url("http://localhost:8080")
                         .description("Future Server for application"));
     }
 
