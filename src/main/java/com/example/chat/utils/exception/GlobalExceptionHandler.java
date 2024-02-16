@@ -1,6 +1,7 @@
 package com.example.chat.utils.exception;
 
 import com.example.chat.model.User;
+import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.servise.UserService;
 import com.example.chat.utils.CustomFieldError;
 import jakarta.security.auth.message.AuthException;
@@ -41,7 +42,8 @@ public class GlobalExceptionHandler {
         if (ex.getMessage().equals("user.bad.email.forgot.password")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(messageSource.getMessage(ex.getMessage(), null, currentLocale));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new CustomFieldError("general",messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
+                new CustomFieldError("general",messageSource.getMessage("user.bad.authorisation", null, currentLocale))));
 
     }
 
@@ -50,7 +52,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> handleRefreshJwtAccessTokenExceptions(AuthException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new CustomFieldError("general", messageSource.getMessage("user.bad.authorisation", null, currentLocale)));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
+                new CustomFieldError("general", messageSource.getMessage("user.bad.authorisation", null, currentLocale))));
     }
 
     @ExceptionHandler(BadRefreshTokenException.class)
@@ -66,8 +69,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> emailNotVerificationException(UserAccountNotActivatedException ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                new CustomFieldError("login", messageSource.getMessage(ex.getMessage(), null, currentLocale)));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
+                new CustomFieldError("general", messageSource.getMessage(ex.getMessage(), null, currentLocale))));
     }
 
     @ExceptionHandler(AssertionError.class) // add message to messages localizations files
@@ -75,8 +78,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<?> imageContentTypeIsNull(AssertionError ex) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ArrayList<>(List.of(
-                new CustomFieldError("authorisation", messageSource.getMessage(ex.getMessage(), null, currentLocale)))));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
+                new CustomFieldError("general", messageSource.getMessage(ex.getMessage(), null, currentLocale))));
     }
 
     @ExceptionHandler(NullPointerException.class)
@@ -110,10 +113,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public ResponseEntity<String> objectNotFound(ObjectNotFoundException ex) {
+    public ResponseEntity<?> objectNotFound(ObjectNotFoundException ex) {
         if(ex.getMessage().equals("chatroom.not.found")) {
             Locale currentLocale = LocaleContextHolder.getLocale();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageSource.getMessage(ex.getMessage(), null, currentLocale));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
+                    new CustomFieldError("general", messageSource.getMessage(ex.getMessage(), null, currentLocale))));
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }

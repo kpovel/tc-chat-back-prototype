@@ -26,4 +26,13 @@ public class ParserToResponseFromCustomFieldError {
         }
         return fieldErrors;
     }
+    public static Map<String, String> parseCustomFieldError(CustomFieldError error) {
+        Map<String, String> fieldErrors = new HashMap<>();
+
+            String fieldName = error.getFieldName();
+            String fieldMessage = error.getFieldMessage();
+
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + " " + newValue);
+        return fieldErrors;
+    }
 }
