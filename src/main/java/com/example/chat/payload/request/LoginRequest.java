@@ -20,7 +20,7 @@ public class LoginRequest {
 
     @NotBlank(message = "password.minsize")
     @Size(min = 6, message = "password.minsize")
-    @Size(max = 50, message = "email.maxsize")
+    @Size(max = 50, message = "password.maxsize")
     private String password;
 
     public LoginRequest() {
