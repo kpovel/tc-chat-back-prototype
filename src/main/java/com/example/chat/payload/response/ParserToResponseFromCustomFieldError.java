@@ -22,7 +22,7 @@ public class ParserToResponseFromCustomFieldError {
             String fieldName = arr.getFieldName();
             String fieldMessage = arr.getFieldMessage();
 
-            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + " " + newValue);
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + ", " + newValue);
         }
         return fieldErrors;
     }
@@ -32,7 +32,7 @@ public class ParserToResponseFromCustomFieldError {
             String fieldName = error.getFieldName();
             String fieldMessage = error.getFieldMessage();
 
-            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + " " + newValue);
+            fieldErrors.merge(fieldName, fieldMessage, (existingValue, newValue) -> existingValue + ", " + newValue);
         return fieldErrors;
     }
 }
