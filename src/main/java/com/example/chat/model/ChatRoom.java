@@ -23,7 +23,7 @@ public class ChatRoom implements Serializable {
     private Long id;
 
     @Column
-    @JsonView(JsonViews.ViewFieldUiid.class)
+    @JsonView(JsonViews.ViewFieldUIID.class)
     private String uuid;
 
     @Column
@@ -70,7 +70,7 @@ public class ChatRoom implements Serializable {
     private Image image;
 
     @Transient
-    @JsonView(JsonViews.ViewFieldUiid.class)
+    @JsonView(JsonViews.ViewFieldUIID.class)
     private String currentChatUserUIID;
 
     @PrePersist

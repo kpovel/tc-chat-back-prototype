@@ -20,13 +20,14 @@ import java.util.Set;
 @Setter
 @Table(name = "users")
 public class User implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(JsonViews.ViewFieldUiid.class)
     private Long id;
 
     @Column
+    @JsonView(JsonViews.ViewFieldUIID.class)
     private String uiid;
 
     @Column
@@ -68,7 +69,7 @@ public class User implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id")
-    @JsonView(JsonViews.ViewFieldOther.class)
+    @JsonView(JsonViews.ViewFieldUserImage.class)
     private Image image;
 
     @JsonManagedReference

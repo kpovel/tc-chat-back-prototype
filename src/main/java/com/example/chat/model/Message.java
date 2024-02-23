@@ -20,7 +20,7 @@ public class Message {
     private Long id;
 
     @Column
-    @JsonView(JsonViews.ViewFieldUiid.class)
+    @JsonView(JsonViews.ViewFieldUIID.class)
     private String uuid;
 
     @Column(columnDefinition = "text")
@@ -37,6 +37,7 @@ public class Message {
 
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonView(JsonViews.ViewFieldUser.class)
     private User user;
 
     @Column(name = "date_of_created")
