@@ -24,6 +24,7 @@ public interface UserService {
     Optional<User> forgotPasswordStepTwo(String codeFromEmail) throws MessagingException;
 
     User getUserFromSecurityContextHolder();
+    User getUserByUIID(String userUIID);
 
     /**
      * Finds a user in the database by checking the given user ID and converts it into DTO.

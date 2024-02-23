@@ -27,6 +27,9 @@ public class User implements Serializable {
     private Long id;
 
     @Column
+    private String uiid;
+
+    @Column
     @JsonView(JsonViews.ViewFieldName.class)
     private String name;
 
@@ -95,7 +98,8 @@ public class User implements Serializable {
 
     @PrePersist
     private void init(){
-        dateOfCreated = LocalDateTime.now();
+        this.dateOfCreated = LocalDateTime.now();
+        this.uiid = java.util.UUID.randomUUID().toString();
     }
 
 

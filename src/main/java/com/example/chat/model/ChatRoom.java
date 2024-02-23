@@ -30,7 +30,7 @@ public class ChatRoom implements Serializable {
     @JsonView(JsonViews.ViewFieldChatName.class)
     private String name;
 
-    @Column(length = 1000)
+    @Column(length = 300)
     @JsonView(JsonViews.ViewFieldDescription.class)
     private String description;
 
@@ -56,8 +56,8 @@ public class ChatRoom implements Serializable {
     @JsonView(JsonViews.ViewFieldHashtag.class)
     private Hashtag hashtag;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonView(JsonViews.ViewFieldMessages.class)
     private List<Message> messages = new ArrayList<>();
 
     @JsonManagedReference
@@ -68,6 +68,10 @@ public class ChatRoom implements Serializable {
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     @JsonView(JsonViews.ViewFieldOther.class)
     private Image image;
+
+    @Transient
+    @JsonView(JsonViews.ViewFieldUiid.class)
+    private String currentChatUserUIID;
 
     @PrePersist
     private void init(){

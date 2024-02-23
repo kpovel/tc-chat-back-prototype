@@ -44,7 +44,7 @@ public class ChatRoomController {
     @Operation(summary = "(DEMO!!!) Create New public chat room", description = "Create demo data for test")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> saveNewPublicChatRoomDemo(@RequestPart(name = "file", required = false) MultipartFile file,
-                                                   @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
+                                                       @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
         Image image = new Image();
         if(file != null) {
             String contentType = file.getContentType();
@@ -107,8 +107,12 @@ public class ChatRoomController {
     @GetMapping("/get-chat-room/{chatRoomUUID}")
     @Operation(summary = "Get chat room by uiid")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<?> getChatRoomByUiid(@PathVariable String chatRoomUUID) {
-        return ResponseEntity.ok(chatRoomService.getChatRoomByUIID(chatRoomUUID));
+    @JsonView(JsonViews.ViewFieldChatRoom.class)
+    public ResponseEntity<?> getChatRoomByUIID(@PathVariable String chatRoomUUID) {
+        User user = userService.getUserFromSecurityContextHolder();
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(chatRoomUUID);
+        chatRoom.setCurrentChatUserUIID(user.getUiid());
+        return ResponseEntity.ok(chatRoom);
     }
 
     @PostMapping("/create-private-chat-room/to-user/{userId}")

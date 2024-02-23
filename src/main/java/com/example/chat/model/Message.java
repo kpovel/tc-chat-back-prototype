@@ -1,7 +1,6 @@
 package com.example.chat.model;
 
 import com.example.chat.utils.JsonViews;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,19 +23,19 @@ public class Message {
     @JsonView(JsonViews.ViewFieldUiid.class)
     private String uuid;
 
-    @Column
+    @Column(columnDefinition = "text")
     @JsonView(JsonViews.ViewFieldMessageContent.class)
     private String content;
 
     @Column
     private boolean edited = false;
 
-    @JsonBackReference
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -46,13 +45,19 @@ public class Message {
 
     @PrePersist
     private void init(){
-        this.dateOfCreated = LocalDateTime.now();
-        this.uuid = java.util.UUID.randomUUID().toString();
+        dateOfCreated = LocalDateTime.now();
+        uuid = java.util.UUID.randomUUID().toString();
     }
 
     public Message() {
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Message{" +
+                "uuid='" + uuid + '\'' +
+                ", content='" + content + '\'' +
+                ", dateOfCreated=" + dateOfCreated +
+                '}';
+    }
 }

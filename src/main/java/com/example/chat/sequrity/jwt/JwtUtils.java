@@ -39,7 +39,7 @@ public class JwtUtils {
     public String getUsernameFromToken(String token) {
 
         if (validateAccessToken(token)) {
-            final Claims claims = getRefreshClaims(token);
+            final Claims claims = getAccessClaims(token);
             return claims.getSubject();
         }
         return null;
