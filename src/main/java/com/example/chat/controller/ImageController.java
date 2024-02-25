@@ -64,18 +64,18 @@ public class ImageController {
         }
     }
 
-    @PutMapping("/edit-image/public-chat-room/{uiid}")
+    @PutMapping("/edit-image/public-chat-room/{uuid}")
     @Operation(summary = "Edit public chat room step five", description = "Step five - upload image chat room")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidChatList.class)
-    public ResponseEntity<?> editImagePublicChatRoom(@PathVariable String uiid,
+    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
+    public ResponseEntity<?> editImagePublicChatRoom(@PathVariable String uuid,
                                                      @RequestParam("image") MultipartFile file) {
         try {
             String contentType = file.getContentType();
             if (ValidateFields.isSupportedImageType(contentType)) {
                 User user = userService.getUserFromSecurityContextHolder();
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
-                ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(uiid);
+                ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(uuid);
                 if (!chatRoom.getImage().getName().equals("no-image.svg"))
                     fileService.deleteFileFromStorage(chatRoom.getImage().getName());
                 return ResponseEntity.ok(chatRoomService.editImagePublicChatRoom(user, chatRoom, imageName));

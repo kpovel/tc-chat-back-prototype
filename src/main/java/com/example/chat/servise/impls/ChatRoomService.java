@@ -70,7 +70,7 @@ public class ChatRoomService {
     }
 
     public ChatRoom editDescriptionPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest) {
-        ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
+        ChatRoom chatRoom = getChatRoomByUUID(chatRoomRequest.getUuid());
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
            chatRoom.setDescription(chatRoomRequest.getChatRoomDescription());
            chatRoomRepository.save(chatRoom);
@@ -80,7 +80,7 @@ public class ChatRoomService {
     }
 
     public ChatRoom editHashtagPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest, Hashtag hashtag) {
-        ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
+        ChatRoom chatRoom = getChatRoomByUUID(chatRoomRequest.getUuid());
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
            chatRoom.setHashtag(hashtag);
            chatRoomRepository.save(chatRoom);
@@ -117,7 +117,7 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoom getChatRoomByUIID(String chatRoomUUID) {
+    public ChatRoom getChatRoomByUUID(String chatRoomUUID) {
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findChatRoomByUuid(chatRoomUUID);
         if(chatRoomOptional.isPresent()){
             return chatRoomOptional.get();

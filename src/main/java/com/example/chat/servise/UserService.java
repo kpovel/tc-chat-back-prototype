@@ -8,9 +8,7 @@ import jakarta.mail.MessagingException;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 public interface UserService {
 
@@ -24,7 +22,7 @@ public interface UserService {
     Optional<User> forgotPasswordStepTwo(String codeFromEmail) throws MessagingException;
 
     User getUserFromSecurityContextHolder();
-    User getUserByUIID(String userUIID);
+    User getUserByUUID(String userUUID);
 
     /**
      * Finds a user in the database by checking the given user ID and converts it into DTO.

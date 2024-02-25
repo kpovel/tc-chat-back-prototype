@@ -9,8 +9,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 @AllArgsConstructor
 public class MessageService {
@@ -20,8 +18,8 @@ public class MessageService {
     private final ChatRoomService chatRoomService;
 
     @Transactional
-    public Message saveMessage(MessageRequest messageRequest, User user, String chatRoomUIID) {
-        ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(chatRoomUIID);
+    public Message saveMessage(MessageRequest messageRequest, User user, String chatRoomUUID) {
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
         Message message = new Message();
         message.setUser(user);
 

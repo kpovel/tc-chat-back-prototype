@@ -1,7 +1,7 @@
 package com.example.chat.utils;
 
 public final class JsonViews {
-    public interface ViewFieldUIID {}
+    public interface ViewFieldUUID {}
     public interface ViewFieldName{}
     public interface ViewFieldUserLogin{}
     public interface ViewFieldUserEmail{}
@@ -20,15 +20,15 @@ public final class JsonViews {
 
     public interface ViewFieldOther{}
 
-    public interface ViewFieldChat extends ViewFieldUIID, ViewFieldChatName, ViewFieldDescription, ViewFieldOther, ViewFieldName {}
+    public interface ViewFieldChat extends ViewFieldUUID, ViewFieldChatName, ViewFieldDescription, ViewFieldOther, ViewFieldName {}
 
-    public interface ViewFieldUu extends ViewFieldUIID, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldDateOfCreated, ViewFieldUserDateLastVisit{}
+    public interface ViewFieldUu extends ViewFieldUUID, ViewFieldName, ViewFieldUserLogin, ViewFieldUserEmail, ViewFieldDateOfCreated, ViewFieldUserDateLastVisit{}
     public interface ViewFieldUserOnboarding extends ViewFieldName, ViewFieldUserLogin, ViewFieldOther, ViewFieldUserImage {}
 
-    public interface ViewFieldUiidHashtagsGroups extends ViewFieldUIID, ViewFieldName, ViewFieldOther{}
-    public interface ViewFieldUiidChatList extends ViewFieldUIID, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
-    public interface ViewFieldChatRoom extends ViewFieldUIID, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldMessages{}
+    public interface ViewFieldUUIDHashtagsGroups extends ViewFieldUUID, ViewFieldName, ViewFieldOther{}
+    public interface ViewFieldUUIDChatList extends ViewFieldUUID, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
+    public interface ViewFieldChatRoom extends ViewFieldUUID, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldMessages{}
 
-    public interface ViewMessage extends ViewFieldUIID, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldUser, ViewFieldUserImage, ViewFieldName {}
+    public interface ViewMessage extends ViewFieldUUID, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldUser, ViewFieldUserImage, ViewFieldName {}
 
 }

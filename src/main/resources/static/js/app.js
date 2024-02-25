@@ -1,15 +1,15 @@
 let roomId = '';
 let token = '';
-let userUIID = '';
+let userUUID = '';
 const stompClient = new StompJs.Client({
     brokerURL: 'ws://localhost:8080/ws'
 });
 
 stompClient.onConnect = (frame) => {
     token = $("#token").val();
-    roomId = $("#chatUIID").val();
-    userUIID = $("#userUIID").val();
-    console.log(token + ' token | ' + roomId + ' roomId | ' + userUIID + ' UserUIID');
+    roomId = $("#chatUUID").val();
+    userUUID = $("#userUUID").val();
+    console.log(token + ' token | ' + roomId + ' roomId | ' + userUUID + ' UserUUID');
     const subscriptionAddress = '/topic/' + roomId; // Створіть адресу підписки на основі значення
     setConnected(true);
     stompClient.subscribe(subscriptionAddress, (greeting) => {
@@ -51,7 +51,7 @@ function disconnect() {
 
 function sendName() {
     var message = {
-        currentChatUserUIID: userUIID,
+        currentChatUserUUID: userUUID,
         content: $("#content").val(),
         edited: false
     }

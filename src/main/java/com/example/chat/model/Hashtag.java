@@ -15,7 +15,7 @@ public class Hashtag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(JsonViews.ViewFieldUIID.class)
+    @JsonView(JsonViews.ViewFieldUUID.class)
     private Long id;
 
     @Column

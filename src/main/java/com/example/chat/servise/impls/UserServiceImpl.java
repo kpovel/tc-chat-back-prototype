@@ -139,8 +139,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserByUIID(String userUIID) {
-        Optional<User> userOptional = userRepository.findUserByUiid(userUIID);
+    public User getUserByUUID(String userUUID) {
+        Optional<User> userOptional = userRepository.findUserByUuid(userUUID);
         if(userOptional.isPresent()) {
             return userOptional.get();
         }

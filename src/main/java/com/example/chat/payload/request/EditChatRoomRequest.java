@@ -10,7 +10,7 @@ import lombok.Setter;
 public class EditChatRoomRequest {
 
     @NonNull
-    private String uiid;
+    private String uuid;
 
     private String chatRoomDescription;
 

@@ -13,7 +13,7 @@ public class MessageRequest {
     private String content;
 
     @NonNull
-    private String currentChatUserUIID;
+    private String currentChatUserUUID;
 
     boolean edited = false;
 }

@@ -87,7 +87,7 @@ public class ChatRoomController {
     @PutMapping("/public-chat-room/edit-description")
     @Operation(summary = "Edit public chat room step two", description = "Step two - chat description")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
     public ResponseEntity<ChatRoom> editDescriptionPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
         if(chatRoomRequest.getChatRoomDescription().length() > 300 ) throw new InvalidDataException("chat description field max size 300 characters");
@@ -97,7 +97,7 @@ public class ChatRoomController {
     @PutMapping("/public-chat-room/edit-hashtag")
     @Operation(summary = "Edit public chat room step four", description = "Step three - chat hashtag ")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
     public ResponseEntity<ChatRoom> editHashtagPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
         Hashtag hashtag = hashtagService.getHashtagById(chatRoomRequest.getHashtag().getId());
@@ -105,13 +105,13 @@ public class ChatRoomController {
     }
 
     @GetMapping("/get-chat-room/{chatRoomUUID}")
-    @Operation(summary = "Get chat room by uiid")
+    @Operation(summary = "Get chat room by uuid")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldChatRoom.class)
-    public ResponseEntity<?> getChatRoomByUIID(@PathVariable String chatRoomUUID) {
+    public ResponseEntity<?> getChatRoomByUUID(@PathVariable String chatRoomUUID) {
         User user = userService.getUserFromSecurityContextHolder();
-        ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(chatRoomUUID);
-        chatRoom.setCurrentChatUserUIID(user.getUiid());
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
+        chatRoom.setCurrentChatUserUUID(user.getUuid());
         return ResponseEntity.ok(chatRoom);
     }
 
