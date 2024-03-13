@@ -129,7 +129,7 @@ public class GlobalExceptionHandler {
         Locale currentLocale = LocaleContextHolder.getLocale();
         String message = String.format(messageSource.getMessage("max.file.size", null, currentLocale), maxFileSize);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
-                new CustomFieldError("general", messageSource.getMessage("max.file.size", null, currentLocale))));
+                new CustomFieldError("general", message)));
     }
 
     @ExceptionHandler(ForbiddenException.class)
