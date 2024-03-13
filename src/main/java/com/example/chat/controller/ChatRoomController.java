@@ -81,7 +81,8 @@ public class ChatRoomController {
     @Operation(summary = "Create New public chat room step one", description = "Step one - name, chat type and image file")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldChat.class)
-    public ResponseEntity<?> createNewPublicChatRoom( @Valid @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest,BindingResult bindingResult,
+    public ResponseEntity<?> createNewPublicChatRoom( @Valid @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest,
+                                                      BindingResult bindingResult,
                                                       @RequestPart(name = "file", required = false ) MultipartFile file
 
                                                      ) {
@@ -108,15 +109,33 @@ public class ChatRoomController {
             } else throw new FileFormatException("Дозволено тільки зображення");
             //TODO: add GlobalHandler FileFormatException
         }
+
+        Hashtag hashtag = hashtagService.hetHashtagByName("other");
+        if(currentLocale.toLanguageTag().equals("uk")) hashtag = hashtagService.hetHashtagByName("інше");
         User user = userService.getUserFromSecurityContextHolder();
-        return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image));
+        return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image, hashtag));
     }
 
     @PutMapping("/public-chat-room/edit-description")
     @Operation(summary = "Edit public chat room step two", description = "Step two - chat description")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldUUIDChatList.class)
-    public ResponseEntity<ChatRoom> editDescriptionPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
+    public ResponseEntity<?> editDescriptionPublicChatRoom(@Valid @RequestBody EditChatRoomRequest chatRoomRequest,
+                                                                  BindingResult bindingResult) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        if(bindingResult.hasErrors()) {
+            List<CustomFieldError> errorFields = new ArrayList<>();
+            try {
+                errorFields = bindingResult.getFieldErrors().stream()
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                        .collect(Collectors.toList());
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            } catch (NoSuchMessageException e) {
+                errorFields.clear();
+                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            }
+        }
         User user = userService.getUserFromSecurityContextHolder();
         if(chatRoomRequest.getChatRoomDescription().length() > 300 ) throw new InvalidDataException("chat description field max size 300 characters");
         return ResponseEntity.ok(chatRoomService.editDescriptionPublicChatRoom(user, chatRoomRequest));

@@ -47,9 +47,10 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest, Image image) {
+    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest, Image image, Hashtag hashtag) {
 
         ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setHashtag(hashtag);
         if(image.getName() == null)image.setName("no-image.svg");
         chatRoom.setImage(image);
         chatRoom.getChatRoomType().add(ChatRoomType.PUBLIC);
