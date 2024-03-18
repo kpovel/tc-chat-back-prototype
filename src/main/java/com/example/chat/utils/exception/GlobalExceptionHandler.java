@@ -135,10 +135,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
-    public ResponseEntity<String> maxFilesizeException(ForbiddenException e) {
+    public ResponseEntity<?> forbiddenException(ForbiddenException e) {
+
         Locale currentLocale = LocaleContextHolder.getLocale();
-        String message = String.format(messageSource.getMessage(e.getMessage(), null, currentLocale), maxFileSize);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(message);
+
+        CustomFieldError messageError = new CustomFieldError("general", messageSource.getMessage(e.getMessage(), null, currentLocale));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(messageError));
     }
 
 }

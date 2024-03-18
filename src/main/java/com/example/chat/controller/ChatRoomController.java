@@ -162,6 +162,18 @@ public class ChatRoomController {
         return ResponseEntity.ok(chatRoom);
     }
 
+    @DeleteMapping("/public-chat-room/{uuid}")
+    @Operation(summary = "Delete chat room by uuid")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> deletePublicChatRoom(@PathVariable String uuid) {
+
+        User user = userService.getUserFromSecurityContextHolder();
+        chatRoomService.deletePublicChatRoom(user, uuid);
+
+        return ResponseEntity.ok("Success");
+    }
+
+
     @PostMapping("/create-private-chat-room/to-user/{userId}")
     @Operation(summary = "New chat room (-TODO-)")
     @SecurityRequirement(name = "Bearer Authentication")
