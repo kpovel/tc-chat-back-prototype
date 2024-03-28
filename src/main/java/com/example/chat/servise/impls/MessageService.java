@@ -7,6 +7,9 @@ import com.example.chat.payload.request.MessageRequest;
 import com.example.chat.repository.MessageRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,5 +32,11 @@ public class MessageService {
         message.setChatRoom(chatRoom);
         messageRepository.save(message);
         return message;
+    }
+
+    @Transactional
+    public Page<Message> getPageMessage(long chatRoomId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return messageRepository.findPageMessage(pageable, chatRoomId);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.chat.model;
 
+import com.example.chat.utils.CustomMessageSerializer;
 import com.example.chat.utils.JsonViews;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "messages")
+@JsonSerialize(using = CustomMessageSerializer.class)
 public class Message {
 
     @Id
@@ -31,7 +34,6 @@ public class Message {
     private boolean edited = false;
 
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
@@ -53,12 +55,4 @@ public class Message {
     public Message() {
     }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "uuid='" + uuid + '\'' +
-                ", content='" + content + '\'' +
-                ", dateOfCreated=" + dateOfCreated +
-                '}';
-    }
 }

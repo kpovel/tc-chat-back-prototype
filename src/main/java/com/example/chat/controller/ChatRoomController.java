@@ -9,6 +9,7 @@ import com.example.chat.servise.UserService;
 import com.example.chat.servise.impls.ChatRoomService;
 import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.HashtagService;
+import com.example.chat.servise.impls.MessageService;
 import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.exception.FileFormatException;
@@ -50,6 +51,8 @@ public class ChatRoomController {
     private final FileService fileService;
 
     private final MessageSource messageSource;
+
+    private final MessageService messageService;
 
 
     @PostMapping("/public-chat-room/create/demo-data")
@@ -158,6 +161,9 @@ public class ChatRoomController {
     public ResponseEntity<?> getChatRoomByUUID(@PathVariable String chatRoomUUID) {
         User user = userService.getUserFromSecurityContextHolder();
         ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
+        List<Message> messages = messageService.getPageMessage(chatRoom.getId(), 0, 20).getContent();
+        chatRoom.getMessages().clear();
+        chatRoom.setMessages(messages);
         chatRoom.setCurrentChatUserUUID(user.getUuid());
         return ResponseEntity.ok(chatRoom);
     }

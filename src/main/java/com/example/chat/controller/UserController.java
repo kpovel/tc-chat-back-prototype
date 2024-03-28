@@ -242,6 +242,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldUUIDChatList.class)
     public ResponseEntity<List<UserChatRoom>> getUserChatRooms() {
+        //TODO: Add a filter by the date of the last message of the chat message.
         return ResponseEntity.ok(userService.getUserChatRooms());
     }
 
