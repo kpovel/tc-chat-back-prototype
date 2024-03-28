@@ -9,6 +9,7 @@ import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.Transient;
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -116,6 +117,7 @@ public class UserServiceImpl implements UserService {
             User user = userOptional.get();
             user.setUniqueServiceCode(null);
             user.setEnable(true);
+            user.setOnboardingEnd(true);
             userRepository.save(user);
         }
         return userOptional;
@@ -129,10 +131,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User getUserById(long id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) return userOptional.get();
         throw new InvalidDataException("The user with id " + id + " is missing");
+    }
+
+    @Override
+    public User getUserByUUID(String userUUID) {
+        Optional<User> userOptional = userRepository.findUserByUuid(userUUID);
+        if(userOptional.isPresent()) {
+            return userOptional.get();
+        }
+        //TODO: Edit message Exception!!!!
+        else throw new BadCredentialsException("user.bad.email.forgot.password");
     }
 
 

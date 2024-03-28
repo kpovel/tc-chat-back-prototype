@@ -47,9 +47,10 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest, Image image) {
+    public ChatRoom saveNewPublicChatRoom(User user, CreatePublicChatRoomRequest chatRoomRequest, Image image, Hashtag hashtag) {
 
         ChatRoom chatRoom = new ChatRoom();
+        chatRoom.setHashtag(hashtag);
         if(image.getName() == null)image.setName("no-image.svg");
         chatRoom.setImage(image);
         chatRoom.getChatRoomType().add(ChatRoomType.PUBLIC);
@@ -70,23 +71,23 @@ public class ChatRoomService {
     }
 
     public ChatRoom editDescriptionPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest) {
-        ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
+        ChatRoom chatRoom = getChatRoomByUUID(chatRoomRequest.getUuid());
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
            chatRoom.setDescription(chatRoomRequest.getChatRoomDescription());
            chatRoomRepository.save(chatRoom);
            return chatRoom;
         }
-        else throw new ForbiddenException("forbidden");
+        else throw new ForbiddenException("forbidden.exception");
     }
 
     public ChatRoom editHashtagPublicChatRoom(User user, EditChatRoomRequest chatRoomRequest, Hashtag hashtag) {
-        ChatRoom chatRoom = getChatRoomByUIID(chatRoomRequest.getUiid());
+        ChatRoom chatRoom = getChatRoomByUUID(chatRoomRequest.getUuid());
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
            chatRoom.setHashtag(hashtag);
            chatRoomRepository.save(chatRoom);
            return chatRoom;
         }
-        else throw new ForbiddenException("forbidden");
+        else throw new ForbiddenException("forbidden.exception");
     }
     public ChatRoom editImagePublicChatRoom(User user, ChatRoom chatRoom, String newImageName) {
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
@@ -94,7 +95,19 @@ public class ChatRoomService {
            chatRoomRepository.save(chatRoom);
            return chatRoom;
         }
-        else throw new ForbiddenException("forbidden");
+        else throw new ForbiddenException("forbidden.exception");
+    }
+
+    @Transactional
+    public void deletePublicChatRoom(User user, String uuid) {
+        ChatRoom chatRoom = getChatRoomByUUID(uuid);
+        if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
+            chatRoomRepository.delete(chatRoom);
+        } else {
+
+            throw new ForbiddenException("forbidden.exception");
+
+        }
     }
 
     @Transactional
@@ -117,7 +130,7 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public ChatRoom getChatRoomByUIID(String chatRoomUUID) {
+    public ChatRoom getChatRoomByUUID(String chatRoomUUID) {
         Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findChatRoomByUuid(chatRoomUUID);
         if(chatRoomOptional.isPresent()){
             return chatRoomOptional.get();

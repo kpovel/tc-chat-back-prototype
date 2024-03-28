@@ -27,7 +27,7 @@ public class HashtagGroupController {
     @GetMapping("/hashtags-group/all-hashtags-locale")
     @Operation(summary = "Get all hashtags by locale", description = "Required parameter for local download hashtags - ?lang=uk or ?lang=en")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidHashtagsGroups.class)
+    @JsonView(JsonViews.ViewFieldUUIDHashtagsGroups.class)
     public ResponseEntity<List<HashtagsGroup>> getAllHashtagGroupsUserLocale() throws ErrorServerException {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return ResponseEntity.ok(hashtagGroupService.allHashtagsGroupUserLocale(currentLocale.getLanguage()));

@@ -22,12 +22,6 @@ public class MailSenderService {
 
     private final TemplateEngine templateEngine;
 
-//    public MailSenderService(JavaMailSender javaMailSender,
-//                             TemplateEngine templateEngine) {
-//        this.javaMailSender = javaMailSender;
-//        this.templateEngine = templateEngine;
-//    }
-
 
     public void sendSimpleMessage(String emailTo, String subject, String templateName, Context context) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

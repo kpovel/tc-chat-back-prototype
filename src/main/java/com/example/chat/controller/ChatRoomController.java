@@ -4,10 +4,13 @@ import com.example.chat.model.*;
 import com.example.chat.payload.request.CreatePublicChatRoomRequest;
 import com.example.chat.payload.request.DemoDataPublicChat;
 import com.example.chat.payload.request.EditChatRoomRequest;
+import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.servise.UserService;
 import com.example.chat.servise.impls.ChatRoomService;
 import com.example.chat.servise.impls.FileService;
 import com.example.chat.servise.impls.HashtagService;
+import com.example.chat.servise.impls.MessageService;
+import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.exception.FileFormatException;
 import com.example.chat.utils.exception.InvalidDataException;
@@ -16,12 +19,20 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 
 @Tag(name = "Chat room", description = "Rest controller chat room")
@@ -39,12 +50,16 @@ public class ChatRoomController {
 
     private final FileService fileService;
 
+    private final MessageSource messageSource;
+
+    private final MessageService messageService;
+
 
     @PostMapping("/public-chat-room/create/demo-data")
     @Operation(summary = "(DEMO!!!) Create New public chat room", description = "Create demo data for test")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> saveNewPublicChatRoomDemo(@RequestPart(name = "file", required = false) MultipartFile file,
-                                                   @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
+                                                       @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
         Image image = new Image();
         if(file != null) {
             String contentType = file.getContentType();
@@ -69,8 +84,25 @@ public class ChatRoomController {
     @Operation(summary = "Create New public chat room step one", description = "Step one - name, chat type and image file")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldChat.class)
-    public ResponseEntity<ChatRoom> createNewPublicChatRoom(@RequestPart(name = "file", required = false) MultipartFile file,
-                                                            @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest) {
+    public ResponseEntity<?> createNewPublicChatRoom( @Valid @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest,
+                                                      BindingResult bindingResult,
+                                                      @RequestPart(name = "file", required = false ) MultipartFile file
+
+                                                     ) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        if(bindingResult.hasErrors()) {
+            List<CustomFieldError> errorFields = new ArrayList<>();
+            try {
+                errorFields = bindingResult.getFieldErrors().stream()
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                        .collect(Collectors.toList());
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            } catch (NoSuchMessageException e) {
+                errorFields.clear();
+                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            }
+        }
         Image image = new Image();
         if(file != null) {
             String contentType = file.getContentType();
@@ -80,15 +112,33 @@ public class ChatRoomController {
             } else throw new FileFormatException("Дозволено тільки зображення");
             //TODO: add GlobalHandler FileFormatException
         }
+
+        Hashtag hashtag = hashtagService.hetHashtagByName("other");
+        if(currentLocale.toLanguageTag().equals("uk")) hashtag = hashtagService.hetHashtagByName("інше");
         User user = userService.getUserFromSecurityContextHolder();
-        return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image));
+        return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image, hashtag));
     }
 
     @PutMapping("/public-chat-room/edit-description")
     @Operation(summary = "Edit public chat room step two", description = "Step two - chat description")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidChatList.class)
-    public ResponseEntity<ChatRoom> editDescriptionPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
+    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
+    public ResponseEntity<?> editDescriptionPublicChatRoom(@Valid @RequestBody EditChatRoomRequest chatRoomRequest,
+                                                                  BindingResult bindingResult) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        if(bindingResult.hasErrors()) {
+            List<CustomFieldError> errorFields = new ArrayList<>();
+            try {
+                errorFields = bindingResult.getFieldErrors().stream()
+                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                        .collect(Collectors.toList());
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            } catch (NoSuchMessageException e) {
+                errorFields.clear();
+                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
+            }
+        }
         User user = userService.getUserFromSecurityContextHolder();
         if(chatRoomRequest.getChatRoomDescription().length() > 300 ) throw new InvalidDataException("chat description field max size 300 characters");
         return ResponseEntity.ok(chatRoomService.editDescriptionPublicChatRoom(user, chatRoomRequest));
@@ -97,7 +147,7 @@ public class ChatRoomController {
     @PutMapping("/public-chat-room/edit-hashtag")
     @Operation(summary = "Edit public chat room step four", description = "Step three - chat hashtag ")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
     public ResponseEntity<ChatRoom> editHashtagPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
         Hashtag hashtag = hashtagService.getHashtagById(chatRoomRequest.getHashtag().getId());
@@ -105,11 +155,30 @@ public class ChatRoomController {
     }
 
     @GetMapping("/get-chat-room/{chatRoomUUID}")
-    @Operation(summary = "Get chat room by uiid")
+    @Operation(summary = "Get chat room by uuid")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<?> getChatRoomByUiid(@PathVariable String chatRoomUUID) {
-        return ResponseEntity.ok(chatRoomService.getChatRoomByUIID(chatRoomUUID));
+    @JsonView(JsonViews.ViewFieldChatRoom.class)
+    public ResponseEntity<?> getChatRoomByUUID(@PathVariable String chatRoomUUID) {
+        User user = userService.getUserFromSecurityContextHolder();
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
+        List<Message> messages = messageService.getPageMessage(chatRoom.getId(), 0, 20).getContent();
+        chatRoom.getMessages().clear();
+        chatRoom.setMessages(messages);
+        chatRoom.setCurrentChatUserUUID(user.getUuid());
+        return ResponseEntity.ok(chatRoom);
     }
+
+    @DeleteMapping("/public-chat-room/{uuid}")
+    @Operation(summary = "Delete chat room by uuid")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> deletePublicChatRoom(@PathVariable String uuid) {
+
+        User user = userService.getUserFromSecurityContextHolder();
+        chatRoomService.deletePublicChatRoom(user, uuid);
+
+        return ResponseEntity.ok("Success");
+    }
+
 
     @PostMapping("/create-private-chat-room/to-user/{userId}")
     @Operation(summary = "New chat room (-TODO-)")

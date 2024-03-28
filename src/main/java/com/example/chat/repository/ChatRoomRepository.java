@@ -12,4 +12,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 //    Optional<ChatRoom> getChatRoom();
 
     Optional<ChatRoom> findChatRoomByUuid(String uuid);
+
+
 }
