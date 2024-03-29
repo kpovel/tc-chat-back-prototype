@@ -20,11 +20,15 @@ import java.util.Set;
 @Setter
 @Table(name = "users")
 public class User implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    @JsonView(JsonViews.ViewFieldUiid.class)
     private Long id;
+
+    @Column
+    @JsonView(JsonViews.ViewFieldUUID.class)
+    private String uuid;
 
     @Column
     @JsonView(JsonViews.ViewFieldName.class)
@@ -65,7 +69,7 @@ public class User implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "image_id")
-    @JsonView(JsonViews.ViewFieldOther.class)
+    @JsonView(JsonViews.ViewFieldUserImage.class)
     private Image image;
 
     @JsonManagedReference
@@ -95,7 +99,8 @@ public class User implements Serializable {
 
     @PrePersist
     private void init(){
-        dateOfCreated = LocalDateTime.now();
+        this.dateOfCreated = LocalDateTime.now();
+        this.uuid = java.util.UUID.randomUUID().toString();
     }
 
 

@@ -3,12 +3,14 @@ package com.example.chat.servise.impls;
 import com.example.chat.model.ChatRoom;
 import com.example.chat.model.Message;
 import com.example.chat.model.User;
+import com.example.chat.payload.request.MessageRequest;
 import com.example.chat.repository.MessageRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @AllArgsConstructor
@@ -16,18 +18,25 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
 
-    private final UserServiceImpl userService;
-
     private final ChatRoomService chatRoomService;
 
     @Transactional
-    public void saveMessage(Message message, long chatRoomId) {
-//        User user = userService.getUserById(1L);
-//        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-//        message.setUser(user);
-//        message.setDateOfCreated(LocalDateTime.now());
-////        chatRoom.getMessage().add(message);
-//        message.setChatRoom(chatRoom);
-//        messageRepository.save(message);
+    public Message saveMessage(MessageRequest messageRequest, User user, String chatRoomUUID) {
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
+        Message message = new Message();
+        message.setUser(user);
+
+        message.setContent(messageRequest.getContent());
+
+        chatRoom.getMessages().add(message);
+        message.setChatRoom(chatRoom);
+        messageRepository.save(message);
+        return message;
+    }
+
+    @Transactional
+    public Page<Message> getPageMessage(long chatRoomId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return messageRepository.findPageMessage(pageable, chatRoomId);
     }
 }

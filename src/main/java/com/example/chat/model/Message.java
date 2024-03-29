@@ -1,8 +1,9 @@
 package com.example.chat.model;
 
+import com.example.chat.utils.CustomMessageSerializer;
 import com.example.chat.utils.JsonViews;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "messages")
+@JsonSerialize(using = CustomMessageSerializer.class)
 public class Message {
 
     @Id
@@ -21,23 +23,23 @@ public class Message {
     private Long id;
 
     @Column
-    @JsonView(JsonViews.ViewFieldUiid.class)
+    @JsonView(JsonViews.ViewFieldUUID.class)
     private String uuid;
 
-    @Column
+    @Column(columnDefinition = "text")
     @JsonView(JsonViews.ViewFieldMessageContent.class)
     private String content;
 
     @Column
     private boolean edited = false;
 
-    @JsonBackReference
     @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonView(JsonViews.ViewFieldUser.class)
     private User user;
 
     @Column(name = "date_of_created")
@@ -46,13 +48,11 @@ public class Message {
 
     @PrePersist
     private void init(){
-        this.dateOfCreated = LocalDateTime.now();
-        this.uuid = java.util.UUID.randomUUID().toString();
+        dateOfCreated = LocalDateTime.now();
+        uuid = java.util.UUID.randomUUID().toString();
     }
 
     public Message() {
     }
-
-
 
 }

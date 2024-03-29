@@ -19,10 +19,6 @@ import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -244,8 +240,9 @@ public class UserController {
     @GetMapping("/user/chat-rooms")
     @Operation(summary = "Get user chat rooms")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUiidChatList.class)
+    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
     public ResponseEntity<List<UserChatRoom>> getUserChatRooms() {
+        //TODO: Add a filter by the date of the last message of the chat message.
         return ResponseEntity.ok(userService.getUserChatRooms());
     }
 
@@ -253,7 +250,7 @@ public class UserController {
     @Operation(summary = "Add user in public chat rooms")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> addPublicChatRoomToUserChatRoomsSet(@PathVariable String chatRoomUUID) {
-        ChatRoom chatRoom = chatRoomService.getChatRoomByUIID(chatRoomUUID);
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
         userService.addPublicChatRoomToUserChatRoomsSet(chatRoom);
         return ResponseEntity.ok("Success");
     }

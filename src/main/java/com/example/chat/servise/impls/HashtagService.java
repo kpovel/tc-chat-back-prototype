@@ -16,9 +16,13 @@ public class HashtagService {
 
 
     public Hashtag getHashtagById(long hashtagId) {
-        Optional<Hashtag> hashtagOptional = hashtagRepository.findById(hashtagId);
-        if(hashtagOptional.isPresent()) return hashtagOptional.get();
-        else throw new ObjectNotFoundException("Hashtag with id: " + hashtagId + " not found");
+        return hashtagRepository.findById(hashtagId)
+                .orElseThrow(() -> new ObjectNotFoundException("Hashtag with id: " + hashtagId + " not found"));
+    }
+
+    public Hashtag hetHashtagByName(String name) {
+        return hashtagRepository.findHashtagByName(name)
+                .orElseThrow(() -> new ObjectNotFoundException("Hashtag with name: '" + name + "' not found"));
     }
     public long countHashtags() {
         return hashtagRepository.count();
