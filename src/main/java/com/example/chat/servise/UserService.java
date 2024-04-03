@@ -33,9 +33,9 @@ public interface UserService {
 
     User getUserById(long id);
 
-    boolean isOldUserPassword(User user,UserPasswordRequest userPassword);
+    boolean isOldUserPassword(User user, String oldUserPassword);
 
-    void saveNewUserPassword(User user, UserPasswordRequest userPassword);
+    void saveNewUserPassword(User user, String newUserPassword);
 
     void saveUserHashtagsWithOnboarding(List<HashtagRequest> hashtags);
 

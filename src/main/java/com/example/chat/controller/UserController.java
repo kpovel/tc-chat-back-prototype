@@ -32,10 +32,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Tag(name = "User rest controller", description = "Rest controller user account")
@@ -170,8 +167,8 @@ public class UserController {
                 return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
             }
         }
-        if (!userService.isOldUserPassword(user, newUserPassword)) {
-            userService.saveNewUserPassword(user, newUserPassword);
+        if (!userService.isOldUserPassword(user, newUserPassword.getUserPassword())) {
+            userService.saveNewUserPassword(user, newUserPassword.getUserPassword());
             return ResponseEntity.ok("Success");
         }
         return ResponseEntity.badRequest().body(messageSource.getMessage("user.bad.new.password", null, currentLocale));
@@ -268,5 +265,42 @@ public class UserController {
         } else throw new BadRefreshTokenException(" ");
     }
 
+    @PutMapping("/user/edit-password")
+    @Operation(summary = "User edit password")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> editUserPassword(@Valid @RequestBody EditUserPassword editUserPassword,
+                                              BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResultMessages(bindingResult));
+        }
+
+        User user = userService.getUserFromSecurityContextHolder();
+
+        if (!userService.isOldUserPassword(user, editUserPassword.getOldPassword())) {
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            CustomFieldError messageError = new CustomFieldError("oldPassword", messageSource.getMessage("user.bad.old.password", null, currentLocale));
+            return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldError(messageError));
+        }
+
+        userService.saveNewUserPassword(user, editUserPassword.getNewPassword());
+        return ResponseEntity.ok("Success");
+    }
+
+
+    private Map<String, String> bindingResultMessages(BindingResult bindingResult) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        List<CustomFieldError> errorFields = new ArrayList<>();
+        try {
+            errorFields = bindingResult.getFieldErrors().stream()
+                    .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
+                    .collect(Collectors.toList());
+            return ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields);
+        } catch (NoSuchMessageException e) {
+            errorFields.clear();
+            errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
+            return ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields);
+        }
+    }
 
 }

@@ -150,14 +150,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean isOldUserPassword(User user, UserPasswordRequest userPassword) {
+    public boolean isOldUserPassword(User user, String oldUserPassword) {
         String encodedPassword = user.getPassword();
-        return passwordEncoder.matches(userPassword.getUserPassword(), encodedPassword);
+        return passwordEncoder.matches(oldUserPassword, encodedPassword);
     }
 
     @Override
-    public void saveNewUserPassword(User user, UserPasswordRequest userPassword) {
-        user.setPassword(passwordEncoder.encode(userPassword.getUserPassword()));
+    public void saveNewUserPassword(User user, String newUserPassword) {
+        user.setPassword(passwordEncoder.encode(newUserPassword));
         userRepository.save(user);
     }
 
