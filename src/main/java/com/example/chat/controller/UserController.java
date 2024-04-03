@@ -67,16 +67,7 @@ public class UserController {
         Locale currentLocale = LocaleContextHolder.getLocale();
         List<CustomFieldError> errorFields = new ArrayList<>();
         if (bindingResult.hasErrors()) {
-            try {
-                errorFields = bindingResult.getFieldErrors().stream()
-                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
-                        .collect(Collectors.toList());
-                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
-            } catch (NoSuchMessageException e) {
-                errorFields.clear();
-                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
-                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
-            }
+            return ResponseEntity.badRequest().body(bindingResultMessages(bindingResult));
         }
         if (validate.existsByLogin(signUpRequest.getLogin())) {
             errorFields.add(new CustomFieldError("login", messageSource.getMessage("login.duplicate", null, currentLocale)));
@@ -114,16 +105,8 @@ public class UserController {
     public ResponseEntity<?> forgotUserPasswordOneStep(@Valid @RequestBody UserEmailRequest userEmail,
                                                        BindingResult bindingResult,
                                                        @RequestHeader(value = "X-Originating-Host", required = false) String xOriginatingHost) throws MessagingException {
-        Locale currentLocale = LocaleContextHolder.getLocale();
         if (bindingResult.hasErrors()) {
-            try {
-                List<CustomFieldError> errorFields = bindingResult.getFieldErrors().stream()
-                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
-                        .collect(Collectors.toList());
-                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
-            } catch (NoSuchMessageException e) {
-                return ResponseEntity.badRequest().body(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
-            }
+            return ResponseEntity.badRequest().body(bindingResultMessages(bindingResult));
         }
         userService.forgotPasswordStepOne(userEmail, xOriginatingHost);
         return ResponseEntity.ok("Success");
@@ -156,16 +139,7 @@ public class UserController {
         Locale currentLocale = LocaleContextHolder.getLocale();
         User user = userService.getUserFromSecurityContextHolder();
         if (bindingResult.hasErrors()) {
-            List<CustomFieldError> errorFields = new ArrayList<>();
-            try {
-                errorFields = bindingResult.getFieldErrors().stream()
-                        .map(fieldError -> new CustomFieldError(fieldError.getField(), messageSource.getMessage(fieldError.getDefaultMessage(), null, currentLocale)))
-                        .collect(Collectors.toList());
-                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
-            } catch (NoSuchMessageException e) {
-                errorFields.add(new CustomFieldError("serverError", messageSource.getMessage("server.error", null, currentLocale)));
-                return ResponseEntity.badRequest().body(ParserToResponseFromCustomFieldError.parseCustomFieldErrors(errorFields));
-            }
+            return ResponseEntity.badRequest().body(bindingResultMessages(bindingResult));
         }
         if (!userService.isOldUserPassword(user, newUserPassword.getUserPassword())) {
             userService.saveNewUserPassword(user, newUserPassword.getUserPassword());
