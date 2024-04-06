@@ -167,6 +167,24 @@ public class UserController {
         return ResponseEntity.ok("Success");
     }
 
+    @PutMapping("/user/hashtags")
+    @Operation(summary = "User onboarding (step: 'HASHTAGS') - save hashtags")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> saveUserHashtags(@RequestBody List<HashtagRequest> hashtags) {
+        if (hashtags == null) throw new NullPointerException("response - hashtags is NULL");
+        userService.saveUserHashtags(hashtags);
+        return ResponseEntity.ok("Success");
+    }
+
+    @GetMapping("/user/hashtags")
+    @Operation(summary = "User onboarding (step: 'HASHTAGS') - save hashtags")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @JsonView(JsonViews.ViewFieldUUIDHashtagsGroups.class)
+    public ResponseEntity<?> getUserHashtags() {
+        User user = userService.getUserFromSecurityContextHolder();
+        return ResponseEntity.ok(user.getHashtags());
+    }
+
     @PutMapping("/user/user-about-with-onboarding/save")
     @Operation(summary = "User onboarding (step: 'ABOUT') - save user about field")
     @SecurityRequirement(name = "Bearer Authentication")

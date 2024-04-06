@@ -173,6 +173,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public void saveUserHashtags(List<HashtagRequest> hashtags) {
+        User user = getUserFromSecurityContextHolder();
+        user.getHashtags().clear();
+        for (HashtagRequest arr : hashtags) {
+            Hashtag hashtag = hashtagMapper.toModel(arr);
+            user.getHashtags().add(hashtag);
+        }
+        userRepository.save(user);
+    }
+
+    @Override
     public void saveUserAboutWithOnboarding(String userAbout) {
         User user = getUserFromSecurityContextHolder();
         if (user.isOnboardingEnd()) throw new InvalidDataException("User onboarding is END!");

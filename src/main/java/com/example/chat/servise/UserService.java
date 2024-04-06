@@ -39,6 +39,8 @@ public interface UserService {
 
     void saveUserHashtagsWithOnboarding(List<HashtagRequest> hashtags);
 
+    void saveUserHashtags(List<HashtagRequest> hashtags);
+
     void saveUserAboutWithOnboarding(String userAbout);
 
     void saveDefaultAvatarWithOnboarding(String defaultAvatarName);
