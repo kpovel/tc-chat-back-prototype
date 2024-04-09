@@ -26,6 +26,10 @@ public class Hashtag {
     @JoinColumn(name = "group_id")
     private HashtagsGroup hashtagsGroup;
 
+    @Transient
+    @JsonView(JsonViews.ViewFieldOther.class)
+    private boolean selected;
+
     public Hashtag() {
     }
 

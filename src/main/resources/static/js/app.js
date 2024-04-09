@@ -2,7 +2,7 @@ let roomId = '';
 let token = '';
 let userUUID = '';
 const stompClient = new StompJs.Client({
-    brokerURL: 'ws://localhost:8080/ws'
+    brokerURL: 'ws://138.68.69.149:8080/ws'
 });
 
 stompClient.onConnect = (frame) => {

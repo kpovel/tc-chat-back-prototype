@@ -30,6 +30,6 @@ public class HashtagGroupController {
     @JsonView(JsonViews.ViewFieldUUIDHashtagsGroups.class)
     public ResponseEntity<List<HashtagsGroup>> getAllHashtagGroupsUserLocale() throws ErrorServerException {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return ResponseEntity.ok(hashtagGroupService.allHashtagsGroupUserLocale(currentLocale.getLanguage()));
+        return ResponseEntity.ok(hashtagGroupService.getAllHashtagsGroupsByLocale(currentLocale.getLanguage()));
     }
 }

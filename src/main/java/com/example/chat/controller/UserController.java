@@ -1,19 +1,15 @@
 package com.example.chat.controller;
 
-import com.example.chat.model.ChatRoom;
-import com.example.chat.model.User;
-import com.example.chat.model.UserChatRoom;
+import com.example.chat.model.*;
 import com.example.chat.payload.request.*;
 import com.example.chat.payload.response.JwtResponse;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.sequrity.jwt.JwtUtils;
-import com.example.chat.servise.impls.AuthService;
-import com.example.chat.servise.impls.ChatRoomService;
-import com.example.chat.servise.impls.FileService;
-import com.example.chat.servise.impls.UserServiceImpl;
+import com.example.chat.servise.impls.*;
 import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.exception.BadRefreshTokenException;
+import com.example.chat.utils.exception.ErrorServerException;
 import com.example.chat.utils.exception.InvalidDataException;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.validate.ValidateFields;
@@ -57,6 +53,8 @@ public class UserController {
     private final FileService fileService;
 
     private final ChatRoomService chatRoomService;
+
+    private final HashtagGroupService hashtagGroupService;
 
     @PostMapping("/signup")
     @Operation(summary = "Registration new user")
@@ -180,9 +178,18 @@ public class UserController {
     @Operation(summary = "User onboarding (step: 'HASHTAGS') - save hashtags")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldUUIDHashtagsGroups.class)
-    public ResponseEntity<?> getUserHashtags() {
-        User user = userService.getUserFromSecurityContextHolder();
-        return ResponseEntity.ok(user.getHashtags());
+    public ResponseEntity<?> getUserHashtags() throws ErrorServerException {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        List<Hashtag> userHashTags = userService.getUserFromSecurityContextHolder().getHashtags();
+        List<HashtagsGroup> allHashtagsGroups = hashtagGroupService.getAllHashtagsGroupsByLocale(currentLocale.getLanguage());
+        if(userHashTags.isEmpty()) return ResponseEntity.ok(allHashtagsGroups);
+        allHashtagsGroups.stream()
+                .flatMap(group -> group.getHashtags().stream())
+                .filter(hashtag -> userHashTags.stream()
+                        .anyMatch(userHashtag -> userHashtag.getId().equals(hashtag.getId())))
+                .forEach(hashtag -> hashtag.setSelected(true));
+        return ResponseEntity.ok(allHashtagsGroups);
+
     }
 
     @PutMapping("/user/user-about-with-onboarding/save")
