@@ -19,6 +19,8 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
 
+    private final MessageService messageService;
+
 
     @Transactional
     public void saveNewPublicChatRoomDemoData(User user, DemoDataPublicChat chatRoomRequest, Image image) {
@@ -36,7 +38,7 @@ public class ChatRoomService {
 
         UserChatRoom userChatRoom = new UserChatRoom();
         userChatRoom.setUser(user);
-        userChatRoom.setChatName(chatRoomRequest.getChatRoomName());
+//        userChatRoom.setChatName(chatRoomRequest.getChatRoomName()); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         userChatRoom.setChatRoom(chatRoom);
 
         user.getUserChatRoomsAdmin().add(chatRoom);
@@ -58,7 +60,7 @@ public class ChatRoomService {
 
         UserChatRoom userChatRoom = new UserChatRoom();
         userChatRoom.setUser(user);
-        userChatRoom.setChatName(chatRoomRequest.getChatRoomName());
+//        userChatRoom.setChatName(chatRoomRequest.getChatRoomName()); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         userChatRoom.setChatRoom(chatRoom);
 
         user.getUserChatRoomsAdmin().add(chatRoom);
@@ -102,11 +104,12 @@ public class ChatRoomService {
     public void deletePublicChatRoom(User user, String uuid) {
         ChatRoom chatRoom = getChatRoomByUUID(uuid);
         if(chatRoom.getUserAminChatRoom().getId().equals(user.getId())) {
+            messageService.deleteAllMessageByChatId(chatRoom.getId());
             chatRoomRepository.delete(chatRoom);
         } else {
-
+//
             throw new ForbiddenException("forbidden.exception");
-
+//
         }
     }
 
