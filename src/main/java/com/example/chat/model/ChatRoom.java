@@ -56,7 +56,8 @@ public class ChatRoom implements Serializable {
     @JsonView(JsonViews.ViewFieldHashtag.class)
     private Hashtag hashtag;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Transient
+//    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     @JsonView(JsonViews.ViewFieldMessages.class)
     private List<Message> messages = new ArrayList<>();
 

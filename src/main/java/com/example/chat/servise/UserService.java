@@ -47,7 +47,7 @@ public interface UserService {
 
     void userOnboardingEnd(UserOnboardingSteps onboardingEnd);
 
-    List<UserChatRoom> getUserChatRooms();
+    List<UserChatRoom> getUserChatRoomList();
 
     void addPublicChatRoomToUserChatRoomsSet(ChatRoom chatRoom);
 

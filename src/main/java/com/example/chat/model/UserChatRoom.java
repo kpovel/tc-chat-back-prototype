@@ -15,11 +15,11 @@ public class UserChatRoom {
     @Column
     private Long id;
 
-    @Column
+    @Transient
     @JsonView(JsonViews.ViewFieldName.class)
     private String chatName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "chat_room_id")
     @JsonView(JsonViews.ViewFieldOther.class)
     private ChatRoom chatRoom;
