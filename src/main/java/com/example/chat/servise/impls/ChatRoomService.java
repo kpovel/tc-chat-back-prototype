@@ -38,7 +38,6 @@ public class ChatRoomService {
 
         UserChatRoom userChatRoom = new UserChatRoom();
         userChatRoom.setUser(user);
-//        userChatRoom.setChatName(chatRoomRequest.getChatRoomName()); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         userChatRoom.setChatRoom(chatRoom);
 
         user.getUserChatRoomsAdmin().add(chatRoom);
@@ -60,7 +59,6 @@ public class ChatRoomService {
 
         UserChatRoom userChatRoom = new UserChatRoom();
         userChatRoom.setUser(user);
-//        userChatRoom.setChatName(chatRoomRequest.getChatRoomName()); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         userChatRoom.setChatRoom(chatRoom);
 
         user.getUserChatRoomsAdmin().add(chatRoom);

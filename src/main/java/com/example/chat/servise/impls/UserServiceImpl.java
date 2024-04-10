@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUUID(String userUUID) {
         Optional<User> userOptional = userRepository.findUserByUuid(userUUID);
-        if(userOptional.isPresent()) {
+        if (userOptional.isPresent()) {
             return userOptional.get();
         }
         //TODO: Edit message Exception!!!!
@@ -221,24 +221,16 @@ public class UserServiceImpl implements UserService {
         }
         return userChatRooms;
     }
+
     private List<UserChatRoom> addLastMessageAndChatNameToListUserChatRoomsResponse(List<UserChatRoom> userChatRooms) {
         for (int i = 0; i < userChatRooms.size(); i++) {
             List<ChatRoomType> chatRoomType = List.copyOf(userChatRooms.get(i).getChatRoom().getChatRoomType());
-            if(chatRoomType.get(0).equals(ChatRoomType.PUBLIC)) {
+            if (chatRoomType.get(0).equals(ChatRoomType.PUBLIC)) {
                 userChatRooms.get(i).setChatName(userChatRooms.get(i).getChatRoom().getName());
             }
             userChatRooms.get(i).setLastMessage(
                     messageService.getLastMessageByChatRoom(userChatRooms.get(i).getId()).orElse(null)
             );
-
-
-//            if (!userChatRooms.get(i).getChatRoom().getMessages().isEmpty()) {
-//                List<Message> messages = userChatRooms.get(i).getChatRoom().getMessages();
-//                Message lastMessage = messages.stream()
-//                        .max(Comparator.comparing(Message::getId))
-//                        .orElse(null);
-//                userChatRooms.get(i).setLastMessage(lastMessage);
-//            }
         }
         return userChatRooms;
     }
@@ -253,7 +245,6 @@ public class UserServiceImpl implements UserService {
         }
 
         UserChatRoom userChatRoom = new UserChatRoom();
-//        userChatRoom.setChatName(chatRoom.getName()); // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         userChatRoom.setChatRoom(chatRoom);
         userChatRoom.setUser(user);
         user.getUserChatRooms().add(userChatRoom);
