@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title></title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script type="importmap">
+      {
+        "imports": {
+          "@stomp/stompjs": "https://ga.jspm.io/npm:@stomp/stompjs@7.0.0/esm6/index.js"
+        }
+      }
+    </script>
+</head>
+<body>
+  <form id="form">
+    <input type="text" name="message" required />
+    <button type="submit">Send a message</button>
+  </form>
+
+  <script type="module">
+    import {Client} from "@stomp/stompjs";
+
+    const client = new Client({
+      brokerURL: "ws://138.68.69.149:8080/ws",
+      onConnect: () => {
+        client.subscribe("/topic/1", (message) =>
+          console.log(`Received: ${message.body}`),
+        );
+        client.publish({destination: "/topic/1", body: "message1"});
+      },
+    });
+
+    document.getElementById("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const message = e.target.elements.message.value;
+      client.publish({destination: "/topic/1", body: message});
+    });
+
+    client.activate();
+  </script>
+</body>
+</html>
