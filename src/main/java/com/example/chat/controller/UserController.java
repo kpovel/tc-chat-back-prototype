@@ -238,8 +238,22 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldUUIDChatList.class)
     public ResponseEntity<List<UserChatRoom>> getUserChatRooms() {
+        List<UserChatRoom> userChatRoomList = userService.getUserChatRoomList();
+
+        Comparator<UserChatRoom> dateComparator = Comparator
+                // Спочатку порівнюємо за наявністю lastMessage
+                .comparing((UserChatRoom room) -> room.getLastMessage() != null ? 1 : 0)
+                // Потім порівнюємо за датою lastMessage, якщо вона не null
+                .thenComparing((UserChatRoom room) -> room.getLastMessage() != null ? room.getLastMessage().getDateOfCreated() : null,
+                        Comparator.nullsLast(Comparator.naturalOrder()));
+//                        Comparator.nullsLast(Comparator.reverseOrder()));
+
+        List<UserChatRoom> sortedList = userChatRoomList.stream()
+                .sorted(dateComparator.reversed())
+                .collect(Collectors.toList());
         //TODO: Add a filter by the date of the last message of the chat message.
-        return ResponseEntity.ok(userService.getUserChatRooms());
+        return ResponseEntity.ok(sortedList);
+//        return ResponseEntity.ok(userChatRoomList);
     }
 
     @PutMapping("/user/add-public-chatroom/{chatRoomUUID}")

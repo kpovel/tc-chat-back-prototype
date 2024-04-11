@@ -166,6 +166,7 @@ public class ChatRoomController {
         chatRoom.setMessages(messages);
         chatRoom.setCurrentChatUserUUID(user.getUuid());
         return ResponseEntity.ok(chatRoom);
+
     }
 
     @DeleteMapping("/public-chat-room/{uuid}")
