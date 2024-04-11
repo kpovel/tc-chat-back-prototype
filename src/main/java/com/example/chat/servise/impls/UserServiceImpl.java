@@ -212,7 +212,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transient
+    @Transactional
     public List<UserChatRoom> getUserChatRoomList() {
         User user = getUserFromSecurityContextHolder();
         List<UserChatRoom> userChatRooms = user.getUserChatRooms();
