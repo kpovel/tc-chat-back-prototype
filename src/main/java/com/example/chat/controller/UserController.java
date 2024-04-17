@@ -148,12 +148,11 @@ public class UserController {
 
     @GetMapping("/user")
     @SecurityRequirement(name = "Bearer Authentication")
-    @Operation(summary = "Get User (-TODO-)")
-    @JsonView(JsonViews.ViewFieldUu.class)
+    @Operation(summary = "Get User")
+    @JsonView(JsonViews.ViewFieldsUser.class)
     public ResponseEntity<?> getUserToProfile() {
-        User user = userService.getUserById(1L);
-//        UserDto dto = userMapper.toDto(user);
-        return ResponseEntity.ok("dto");
+        User user = userService.getUserFromSecurityContextHolder();
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/user/hashtags-with-onboarding/save")

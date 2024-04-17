@@ -39,6 +39,7 @@ public class User implements Serializable {
     private String userLogin;
 
     @Column(columnDefinition = "text", length = 450)
+    @JsonView(JsonViews.ViewFieldUserAbout.class)
     private String about = "A little bit about me";
 
     @Column
