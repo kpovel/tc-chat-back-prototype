@@ -6,10 +6,7 @@ import com.example.chat.payload.request.DemoDataPublicChat;
 import com.example.chat.payload.request.EditChatRoomRequest;
 import com.example.chat.payload.response.ParserToResponseFromCustomFieldError;
 import com.example.chat.servise.UserService;
-import com.example.chat.servise.impls.ChatRoomService;
-import com.example.chat.servise.impls.FileService;
-import com.example.chat.servise.impls.HashtagService;
-import com.example.chat.servise.impls.MessageService;
+import com.example.chat.servise.impls.*;
 import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
 import com.example.chat.utils.exception.FileFormatException;
@@ -48,6 +45,8 @@ public class ChatRoomController {
 
     private final UserService userService;
 
+    private final UserChatRoomsService userChatRoomsService;
+
     private final FileService fileService;
 
     private final MessageSource messageSource;
@@ -56,9 +55,9 @@ public class ChatRoomController {
 
 
     @PostMapping("/public-chat-room/create/demo-data")
-    @Operation(summary = "(DEMO!!!) Create New public chat room", description = "Create demo data for test")
+    @Operation(summary = "(No testing!!!) Create New public chat room", description = "Create demo data for test")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<?> saveNewPublicChatRoomDemo(@RequestPart(name = "file", required = false) MultipartFile file,
+    public ResponseEntity<?> saveNewPublicChatRoomDemo(@RequestPart(name = "image", required = false) MultipartFile file,
                                                        @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
         Image image = new Image();
         if(file != null) {
@@ -86,7 +85,7 @@ public class ChatRoomController {
     @JsonView(JsonViews.ViewFieldChat.class)
     public ResponseEntity<?> createNewPublicChatRoom( @Valid @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest,
                                                       BindingResult bindingResult,
-                                                      @RequestPart(name = "file", required = false ) MultipartFile file
+                                                      @RequestPart(name = "image", required = false ) MultipartFile file
 
                                                      ) {
         Locale currentLocale = LocaleContextHolder.getLocale();
@@ -110,13 +109,23 @@ public class ChatRoomController {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
                 image.setName(imageName);
             } else throw new FileFormatException("error.file.format");
-            //TODO: add GlobalHandler FileFormatException
         }
 
         Hashtag hashtag = hashtagService.hetHashtagByName("other");
         if(currentLocale.toLanguageTag().equals("uk")) hashtag = hashtagService.hetHashtagByName("інше");
         User user = userService.getUserFromSecurityContextHolder();
         return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image, hashtag));
+    }
+
+    @PutMapping("/exit/public-chat/{uuid}")
+    public ResponseEntity<?> userExitFromChat(@PathVariable String uuid){
+        User user = userService.getUserFromSecurityContextHolder();
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(uuid);
+        userChatRoomsService.userExitFromChatRoom(user, chatRoom);
+
+        //TODO: check after the implementation of adding to the chat
+
+        return ResponseEntity.ok("Success");
     }
 
     @PutMapping("/public-chat-room/edit-description")

@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,7 +30,6 @@ public class ChatRoomService {
 
         if(image.getName() == null) image.setName("no-image.svg");
         chatRoom.setImage(image);
-
 
         chatRoom.getChatRoomType().add(ChatRoomType.PUBLIC);
         chatRoom.setName(chatRoomRequest.getChatRoomName());
@@ -147,4 +147,6 @@ public class ChatRoomService {
 //        ChatRoom chatRoom = getChatRoom(chatRoomId);
 //        chatRoomRepository.delete(chatRoom);
     }
+
+
 }

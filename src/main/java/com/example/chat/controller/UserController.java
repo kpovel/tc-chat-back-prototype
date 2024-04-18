@@ -159,7 +159,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Save user fields")
     @JsonView(JsonViews.ViewFieldsUser.class)
-    public ResponseEntity<?> editUser(@RequestPart(name = "file", required = false) MultipartFile file,
+    public ResponseEntity<?> editUser(@RequestPart(name = "image", required = false) MultipartFile file,
                                       @Valid @RequestPart(name = "user") UserEditRequest userRequest,
                                       BindingResult bindingResult) throws CustomFileNotFoundException {
         if (bindingResult.hasErrors()) {
