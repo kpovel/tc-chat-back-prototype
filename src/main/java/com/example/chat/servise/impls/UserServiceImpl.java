@@ -257,4 +257,10 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
+    @Transactional
+    public void saveUserFields(User user, UserEditRequest userRequest) {
+        user.setName(userRequest.getName());
+        user.setAbout(userRequest.getAbout());
+        userRepository.save(user);
+    }
 }

@@ -8,9 +8,7 @@ import com.example.chat.sequrity.jwt.JwtUtils;
 import com.example.chat.servise.impls.*;
 import com.example.chat.utils.CustomFieldError;
 import com.example.chat.utils.JsonViews;
-import com.example.chat.utils.exception.BadRefreshTokenException;
-import com.example.chat.utils.exception.ErrorServerException;
-import com.example.chat.utils.exception.InvalidDataException;
+import com.example.chat.utils.exception.*;
 import com.example.chat.utils.mapper.HashtagMapper;
 import com.example.chat.utils.validate.ValidateFields;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -18,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.mail.Multipart;
 import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.context.MessageSource;
@@ -27,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -155,6 +155,33 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @PutMapping("/user")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Save user fields")
+    @JsonView(JsonViews.ViewFieldsUser.class)
+    public ResponseEntity<?> editUser(@RequestPart(name = "file", required = false) MultipartFile file,
+                                      @Valid @RequestPart(name = "user") UserEditRequest userRequest,
+                                      BindingResult bindingResult) throws CustomFileNotFoundException {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(bindingResultMessages(bindingResult));
+        }
+        User user = userService.getUserFromSecurityContextHolder();
+        if (file != null && !file.getOriginalFilename().isEmpty()) {
+            String contentType = file.getContentType();
+            if (ValidateFields.isSupportedImageType(contentType)) {
+                String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
+                if (!fileService.defaultImage(user.getImage().getName())) fileService.deleteFileFromStorage(user.getImage().getName());
+                user.getImage().setName(imageName);
+            } else throw new FileFormatException("error.file.format");
+        }
+        if (userRequest.getDefaultAvatar() != null && !userRequest.getDefaultAvatar().isEmpty() && fileService.defaultImage(userRequest.getDefaultAvatar())) {
+            if (!fileService.defaultImage(user.getImage().getName())) fileService.deleteFileFromStorage(user.getImage().getName());
+            user.getImage().setName(userRequest.getDefaultAvatar());
+        }
+        userService.saveUserFields(user, userRequest);
+        return ResponseEntity.ok("Success");
+    }
+
     @PutMapping("/user/hashtags-with-onboarding/save")
     @Operation(summary = "User onboarding (step: 'HASHTAGS') - save hashtags")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -181,7 +208,7 @@ public class UserController {
         Locale currentLocale = LocaleContextHolder.getLocale();
         List<Hashtag> userHashTags = userService.getUserFromSecurityContextHolder().getHashtags();
         List<HashtagsGroup> allHashtagsGroups = hashtagGroupService.getAllHashtagsGroupsByLocale(currentLocale.getLanguage());
-        if(userHashTags.isEmpty()) return ResponseEntity.ok(allHashtagsGroups);
+        if (userHashTags.isEmpty()) return ResponseEntity.ok(allHashtagsGroups);
         allHashtagsGroups.stream()
                 .flatMap(group -> group.getHashtags().stream())
                 .filter(hashtag -> userHashTags.stream()
@@ -240,9 +267,7 @@ public class UserController {
         List<UserChatRoom> userChatRoomList = userService.getUserChatRoomList();
 
         Comparator<UserChatRoom> dateComparator = Comparator
-                // Спочатку порівнюємо за наявністю lastMessage
                 .comparing((UserChatRoom room) -> room.getLastMessage() != null ? 1 : 0)
-                // Потім порівнюємо за датою lastMessage, якщо вона не null
                 .thenComparing((UserChatRoom room) -> room.getLastMessage() != null ? room.getLastMessage().getDateOfCreated() : null,
                         Comparator.nullsLast(Comparator.naturalOrder()));
 //                        Comparator.nullsLast(Comparator.reverseOrder()));
@@ -250,9 +275,7 @@ public class UserController {
         List<UserChatRoom> sortedList = userChatRoomList.stream()
                 .sorted(dateComparator.reversed())
                 .collect(Collectors.toList());
-        //TODO: Add a filter by the date of the last message of the chat message.
         return ResponseEntity.ok(sortedList);
-//        return ResponseEntity.ok(userChatRoomList);
     }
 
     @PutMapping("/user/add-public-chatroom/{chatRoomUUID}")

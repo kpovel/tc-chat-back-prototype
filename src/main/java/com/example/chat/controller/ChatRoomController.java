@@ -66,7 +66,7 @@ public class ChatRoomController {
             if (ValidateFields.isSupportedImageType(contentType)) {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
                 image.setName(imageName);
-            } else throw new FileFormatException("Дозволено тільки зображення");
+            } else throw new FileFormatException("error.file.format");
         }
         User user = userService.getUserFromSecurityContextHolder();
         if (chatRoomRequest.getHashtag() != null) {
@@ -109,7 +109,7 @@ public class ChatRoomController {
             if (ValidateFields.isSupportedImageType(contentType)) {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
                 image.setName(imageName);
-            } else throw new FileFormatException("Дозволено тільки зображення");
+            } else throw new FileFormatException("error.file.format");
             //TODO: add GlobalHandler FileFormatException
         }
 

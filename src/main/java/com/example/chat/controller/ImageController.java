@@ -58,7 +58,7 @@ public class ImageController {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
                 imageService.saveImageName(user, imageName);
                 return ResponseEntity.ok(imageName);
-            } else throw new FileFormatException("Дозволено тільки зображення");
+            } else throw new FileFormatException("error.file.format");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Помилка обробки файлу: " + e.getMessage());
         }
@@ -81,7 +81,7 @@ public class ImageController {
                 return ResponseEntity.ok(chatRoomService.editImagePublicChatRoom(user, chatRoom, imageName));
 
             }
-            else throw new FileFormatException("Дозволено тільки зображення");
+            else throw new FileFormatException("error.file.format");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Помилка обробки файлу: " + e.getMessage());
         }

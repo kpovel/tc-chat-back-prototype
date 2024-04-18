@@ -104,6 +104,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(FileFormatException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ResponseEntity<?> customFileFormatException(FileFormatException ex) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ParserToResponseFromCustomFieldError.parseCustomFieldError(
+                new CustomFieldError("general", messageSource.getMessage(ex.getMessage(), null, currentLocale))));
+    }
+
     @ExceptionHandler(InvalidDataException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
