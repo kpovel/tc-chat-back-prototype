@@ -155,6 +155,20 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/user/to-edit")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @Operation(summary = "Get User")
+    @JsonView(JsonViews.ViewFieldsUser.class)
+    public ResponseEntity<?> getUserAndDefaultsAvatars() {
+        User user = userService.getUserFromSecurityContextHolder();
+        List<String> defaultAvatars = List.of("avatar-1.svg", "avatar-2.svg", "avatar-3.svg", "avatar-4.svg", "avatar-5.svg", "avatar-6.svg", "avatar-7.svg", "avatar-8.svg",
+                "avatar-9.svg", "avatar-10.svg", "avatar-11.svg", "avatar-12.svg", "avatar-13.svg", "avatar-14.svg", "avatar-15.svg", "avatar-16.svg");
+        Map<String, Object>  userAndDefAvatarsMap = new HashMap<>();
+        userAndDefAvatarsMap.put("user", user);
+        userAndDefAvatarsMap.put("avatars", defaultAvatars);
+        return ResponseEntity.ok(userAndDefAvatarsMap);
+    }
+
     @PutMapping("/user")
     @SecurityRequirement(name = "Bearer Authentication")
     @Operation(summary = "Save user fields")
