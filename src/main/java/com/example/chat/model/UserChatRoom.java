@@ -24,6 +24,10 @@ public class UserChatRoom {
     @JsonView(JsonViews.ViewFieldOther.class)
     private ChatRoom chatRoom;
 
+    @Transient
+    @JsonView(JsonViews.ViewFieldOther.class)
+    private boolean isAdmin;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @JsonBackReference

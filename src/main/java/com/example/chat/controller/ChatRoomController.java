@@ -60,7 +60,7 @@ public class ChatRoomController {
     public ResponseEntity<?> saveNewPublicChatRoomDemo(@RequestPart(name = "image", required = false) MultipartFile file,
                                                        @RequestPart(name = "chatRoom") DemoDataPublicChat chatRoomRequest) {
         Image image = new Image();
-        if(file != null) {
+        if (file != null) {
             String contentType = file.getContentType();
             if (ValidateFields.isSupportedImageType(contentType)) {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
@@ -83,13 +83,13 @@ public class ChatRoomController {
     @Operation(summary = "Create New public chat room step one", description = "Step one - name, chat type and image file")
     @SecurityRequirement(name = "Bearer Authentication")
     @JsonView(JsonViews.ViewFieldChat.class)
-    public ResponseEntity<?> createNewPublicChatRoom( @Valid @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest,
-                                                      BindingResult bindingResult,
-                                                      @RequestPart(name = "image", required = false ) MultipartFile file
+    public ResponseEntity<?> createNewPublicChatRoom(@Valid @RequestPart(name = "chatRoom") CreatePublicChatRoomRequest chatRoomRequest,
+                                                     BindingResult bindingResult,
+                                                     @RequestPart(name = "image", required = false) MultipartFile file
 
-                                                     ) {
+    ) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             List<CustomFieldError> errorFields = new ArrayList<>();
             try {
                 errorFields = bindingResult.getFieldErrors().stream()
@@ -103,7 +103,7 @@ public class ChatRoomController {
             }
         }
         Image image = new Image();
-        if(file != null) {
+        if (file != null) {
             String contentType = file.getContentType();
             if (ValidateFields.isSupportedImageType(contentType)) {
                 String imageName = fileService.saveFileInStorage(file, contentType.replaceAll("image/", "."));
@@ -112,13 +112,13 @@ public class ChatRoomController {
         }
 
         Hashtag hashtag = hashtagService.hetHashtagByName("other");
-        if(currentLocale.toLanguageTag().equals("uk")) hashtag = hashtagService.hetHashtagByName("інше");
+        if (currentLocale.toLanguageTag().equals("uk")) hashtag = hashtagService.hetHashtagByName("інше");
         User user = userService.getUserFromSecurityContextHolder();
         return ResponseEntity.ok(chatRoomService.saveNewPublicChatRoom(user, chatRoomRequest, image, hashtag));
     }
 
     @PutMapping("/exit/public-chat/{uuid}")
-    public ResponseEntity<?> userExitFromChat(@PathVariable String uuid){
+    public ResponseEntity<?> userExitFromChat(@PathVariable String uuid) {
         User user = userService.getUserFromSecurityContextHolder();
         ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(uuid);
         userChatRoomsService.userExitFromChatRoom(user, chatRoom);
@@ -131,11 +131,11 @@ public class ChatRoomController {
     @PutMapping("/public-chat-room/edit-description")
     @Operation(summary = "Edit public chat room step two", description = "Step two - chat description")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
+    @JsonView(JsonViews.ViewFieldUserChatList.class)
     public ResponseEntity<?> editDescriptionPublicChatRoom(@Valid @RequestBody EditChatRoomRequest chatRoomRequest,
-                                                                  BindingResult bindingResult) {
+                                                           BindingResult bindingResult) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             List<CustomFieldError> errorFields = new ArrayList<>();
             try {
                 errorFields = bindingResult.getFieldErrors().stream()
@@ -149,14 +149,15 @@ public class ChatRoomController {
             }
         }
         User user = userService.getUserFromSecurityContextHolder();
-        if(chatRoomRequest.getChatRoomDescription().length() > 300 ) throw new InvalidDataException("chat description field max size 300 characters");
+        if (chatRoomRequest.getChatRoomDescription().length() > 300)
+            throw new InvalidDataException("chat description field max size 300 characters");
         return ResponseEntity.ok(chatRoomService.editDescriptionPublicChatRoom(user, chatRoomRequest));
     }
 
     @PutMapping("/public-chat-room/edit-hashtag")
     @Operation(summary = "Edit public chat room step four", description = "Step three - chat hashtag ")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
+    @JsonView(JsonViews.ViewFieldUserChatList.class)
     public ResponseEntity<ChatRoom> editHashtagPublicChatRoom(@RequestBody EditChatRoomRequest chatRoomRequest) {
         User user = userService.getUserFromSecurityContextHolder();
         Hashtag hashtag = hashtagService.getHashtagById(chatRoomRequest.getHashtag().getId());
@@ -170,12 +171,18 @@ public class ChatRoomController {
     public ResponseEntity<?> getChatRoomByUUID(@PathVariable String chatRoomUUID) {
         User user = userService.getUserFromSecurityContextHolder();
         ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(chatRoomUUID);
+        List<User> usersFromChat = userChatRoomsService.getUsersByChatRoomId(chatRoom.getId());
+        for (User arr : usersFromChat) {
+            if (user.getId().equals(arr.getId())) {
+                chatRoom.setJoin(true);
+            }
+        }
+        if (chatRoom.getUserAminChatRoom().getId().equals(user.getId())) chatRoom.setAdmin(true);
         List<Message> messages = messageService.getPageMessage(chatRoom.getId(), 0, 20).getContent();
         chatRoom.getMessages().clear();
         chatRoom.setMessages(messages);
         chatRoom.setCurrentChatUserUUID(user.getUuid());
         return ResponseEntity.ok(chatRoom);
-
     }
 
     @DeleteMapping("/public-chat-room/{uuid}")
@@ -199,7 +206,6 @@ public class ChatRoomController {
 
         return ResponseEntity.ok("ok");
     }
-
 
 
     @GetMapping("/chat-messages/{id}")

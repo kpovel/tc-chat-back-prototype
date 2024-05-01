@@ -15,6 +15,8 @@ public final class JsonViews {
     public interface ViewFieldUser{}
     public interface ViewFieldUserImage{}
     public interface ViewFieldUserAbout{}
+    public interface ViewFieldChatRoomType{}
+    public interface ViewFieldChatIsAdmin{}
 
 
 
@@ -27,8 +29,8 @@ public final class JsonViews {
     public interface ViewFieldUserOnboarding extends ViewFieldName, ViewFieldUserLogin, ViewFieldOther, ViewFieldUserImage {}
 
     public interface ViewFieldUUIDHashtagsGroups extends ViewFieldUUID, ViewFieldName, ViewFieldOther{}
-    public interface ViewFieldUUIDChatList extends ViewFieldUUID, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
-    public interface ViewFieldChatRoom extends ViewFieldUUID, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldMessages{}
+    public interface ViewFieldUserChatList extends ViewFieldUUID,ViewFieldChatRoomType, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
+    public interface ViewFieldChatRoom extends ViewFieldUUID, ViewFieldName, ViewFieldChatIsAdmin, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldMessages{}
 
     public interface ViewMessage extends ViewFieldUUID, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldUser, ViewFieldUserImage, ViewFieldName {}
 

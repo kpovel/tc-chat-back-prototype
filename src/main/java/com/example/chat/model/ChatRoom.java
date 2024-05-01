@@ -45,9 +45,18 @@ public class ChatRoom implements Serializable {
     @JoinColumn(name = "user_admin_id")
     private User userAminChatRoom;
 
+    @Transient
+    @JsonView(JsonViews.ViewFieldChatIsAdmin.class)
+    private boolean isAdmin;
+
+    @Transient
+    @JsonView(JsonViews.ViewFieldOther.class)
+    private boolean isJoin;
+
     @ElementCollection(targetClass = ChatRoomType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "chat_room_type", joinColumns = @JoinColumn(name = "chat_room_id"))
     @Enumerated(EnumType.STRING)
+    @JsonView(JsonViews.ViewFieldChatRoomType.class)
     private Set<ChatRoomType> chatRoomType = new HashSet<>();
 
 

@@ -67,7 +67,7 @@ public class ImageController {
     @PutMapping("/edit-image/public-chat-room/{uuid}")
     @Operation(summary = "Edit public chat room step five", description = "Step five - upload image chat room")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
+    @JsonView(JsonViews.ViewFieldUserChatList.class)
     public ResponseEntity<?> editImagePublicChatRoom(@PathVariable String uuid,
                                                      @RequestParam("image") MultipartFile file) {
         try {

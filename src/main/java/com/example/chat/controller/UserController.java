@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
-import jakarta.mail.Multipart;
 import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.context.MessageSource;
@@ -276,7 +275,7 @@ public class UserController {
     @GetMapping("/user/chat-rooms")
     @Operation(summary = "Get user chat rooms")
     @SecurityRequirement(name = "Bearer Authentication")
-    @JsonView(JsonViews.ViewFieldUUIDChatList.class)
+    @JsonView(JsonViews.ViewFieldUserChatList.class)
     public ResponseEntity<List<UserChatRoom>> getUserChatRooms() {
         List<UserChatRoom> userChatRoomList = userService.getUserChatRoomList();
 

@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,5 +32,15 @@ public class UserChatRoomsService {
         userChatRoomsRepository.delete(userChatRoom);
     }
 
+
+    @Transactional
+    public List<User> getUsersByChatRoomId(long chatRoomId) {
+        List<UserChatRoom> userChatRooms = userChatRoomsRepository.getAllByChatRoomId(chatRoomId);
+        List<User> usersFromChatRoom = new ArrayList<>();
+        for (UserChatRoom arr : userChatRooms) {
+            usersFromChatRoom.add(arr.getUser());
+        }
+        return usersFromChatRoom;
+    }
 
 }

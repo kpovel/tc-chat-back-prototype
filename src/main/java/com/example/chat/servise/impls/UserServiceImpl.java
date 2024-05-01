@@ -216,6 +216,11 @@ public class UserServiceImpl implements UserService {
     public List<UserChatRoom> getUserChatRoomList() {
         User user = getUserFromSecurityContextHolder();
         List<UserChatRoom> userChatRooms = user.getUserChatRooms();
+        for (int i = 0; i < userChatRooms.size(); i++) {
+            if(userChatRooms.get(i).getChatRoom().getUserAminChatRoom().getId().equals(user.getId())) {
+                userChatRooms.get(i).setAdmin(true);
+            }
+        }
         if (!userChatRooms.isEmpty()) {
             return addLastMessageAndChatNameToListUserChatRoomsResponse(userChatRooms);
         }
