@@ -11,7 +11,7 @@ import lombok.Setter;
 public class CreatePublicChatRoomRequest {
 
     @NotNull(message = "field.not.empty")
-    @Size(min=1, max = 60, message = "field.size.name.chat")
+    @Size(min=3, max = 50, message = "field.size.name.chat")
     private String chatRoomName;
 
     public CreatePublicChatRoomRequest() {
