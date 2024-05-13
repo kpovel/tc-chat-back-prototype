@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,9 +33,15 @@ public class MessageService {
     }
 
     @Transactional
+    public List<Message> getMessagesByChatRoom(long chatRoomId, long messageId, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return messageRepository.findMessagesByChatId(chatRoomId, messageId, pageable);
+    }
+
+    @Transactional
     public Page<Message> getPageMessage(long chatRoomId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return messageRepository.findPageMessage(pageable, chatRoomId);
+        return messageRepository.getPageMessage(pageable, chatRoomId);
     }
 
     @Transactional

@@ -1,6 +1,7 @@
 package com.example.chat.utils;
 
 public final class JsonViews {
+    public interface ViewFieldId {}
     public interface ViewFieldUUID {}
     public interface ViewFieldName{}
     public interface ViewFieldUserLogin{}
@@ -32,6 +33,6 @@ public final class JsonViews {
     public interface ViewFieldUserChatList extends ViewFieldUUID,ViewFieldChatRoomType, ViewFieldName, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated{}
     public interface ViewFieldChatRoom extends ViewFieldUUID, ViewFieldName, ViewFieldChatIsAdmin, ViewFieldOther, ViewFieldDescription, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldMessages{}
 
-    public interface ViewMessage extends ViewFieldUUID, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldUser, ViewFieldUserImage, ViewFieldName {}
+    public interface ViewMessage extends ViewFieldId, ViewFieldUUID, ViewFieldMessageContent, ViewFieldDateOfCreated, ViewFieldUser, ViewFieldUserImage, ViewFieldName {}
 
 }

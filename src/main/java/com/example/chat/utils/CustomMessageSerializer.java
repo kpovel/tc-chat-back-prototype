@@ -13,6 +13,7 @@ public class CustomMessageSerializer extends JsonSerializer<Message> {
     public void serialize(Message value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 
         gen.writeStartObject();
+        gen.writeNumberField("id", value.getId());
         gen.writeStringField("uuid", value.getUuid());
         gen.writeStringField("content", value.getContent());
         gen.writeBooleanField("edited", value.isEdited());

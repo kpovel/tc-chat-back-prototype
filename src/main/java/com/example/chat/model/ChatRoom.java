@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -37,21 +38,15 @@ public class ChatRoom implements Serializable {
     @Column
     boolean archived = false;
 
-    @Transient
-    private List<User> usersChatRoom = new ArrayList<>();
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_admin_id")
     private User userAminChatRoom;
 
-    @Transient
-    @JsonView(JsonViews.ViewFieldChatIsAdmin.class)
-    private boolean isAdmin;
-
-    @Transient
-    @JsonView(JsonViews.ViewFieldOther.class)
-    private boolean isJoin;
+    @Column(name = "date_of_created")
+    @JsonView(JsonViews.ViewFieldDateOfCreated.class)
+    private LocalDateTime dateOfCreated;
 
     @ElementCollection(targetClass = ChatRoomType.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "chat_room_type", joinColumns = @JoinColumn(name = "chat_room_id"))
@@ -65,11 +60,6 @@ public class ChatRoom implements Serializable {
     @JsonView(JsonViews.ViewFieldHashtag.class)
     private Hashtag hashtag;
 
-    @Transient
-//    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    @JsonView(JsonViews.ViewFieldMessages.class)
-    private List<Message> messages = new ArrayList<>();
-
     @JsonManagedReference
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     private List<UserChatRoom> userChatRooms = new ArrayList<>();
@@ -80,11 +70,27 @@ public class ChatRoom implements Serializable {
     private Image image;
 
     @Transient
+    private List<User> usersChatRoom = new ArrayList<>();
+
+    @Transient
+    @JsonView(JsonViews.ViewFieldChatIsAdmin.class)
+    private boolean isAdmin;
+
+    @Transient
+    @JsonView(JsonViews.ViewFieldOther.class)
+    private boolean isJoin;
+
+    @Transient
     @JsonView(JsonViews.ViewFieldUUID.class)
     private String currentChatUserUUID;
 
+    @Transient
+    @JsonView(JsonViews.ViewFieldMessages.class)
+    private List<Message> messages = new ArrayList<>();
+
     @PrePersist
     private void init(){
+        this.dateOfCreated = LocalDateTime.now();
         this.uuid = java.util.UUID.randomUUID().toString();
     }
 
