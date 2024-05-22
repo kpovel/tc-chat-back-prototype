@@ -335,6 +335,18 @@ public class UserController {
         return ResponseEntity.ok("Success");
     }
 
+    @PutMapping("/join/public-chat/{uuid}")
+    public ResponseEntity<?> userJoinFromChat(@PathVariable String uuid) {
+        User user = userService.getUserFromSecurityContextHolder();
+        ChatRoom chatRoom = chatRoomService.getChatRoomByUUID(uuid);
+        for(UserChatRoom arr : user.getUserChatRooms()) {
+            if(arr.getChatRoom().getId().equals(chatRoom.getId())) {
+                return ResponseEntity.badRequest().body("Error: the user already has this chat");
+            }
+        }
+        userService.userJoinFromChatRoom(user, chatRoom);
+        return ResponseEntity.ok("Success");
+    }
 
     private Map<String, String> bindingResultMessages(BindingResult bindingResult) {
         Locale currentLocale = LocaleContextHolder.getLocale();

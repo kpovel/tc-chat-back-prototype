@@ -268,4 +268,15 @@ public class UserServiceImpl implements UserService {
         user.setAbout(userRequest.getAbout());
         userRepository.save(user);
     }
+
+    @Transactional
+    public void userJoinFromChatRoom(User user, ChatRoom chatRoom) {
+
+        UserChatRoom userChatRoom = new UserChatRoom();
+        userChatRoom.setChatName(chatRoom.getName());
+        userChatRoom.setChatRoom(chatRoom);
+        userChatRoom.setUser(user);
+        user.getUserChatRooms().add(userChatRoom);
+        userRepository.save(user);
+    }
 }

@@ -32,7 +32,6 @@ public class UserChatRoomsService {
         userChatRoomsRepository.delete(userChatRoom);
     }
 
-
     @Transactional
     public List<User> getUsersByChatRoomId(long chatRoomId) {
         List<UserChatRoom> userChatRooms = userChatRoomsRepository.getAllByChatRoomId(chatRoomId);

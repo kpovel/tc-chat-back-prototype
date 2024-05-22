@@ -128,6 +128,8 @@ public class ChatRoomController {
         return ResponseEntity.ok("Success");
     }
 
+
+
     @PutMapping("/public-chat-room/edit-description")
     @Operation(summary = "Edit public chat room step two", description = "Step two - chat description")
     @SecurityRequirement(name = "Bearer Authentication")
