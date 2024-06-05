@@ -19,14 +19,14 @@ public class UserChatRoomsService {
 
     private UserChatRoomsRepository userChatRoomsRepository;
 
-    public UserChatRoom getUserChatRoomByChatRoomId(long charRoomId) {
-        return userChatRoomsRepository.getUserChatRoomByChatRoomId(charRoomId)
+    public UserChatRoom getUserChatRoomByChatRoomId(long charRoomId, long userId) {
+        return userChatRoomsRepository.getUserChatRoomByChatRoomIdAndUserId(charRoomId, userId)
                 .orElseThrow((() -> new ObjectNotFoundException("Hashtag with id: " + charRoomId + " not found")));
     }
 
     @Transactional
     public void userExitFromChatRoom(User user, ChatRoom chatRoom) {
-        UserChatRoom userChatRoom = getUserChatRoomByChatRoomId(chatRoom.getId());
+        UserChatRoom userChatRoom = getUserChatRoomByChatRoomId(chatRoom.getId(), user.getId());
         List<UserChatRoom> userChatRooms = user.getUserChatRooms();
         userChatRooms.removeIf(obj -> obj.getId().equals(userChatRoom.getId()));
         userChatRoomsRepository.delete(userChatRoom);
